@@ -1,7 +1,6 @@
 import random
 import threading
 import time
-import math
 
 prefix = "%"
 tickbooster = 1.0
@@ -84,6 +83,7 @@ catchfishmsg = "You caught a fish. +1 fishing xp"
 catchtreasuremsg = "You caught treasure. +10 fishing xp"
 catchpetmsg = "You caught a pet"
 nocatchpetmsg = "You didn't catch a pet :(. Better luck next time!"
+fishingupmsg = "Your fishing level was upgraded to %s"
 shouldexit = False
 ticks = 1
 
@@ -92,6 +92,16 @@ UP_P_MULIPLIER = 200
 
 def cprint(msg, esc="", color=""):
     print(color + msg + colors.ENDC + esc)
+
+
+def progressbar(num, cap, partitions=20):  # prints a progressbar
+    dashes = round(num / (cap / partitions))
+    for i in range(partitions):
+        if i < dashes:
+            print("#", end="")
+        else:
+            print("-", end="")
+    print(" (" + str(num) + "/" + str(cap) + ")")
 
 
 def getrank(level):
@@ -227,9 +237,10 @@ class IdleMiner:
             self.minelevel += 1
             self.blocksmined = 0
             print(mineupmsg % self.minelevel)
-        if self.fishxp / self.fishlevel == 1:
+        if self.fishxp / self.fishlevel >= 4:
             self.fishlevel += 1
-            self.fishxp == 0
+            self.fishxp = 0
+            print(fishingupmsg % self.fishlevel)
 
     def execute(self, cmd):
         match cmd:
@@ -247,25 +258,28 @@ class IdleMiner:
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
-                if math.randint(1, 100 - self.fishlevel) == 1:
+                if random.randint(1, 100 - self.fishlevel) == 1:
                     print(catchtreasuremsg)  # TODO: unfinished
                 else:
                     print(catchfishmsg)
                     self.fishxp += 1
             case "hunt" | "h":
-                if math.randint(1, self.huntchance) == 1:
+                if random.randint(1, self.huntchance) == 1:
                     print(catchpetmsg)  # TODO: unfinished
                 else:
                     print(nocatchpetmsg)
-                self.shards += math.randint(1, 10)
-                print('You now have', self.shards, 'shards.')
+                    self.shards += random.randint(1, 10)
+                    print('You now have', self.shards, 'shards.')
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
+                print("shards:", self.shards)
                 print("backpack:", self.backpack)
                 print("tools:", self.tools)
                 print("mine level:", self.minelevel)
                 print("blocks until next level:", str(
                     self.blocksmined) + "/" + str(self.minelevel * 2000))
+                print("fishinglevel:", self.fishlevel, end=" ")
+                progressbar(self.fishxp, self.fishlevel * 4)
             case "quiz" | "q":
                 pass
             case "exit":
