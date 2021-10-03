@@ -3,17 +3,17 @@ import threading
 import json
 import time
 
-prefix = "%"  # prefix that commands should start with
-tickbooster = 1.0  # multiplies TPS
+prefix = "%"  # command prefix
+tickbooster = 1.0  # TPS booster
 
-datapath = "data/"  # path to find the data files
+datapath = "data/"  # data file path
 
 
-def dataload(file):  # function to load data
+def dataload(file):  # 0loads data files
     return json.load(open(datapath + file))
 
 
-class colors:  # colors to print with
+class colors:  # printing colors
     HEADER = '\033[95m'
     INFO2 = '\033[94m'
     INFO = '\033[96m'
@@ -25,31 +25,29 @@ class colors:  # colors to print with
     UNDERLINE = '\033[4m'
 
 
-prices = dataload("prices.json")  # data file for item prices
-mines = dataload("mines.json")  # data file for mine chances
+prices = dataload("prices.json")  # item prices
+mines = dataload("mines.json")  # mining chances
 
-pticks = dataload("ticks.json")  # data file for ticks(based on pickaxe level)
-biomes = dataload("biomes.json")
+pticks = dataload("ticks.json")  # ticks (based on pickaxe level)
+biomes = dataload("biomes.json")  # biome list
 
-errmsg = "Invalid command"  # when we hit a error during command parsing
-# when you run out of money while upgrading
-costmsg = "You don't have enough money (upgraded till max)"
-upmsg = "Your %s level is %s, type is %s"  # shown after upgraading
-# error message if value isn't an integer
+errmsg = "Invalid command"  # error during parsing
+costmsg = "You don't have enough money (upgraded till max)"  # money ran out
+upmsg = "Your %s level is %s, type is %s"
 notintmsg = "Value should be an integer"
-mineupmsg = "Upgraded mine to level %s"  # shown after upgrading mine
-newbiomemsg = "Biome switched to %s"  # shown after biome switches
+mineupmsg = "Upgraded mine to level %s"
+newbiomemsg = "Biome switched to %s"
 shouldexit = False  # should main thread exit
 ticks = 1  # TPS
 
-UP_P_MULIPLIER = 200  # upgrading pickaxe costs UP_P_MULTIPLIER * level
+UP_P_MULIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 
 
-def colorprint(msg, esc="", color=""):  # prints with a color from the colors class
+def colorprint(msg, esc="", color=""):  # prints with a color
     print(color + msg + colors.ENDC + esc)
 
 
-def progressbar(num, cap, partitions=20):  # prints a progressbar
+def progressbar(num, cap, partitions=20):  # progressbar ####--
     dashes = round(num / (cap / partitions))
     for i in range(partitions):
         if i < dashes:
@@ -59,7 +57,7 @@ def progressbar(num, cap, partitions=20):  # prints a progressbar
     print(" (" + str(num) + "/" + str(cap) + ")")
 
 
-def getrank(level):  # gets rank of pickaxe
+def getrank(level):
     if level >= 200:
         return "netherite"
     elif level >= 150:
@@ -76,11 +74,11 @@ def getrank(level):  # gets rank of pickaxe
     return "impossible"
 
 
-def getpticks(rank):  # returns number of ticks based on pickaxe rank
+def getpticks(rank):
     return pticks[rank]
 
 
-class CommandParser():  # class to parse commands
+class CommandParser():
     def get(self, prompt=">"):
         """returns a parsed command [command, args, args...]"""
         cmd = input(prompt)
@@ -99,9 +97,9 @@ class CommandParser():  # class to parse commands
         return data.split(" ")
 
 
-class IdleMiner:  # class for the IdleMiner
+class IdleMiner:
     def __init__(self):
-        self.cmdparse = CommandParser()  # initialize a command parser
+        self.cmdparse = CommandParser()
         self.money = 0  # money
         self.shards = 0  # shards for pets
         self.rc = 0  # rebirth coins
@@ -127,10 +125,10 @@ class IdleMiner:  # class for the IdleMiner
             "p": 0
         }
 
-    def get(self, prefix):  # get a command and call self.execute()
+    def get(self, prefix):
         self.execute(self.cmdparse.get(prefix))
 
-    def sell(self):  # sell the inventory
+    def sell(self):
         for item in list(self.inventory.keys()):
             if self.inventory[item] > 0:
                 money = round(self.inventory[item] *
@@ -140,7 +138,7 @@ class IdleMiner:  # class for the IdleMiner
                 self.money += money
                 self.inventory[item] = 0
 
-    def up(self, tool, amount):  # upgrades
+    def up(self, tool, amount):
         match tool:
             case "p" | "pickaxe":  # rebirth = level >= 200
                 global ticks
@@ -179,14 +177,14 @@ class IdleMiner:  # class for the IdleMiner
             case _:
                 colorprint(errmsg + " (in IdleMiner.up)", color=colors.WARNING)
 
-    def miningtick(self):  # mine resources and add to the inventory
+    def miningtick(self):
         num = random.randint(1, 100)
         for i in mines[self.biome][self.minelevel].keys():
             if num > 100 - mines[self.biome][self.minelevel][i]:
                 self.inventory[i] += 1
                 self.blocksmined += 1
 
-    def update(self):  # check for mine or biome upgrades
+    def update(self):
         if self.blocksmined > 2000 * self.minelevel:
             self.minelevel += 1
             self.blocksmined = 0
@@ -199,7 +197,7 @@ class IdleMiner:  # class for the IdleMiner
             else:
                 print(mineupmsg % self.minelevel)
 
-    def execute(self, cmd):  # execute a command
+    def execute(self, cmd):
         match cmd:
             case "sell" | "s":
                 self.sell()
@@ -227,7 +225,7 @@ class IdleMiner:  # class for the IdleMiner
                 progressbar(self.blocksmined, self.minelevel * 2000)
             case "quiz":
                 pass
-            case "exit":  # exit game
+            case "exit":
                 global shouldexit
                 shouldexit = True
             case "cheat":  # for easy testing, should be disabled later
@@ -239,9 +237,9 @@ class IdleMiner:  # class for the IdleMiner
 
 
 if __name__ == "__main__":
-    steve = IdleMiner()  # make a idle miner
+    steve = IdleMiner()
 
-    def repeatedget():  # get commands in a while true loop, target of the input thread
+    def repeatedget():
         while not shouldexit:
             steve.get(">")
 
