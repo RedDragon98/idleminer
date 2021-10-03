@@ -1,7 +1,5 @@
 import random
-from random import randint
 import threading
-import sys
 import time
 import math
 
@@ -35,7 +33,7 @@ prices = {
     "emerald": 750,
     "diamond": 950,
     "obsidian": 1350,
-    "bedrock": math.inf,
+    "bedrock": 10000000,
 }
 mines = {
     "plains": {
@@ -245,17 +243,17 @@ class IdleMiner:
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
-                if randint(1, 100 - self.fishlevel) == 1:
+                if math.randint(1, 100 - self.fishlevel) == 1:
                     print('You got treasure')  # unfinished
                 else:
                     print('You caught a fish. +1 XP')
                     self.fishxp += 1
             case "hunt" | "h":
-                if randint(1, self.huntchance) == 1:
+                if math.randint(1, self.huntchance) == 1:
                     print('You got a pet')  # unfinished
                 else:
                     print('You didn\'t get a pet :( Better luck next time!')
-                self.shards += randint(1, 10)
+                self.shards += math.randint(1, 10)
                 print('You now have', self.shards, 'shards.')
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
@@ -294,4 +292,4 @@ if __name__ == "__main__":
         steve.update()
 
         if shouldexit:
-            sys.exit()
+            exit(0)
