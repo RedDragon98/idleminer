@@ -33,13 +33,15 @@ biomes = dataload("biomes.json")  # biome list
 
 errmsg = "Invalid command"  # error during parsing
 costmsg = "You don't have enough money (upgraded till max)"  # money ran out
-
 upmsg = "Your %s level is %s, type is %s"
 notintmsg = "Value should be an integer"
-mineupmsg = "Upgraded mine to level %s"
-newbiomemsg = "Biome switched to %s"
-shouldexit = False  # should main thread exit
-ticks = 1  # TPS
+mineupmsg = "Upgraded mine to %s"
+catchfishmsg = "You caught a fish. +1 fishing xp"
+catchtreasuremsg = "You caught treasure. +10 fishing xp"
+catchpetmsg = "You caught a pet"
+nocatchpetmsg = "You didn't catch a pet :(. Better luck next time!"
+shouldexit = False
+ticks = 1
 
 UP_P_MULIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 
@@ -210,19 +212,17 @@ class IdleMiner:
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
-
                 if random.randint(1, 100 - self.fishlevel) == 1:
-                    print('You got treasure')  # unfinished
+                    print('You got treasure')  # TODO: unfinished
                 else:
-                    print('You caught a fish. +1 XP')
+                    print(catchfishmsg)
                     self.fishxp += 1
             case "hunt" | "h":
                 if random.randint(1, self.huntchance) == 1:
-                    print('You got a pet')  # unfinished
+                    print('You got a pet')  # TODO: unfinished
                 else:
                     print('You didn\'t get a pet :( Better luck next time!')
                 self.shards += random.randint(1, 10)
-
                 print('You now have', self.shards, 'shards.')
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
