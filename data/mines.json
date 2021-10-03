@@ -42,6 +42,13 @@
             "coal": 50,
             "iron": 25
         },
+        {
+            "stone": 20,
+            "diorite": 60,
+            "andesite": 26,
+            "coal": 50,
+            "iron": 28
+        },
         "nextlevel"
     ]
 }
