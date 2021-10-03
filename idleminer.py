@@ -1,21 +1,17 @@
 import random
+from random import randint
 import threading
-import json
+import sys
 import time
+import math
 
-prefix = "%"  # prefix that commands should start with
-tickbooster = 1.0  # multiplies TPS
-
-datapath = "data/"  # path to find the data files
-
-
-def dataload(file):  # function to load data
-    return json.load(open(datapath + file))
+prefix = "%"
+tickbooster = 1.0
 
 
-class colors:  # colors to print with
+class colors:
     HEADER = '\033[95m'
-    INFO2 = '\033[94m'
+    BLUE = '\033[94m'
     INFO = '\033[96m'
     SUCCESS = '\033[92m'
     WARNING = '\033[93m'
@@ -25,41 +21,78 @@ class colors:  # colors to print with
     UNDERLINE = '\033[4m'
 
 
-prices = dataload("prices.json")  # data file for item prices
-mines = dataload("mines.json")  # data file for mine chances
+prices = {
+    "dirt": 10,
+    "wood": 20,
+    "stone": 45,
+    "diorite": 60,
+    "coal": 70,
+    "iron": 100,
+    "gold": 180,
+    "lapis": 250,
+    "deepslate": 300,
+    "amethyst": 650,
+    "emerald": 750,
+    "diamond": 950,
+    "obsidian": 1350,
+    "bedrock": math.inf,
+}
+mines = {
+    "plains": {
+        1: {
+            "stone": 70,
+            "coal": 10,
+            "iron": 5,
+        },
+        2: {
+            "stone": 60,
+            "coal": 15,
+            "iron": 7,
 
-pticks = dataload("ticks.json")  # data file for ticks(based on pickaxe level)
-biomes = dataload("biomes.json")
+        },
+        3: {
+            "stone": 50,
+            "diorite": 30,
+            "coal": 18,
+            "iron": 10,
 
-errmsg = "Invalid command"  # when we hit a error during command parsing
-# when you run out of money while upgrading
+        },
+        4: {
+            "stone": 45,
+            "diorite": 40,
+            "coal": 20,
+            "iron": 7,
+
+        },
+    }
+}
+
+pticks = {
+    "wooden": 1,
+    "stone": 2,
+    "iron": 5,
+    "gold": 10,
+    "diamond": 20,
+    "netherite": 50,
+    "impossible": 20000000000,
+}
+
+errmsg = "Invalid args"
 costmsg = "You don't have enough money (upgraded till max)"
-upmsg = "Your %s level is %s, type is %s"  # shown after upgraading
-# error message if value isn't an integer
+upmsg = "Your %s level is %s, type is %s"
 notintmsg = "Value should be an integer"
-mineupmsg = "Upgraded mine to level %s"  # shown after upgrading mine
-newbiomemsg = "Biome switched to %s"  # shown after biome switches
-shouldexit = False  # should main thread exit
-ticks = 1  # TPS
+mineupmsg = "Upgraded mine to %s"
+shouldexit = False
+ticks = 1
 
-UP_P_MULIPLIER = 200  # upgrading pickaxe costs UP_P_MULTIPLIER * level
+UP_P_MULIPLIER = 200
 
 
-def colorprint(msg, esc="", color=""):  # prints with a color from the colors class
+def cprint(msg, esc="", color=""):
     print(color + msg + colors.ENDC + esc)
 
 
-def progressbar(num, cap, partitions=20):  # prints a progressbar
-    dashes = round(num / (cap / partitions))
-    for i in range(partitions):
-        if i < dashes:
-            print("#", end="")
-        else:
-            print("-", end="")
-    print(" (" + str(num) + "/" + str(cap) + ")")
-
-
-def getrank(level):  # gets rank of pickaxe
+def getrank(level):
     if level >= 200:
         return "netherite"
     elif level >= 150:
@@ -76,13 +109,15 @@ def getrank(level):  # gets rank of pickaxe
     return "impossible"
 
 
-def getpticks(rank):  # returns number of ticks based on pickaxe rank
+def getpticks(rank):
     return pticks[rank]
 
 
-class CommandParser():  # class to parse commands
+class CommandParser():
+    def __init__(self):
+        pass
+
     def get(self, prompt=">"):
-        """returns a parsed command [command, args, args...]"""
         cmd = input(prompt)
         parsed = self.parse(cmd)
         if len(parsed) == 1:
@@ -91,7 +126,6 @@ class CommandParser():  # class to parse commands
             return parsed
 
     def parse(self, data: str):
-        """parses a command"""
         if data.strip() == "":
             return "???"
 
@@ -99,48 +133,48 @@ class CommandParser():  # class to parse commands
         return data.split(" ")
 
 
-class IdleMiner:  # class for the IdleMiner
+class IdleMiner:
     def __init__(self):
-        self.cmdparse = CommandParser()  # initialize a command parser
-        self.money = 0  # money
-        self.shards = 0  # shards for pets
-        self.rc = 0  # rebirth coins
-        self.huntchance = 10  # chance of pet
-        self.fishchance = 0  # chance of fish
-        self.biome = "plains"  # current biome
-        self.biomeid = 0  # current biome index in biome list
-        self.basebpsize = 50  # base backpck size
-        self.bpsizebooster = 1.0  # backpack size booster
-        self.sellbooster = 1.0  # booster for sell prices
-        self.minelevel = 1  # current mine level in biome
-        self.blocksmined = 0  # blocks mined in this mine level
-        self.inventory = {  # IdleMiner's inventory
+        self.cmdparse = CommandParser()
+        self.money = 0
+        self.shards = 0
+        self.huntchance = 100
+        self.fishchance = 1
+        self.fishlevel = 1
+        self.fishxp = 0
+        self.cooldown = 300
+        self.biome = "plains"
+        self.basebpsize = 50
+        self.bpsizebooster = 1.0
+        self.sellbooster = 1.0
+        self.minelevel = 1
+        self.blocksmined = 0
+        self.backpack = {
             "dirt": 0,
             "wood": 0,
             "stone": 0,
             "coal": 0,
             "iron": 0,
             "diorite": 0,
-            "andesite": 0,
         }
-        self.tools = {  # tool levels
+        self.tools = {
             "p": 0
         }
 
-    def get(self, prefix):  # get a command and call self.execute()
+    def get(self, prefix):
         self.execute(self.cmdparse.get(prefix))
 
-    def sell(self):  # sell the inventory
-        for item in list(self.inventory.keys()):
-            if self.inventory[item] > 0:
-                money = round(self.inventory[item] *
+    def sell(self):
+        for item in list(self.backpack.keys()):
+            if self.backpack[item] > 0:
+                money = round(self.backpack[item] *
                               prices[item] * self.sellbooster)
-                colorprint(item, ": " + "$" + f"{money:,}" +
-                           " (x" + f"{self.inventory[item]:,}" + ")", colors.BOLD)
+                cprint(item, ": " + "$" + f"{money:,}" +
+                       " (x" + f"{self.backpack[item]:,}" + ")", colors.BOLD)
                 self.money += money
-                self.inventory[item] = 0
+                self.backpack[item] = 0
 
-    def up(self, tool, amount):  # upgrades
+    def up(self, tool, amount):
         match tool:
             case "p" | "pickaxe":  # rebirth = level >= 200
                 global ticks
@@ -150,7 +184,7 @@ class IdleMiner:  # class for the IdleMiner
                         self.tools["p"] += 1
                         self.money -= price
                     else:
-                        colorprint(costmsg, color=colors.WARNING)
+                        cprint(costmsg, color=colors.FAIL)
                         break
 
                 ticks = getpticks(getrank(self.tools["p"]))
@@ -177,29 +211,25 @@ class IdleMiner:  # class for the IdleMiner
             case "t" | "tnt":
                 pass
             case _:
-                colorprint(errmsg + " (in IdleMiner.up)", color=colors.WARNING)
+                cprint(errmsg + " (in IdleMiner.up)", color=colors.FAIL)
 
-    def miningtick(self):  # mine resources and add to the inventory
+    def miningtick(self):
         num = random.randint(1, 100)
         for i in mines[self.biome][self.minelevel].keys():
             if num > 100 - mines[self.biome][self.minelevel][i]:
-                self.inventory[i] += 1
+                self.backpack[i] += 1
                 self.blocksmined += 1
 
-    def update(self):  # check for mine or biome upgrades
+    def update(self):
         if self.blocksmined > 2000 * self.minelevel:
             self.minelevel += 1
             self.blocksmined = 0
-            if mines[self.biome][self.minelevel] == "nextlevel":
-                self.biomeid += 1
-                self.biome = biomes[self.biomeid]
-                self.minelevel = 1
+            print(mineupmsg % self.minelevel)
+        if self.fishxp / self.fishlevel == 1:
+            self.fishlevel += 1
+            self.fishxp == 0
 
-                print(newbiomemsg % self.biome)
-            else:
-                print(mineupmsg % self.minelevel)
-
-    def execute(self, cmd):  # execute a command
+    def execute(self, cmd):
         match cmd:
             case "sell" | "s":
                 self.sell()
@@ -211,51 +241,57 @@ class IdleMiner:  # class for the IdleMiner
                 try:
                     int(amount)
                 except:
-                    colorprint(notintmsg, color=colors.FAIL)
+                    cprint(notintmsg, color=colors.FAIL)
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
-                pass
+                if randint(1, 100 - self.fishlevel) == 1:
+                    print('You got treasure')  # unfinished
+                else:
+                    print('You caught a fish. +1 XP')
+                    self.fishxp += 1
             case "hunt" | "h":
-                pass
+                if randint(1, self.huntchance) == 1:
+                    print('You got a pet')  # unfinished
+                else:
+                    print('You didn\'t get a pet :( Better luck next time!')
+                self.shards += randint(1, 10)
+                print('You now have', self.shards, 'shards.')
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
-                print("backpack:", self.inventory)
+                print("backpack:", self.backpack)
                 print("tools:", self.tools)
                 print("mine level:", self.minelevel)
-                print("blocks until next level:", end=" ")
-                progressbar(self.blocksmined, self.minelevel * 2000)
-            case "quiz":
+                print("blocks until next level:", str(
+                    self.blocksmined) + "/" + str(self.minelevel * 2000))
+            case "quiz" | "q":
                 pass
-            case "exit":  # exit game
+            case "exit":
                 global shouldexit
                 shouldexit = True
-            case "cheat":  # for easy testing, should be disabled later
-                self.money += 5000000
+            case "cheat":
+                self.money += 9**999
                 self.blocksmined += 2000
             case _:
-                colorprint(errmsg + " (in IdleMiner.execute)",
-                           color=colors.WARNING)
+                cprint(errmsg + " (in IdleMiner.execute)", color=colors.FAIL)
 
 
 if __name__ == "__main__":
-    steve = IdleMiner()  # make a idle miner
+    steve = IdleMiner()
 
-    def repeatedget():  # get commands in a while true loop, target of the input thread
-        while not shouldexit:
+    def repeatedget():
+        while True:
             steve.get(">")
 
-    inputthread = threading.Thread(target=repeatedget)
-    inputthread.daemon = True
-    inputthread.start()
+    cmd = threading.Thread(target=repeatedget)
+    cmd.daemon = True
+    cmd.start()
 
-    # background tasks(miningtick(), and update())
-    # also exits if needed
+    # background tasks
     while True:
-        if shouldexit:
-            exit(0)
+        time.sleep(1 / ticks)
+        steve.miningtick()
+        steve.update()
 
-        else:
-            time.sleep(1 / ticks)
-            steve.miningtick()
-            steve.update()
+        if shouldexit:
+            sys.exit()
