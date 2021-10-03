@@ -1,6 +1,5 @@
 import random
 import threading
-import sys
 import time
 import json
 
@@ -10,7 +9,7 @@ tickbooster = 1.0  # TPS booster
 datapath = "data/"  # data file path
 
 
-def dataload(file):  # 0loads data files
+def dataload(file):  # loads data files
     return json.load(open(datapath + file))
 
 
@@ -34,6 +33,7 @@ biomes = dataload("biomes.json")  # biome list
 
 errmsg = "Invalid command"  # error during parsing
 costmsg = "You don't have enough money (upgraded till max)"  # money ran out
+
 upmsg = "Your %s level is %s, type is %s"
 notintmsg = "Value should be an integer"
 mineupmsg = "Upgraded mine to level %s"
@@ -210,6 +210,7 @@ class IdleMiner:
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
+
                 if random.randint(1, 100 - self.fishlevel) == 1:
                     print('You got treasure')  # unfinished
                 else:
@@ -221,6 +222,7 @@ class IdleMiner:
                 else:
                     print('You didn\'t get a pet :( Better luck next time!')
                 self.shards += random.randint(1, 10)
+
                 print('You now have', self.shards, 'shards.')
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
@@ -262,4 +264,4 @@ if __name__ == "__main__":
         steve.update()
 
         if shouldexit:
-            sys.exit()
+            exit(0)
