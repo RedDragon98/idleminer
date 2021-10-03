@@ -278,7 +278,7 @@ class IdleMiner:
                 print("mine level:", self.minelevel)
                 print("blocks until next level:", str(
                     self.blocksmined) + "/" + str(self.minelevel * 2000))
-                print("fishinglevel:", self.fishlevel, end=" ")
+                print("fishing level:", self.fishlevel, end=" ")
                 progressbar(self.fishxp, self.fishlevel * 4)
             case "quiz" | "q":
                 pass
