@@ -1,0 +1,18 @@
+{
+    "dirt": 10,
+    "wood": 20,
+    "stone": 45,
+    "diorite": 60,
+    "coal": 70,
+    "iron": 100,
+    "gold": 180,
+    "andesite": 200,
+    "lapis": 250,
+    "deepslate": 300,
+    "tuff": 320,
+    "amethyst": 650,
+    "emerald": 750,
+    "diamond": 950,
+    "obsidian": 1350,
+    "bedrock": 10000000000000000000
+}
