@@ -216,6 +216,7 @@ class IdleMiner:
             case "fish" | "f":
                 if random.randint(1, 100 - self.fishlevel) == 1:
                     print(catchtreasuremsg)  # TODO: unfinished
+                    self.money += 5000
                 else:
                     print(catchfishmsg)
                     self.fishxp += 1
