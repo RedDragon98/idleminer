@@ -41,6 +41,18 @@ catchtreasuremsg = "You caught treasure. +10 fishing xp"
 catchpetmsg = "You caught a pet"
 nocatchpetmsg = "You didn't catch a pet :(. Better luck next time!"
 fishingupmsg = "Your fishing level was upgraded to %s"
+
+helpmsg = """
+s/sell: sells any resources in the inventory
+p/profile: prints stats about the IdleMiner
+f/fish: fishes for treasure
+h/hunt: catches pets
+u/upgrade tool amount: upgrades a tool by amount (eg. u p 1)
+exit: exits the game !SAVING IS NOT IMPLEMENTED!
+help: prints this menu again
+
+The available tool is pickaxe (more are coming)
+"""
 shouldexit = False
 ticks = 1
 
@@ -216,6 +228,7 @@ class IdleMiner:
             case "fish" | "f":
                 if random.randint(1, 100 - self.fishlevel) == 1:
                     print(catchtreasuremsg)  # TODO: unfinished
+                    self.money += 5000
                 else:
                     print(catchfishmsg)
                     self.fishxp += 1
@@ -231,9 +244,8 @@ class IdleMiner:
                 print("shards:", self.shards)
                 print("inventory:", self.inventory)
                 print("tools:", self.tools)
-                print("mine level:", self.minelevel)
-                print("blocks until next level:", str(
-                    self.blocksmined) + "/" + str(self.minelevel * 2000))
+                print("mine level:", self.minelevel, end=" ")
+                progressbar(self.blocksmined, self.minelevel * 2000)
                 print("fishing level:", self.fishlevel, end=" ")
                 progressbar(self.fishxp, self.fishlevel * 4)
             case "quiz" | "q":
@@ -241,6 +253,8 @@ class IdleMiner:
             case "exit":
                 global shouldexit
                 shouldexit = True
+            case "help":
+                print(helpmsg)
             case "cheat":
                 self.money += 9**999
                 self.blocksmined += 2000
@@ -250,6 +264,7 @@ class IdleMiner:
 
 
 if __name__ == "__main__":
+    print(helpmsg)
     steve = IdleMiner()
 
     def repeatedget():
