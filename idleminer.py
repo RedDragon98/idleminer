@@ -80,6 +80,10 @@ costmsg = "You don't have enough money (upgraded till max)"
 upmsg = "Your %s level is %s, type is %s"
 notintmsg = "Value should be an integer"
 mineupmsg = "Upgraded mine to %s"
+catchfishmsg = "You caught a fish. +1 fishing xp"
+catchtreasuremsg = "You caught treasure. +10 fishing xp"
+catchpetmsg = "You caught a pet"
+nocatchpetmsg = "You didn't catch a pet :(. Better luck next time!"
 shouldexit = False
 ticks = 1
 
@@ -244,15 +248,15 @@ class IdleMiner:
                     self.up(tool, int(amount))
             case "fish" | "f":
                 if math.randint(1, 100 - self.fishlevel) == 1:
-                    print('You got treasure')  # unfinished
+                    print(catchtreasuremsg)  # TODO: unfinished
                 else:
-                    print('You caught a fish. +1 XP')
+                    print(catchfishmsg)
                     self.fishxp += 1
             case "hunt" | "h":
                 if math.randint(1, self.huntchance) == 1:
-                    print('You got a pet')  # unfinished
+                    print(catchpetmsg)  # TODO: unfinished
                 else:
-                    print('You didn\'t get a pet :( Better luck next time!')
+                    print(nocatchpetmsg)
                 self.shards += math.randint(1, 10)
                 print('You now have', self.shards, 'shards.')
             case "profile" | "p":
