@@ -1,7 +1,7 @@
+import json
 import random
 import threading
 import time
-import json
 
 prefix = "%"  # command prefix
 tickbooster = 1.0  # TPS booster
@@ -40,6 +40,7 @@ catchfishmsg = "You caught a fish. +1 fishing xp"
 catchtreasuremsg = "You caught treasure. +10 fishing xp"
 catchpetmsg = "You caught a pet"
 nocatchpetmsg = "You didn't catch a pet :(. Better luck next time!"
+fishingupmsg = "Your fishing level was upgraded to %s"
 shouldexit = False
 ticks = 1
 
@@ -192,9 +193,10 @@ class IdleMiner:
             self.minelevel += 1
             self.blocksmined = 0
             print(mineupmsg % self.minelevel)
-        if self.fishxp / self.fishlevel == 1:
+        if self.fishxp / self.fishlevel >= 4:
             self.fishlevel += 1
-            self.fishxp == 0
+            self.fishxp = 0
+            print(fishingupmsg % self.fishlevel)
 
     def execute(self, cmd):
         match cmd:
@@ -213,19 +215,20 @@ class IdleMiner:
                     self.up(tool, int(amount))
             case "fish" | "f":
                 if random.randint(1, 100 - self.fishlevel) == 1:
-                    print('You got treasure')  # TODO: unfinished
+                    print(catchtreasuremsg)  # TODO: unfinished
                 else:
                     print(catchfishmsg)
                     self.fishxp += 1
             case "hunt" | "h":
                 if random.randint(1, self.huntchance) == 1:
-                    print('You got a pet')  # TODO: unfinished
+                    print(catchpetmsg)  # TODO: unfinished
                 else:
-                    print('You didn\'t get a pet :( Better luck next time!')
-                self.shards += random.randint(1, 10)
-                print('You now have', self.shards, 'shards.')
+                    print(nocatchpetmsg)
+                    self.shards += random.randint(1, 10)
+                    print('You now have', self.shards, 'shards.')
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
+                print("shards:", self.shards)
                 print("inventory:", self.inventory)
                 print("tools:", self.tools)
                 print("mine level:", self.minelevel)
