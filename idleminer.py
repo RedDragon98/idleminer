@@ -5,7 +5,7 @@ import random
 import threading
 import time
 from enum import Enum
-from sys import exit
+import sys
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
@@ -250,7 +250,7 @@ class IdleMiner:
             case["upgrade" | "up" | "u", tool, amount]:
                 try:
                     int(amount)
-                except:
+                except ValueError:
                     colorprint(NOTINTMSG, color=Colors.FAIL)
                 else:
                     self.up(tool, int(amount))
@@ -287,7 +287,7 @@ class IdleMiner:
                 answer = input("answer: ")
                 try:
                     int(answer)
-                except:
+                except ValueError:
                     colorprint(NOTINTMSG, color=Colors.FAIL)
 
                 if int(answer) == question["answer"]:
@@ -314,6 +314,7 @@ if __name__ == "__main__":
     steve = IdleMiner()
 
     def repeatedget():
+        """repeatedly gets input"""
         while not shouldexit:
             steve.get(">")
 
