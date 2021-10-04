@@ -66,7 +66,7 @@ UP_P_MULIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 
 def colorprint(msg, esc="", color=""):
     """prints text with a color"""
-    print(color + msg + Colors.ENDC + esc)
+    print(color.value + msg + Colors.ENDC.value + esc)
 
 
 def progressbar(num, cap, partitions=20):
