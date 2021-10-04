@@ -36,7 +36,7 @@ pticks = dataload("ticks.json")  # ticks (based on pickaxe level)
 biomes = dataload("biomes.json")  # biome list
 
 shouldexit = False
-ticks = 1
+ticks = 1 
 
 ERRMSG = "Invalid command"  # error during parsing
 COSTMSG = "You don't have enough money (upgraded till max)"  # money ran out
