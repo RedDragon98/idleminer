@@ -36,7 +36,7 @@ pticks = dataload("ticks.json")  # ticks (based on pickaxe level)
 biomes = dataload("biomes.json")  # biome list
 
 shouldexit = False
-ticks = 1 
+ticks = 1
 
 ERRMSG = "Invalid command"  # error during parsing
 COSTMSG = "You don't have enough money (upgraded till max)"  # money ran out
@@ -143,6 +143,7 @@ class IdleMiner:
         self.sellbooster = 1.0  # booster for sell prices
         self.minelevel = 1  # current mine level in biome
         self.blocksmined = 0  # blocks mined in this mine level
+        self.pets = []  # self-explanatory
         self.inventory = {
             "dirt": 0,
             "wood": 0,
@@ -251,11 +252,113 @@ class IdleMiner:
                     self.fishxp += 1
             case "hunt" | "h":
                 if random.randint(1, self.huntchance) == 1:
-                    print(CATCHPETMSG)  # TODO: unfinished
-                else:
-                    print(NOCATCHPETMSG)
-                    self.shards += random.randint(1, 10)
-                    print('You now have', self.shards, 'shards.')
+                    if self.huntcooldown < 1:
+                        self.huntcooldown = 300
+                        if random.randint (0, self.huntchance) < 10:
+                            print('You got a pet. Do the command "pets" to see all of them.')
+                            #oh no not another d3banana oof section
+                            #also add new pets like PANDY
+                            #IMPORTANT: FIX GLITCH WHERE YOU GET MULTIPLE PETS! [Fixed?]
+
+                            self.hunted = random.randint(1, self.huntchance)
+                            if 1 == 1 and self.hunted > 8:
+                                if self.hunted < 8 and self.hunted > 6:
+                                    if self.hunted < 6 and self.hunted > 4:
+                                        if self.hunted < 4 and self.hunted > 2:
+                                            if self.hunted < 2 and self.hunted > 0.1:
+                                                if self.hunted < 0.1 and random.randint (1, 3) == 2:
+                                                    self.petchance = random.randint(1, 3) == 1
+                                                    if self.petchance == 1:
+                                                        self.pets.append('Giant')
+                                                        print(CATCHPETMSG, 'Giant')
+                                                    elif self.petchance == 2:
+                                                        self.pets.append('Ender Dragon')
+                                                        print(CATCHPETMSG, 'Ender Dragon')
+                                                    elif self.petchance == 3:
+                                                        self.pets.append('Wither')
+                                                        print(CATCHPETMSG, 'Wither')
+                                                self.petchance = random.randint(1, 3) == 1
+                                                if self.petchance == 1:
+                                                    self.pets.append('Spider Jockey')
+                                                    print(CATCHPETMSG, 'Spider Jockey')
+                                                elif self.petchance == 2:
+                                                    self.pets.append('Zombie Horse')
+                                                    print(CATCHPETMSG, 'Zombie Horse')
+                                                elif self.petchance == 3:
+                                                    self.pets.append('Skeleton Horse')
+                                                    print(CATCHPETMSG, 'Skeleton Horse')
+                                            self.petchance = random.randint(1, 5)
+                                            if self.petchance == 1:
+                                                    self.pets.append('Wither Skeleton')
+                                                    print(CATCHPETMSG, 'Wither Skeleton')
+                                            elif self.petchance == 2:
+                                                    self.pets.append('Villager')
+                                                    print(CATCHPETMSG, 'Villager')
+                                            elif self.petchance == 3:
+                                                    self.pets.append('Iron Golem')
+                                                    print(CATCHPETMSG, 'Iron Golem')
+                                            elif self.petchance == 4:
+                                                    self.pets.append('Snow Golem')
+                                                    print(CATCHPETMSG, 'Snow Golem')
+                                            elif self.petchance == 5:
+                                                    self.pets.append('Elder Guardian')
+                                                    print(CATCHPETMSG, 'Elder Guardian')
+                                        self.petchance = random.randint(1, 5)
+                                        if self.petchance == 1:
+                                                self.pets.append('Dolphin')
+                                                print(CATCHPETMSG, 'Dolphin')
+                                        elif self.petchance == 2:
+                                                self.pets.append('Enderman')
+                                                print(CATCHPETMSG, 'Enderman')
+                                        elif self.petchance == 3:
+                                                self.pets.append('Guardian')
+                                                print(CATCHPETMSG, 'Guardian')
+                                        elif self.petchance == 4:
+                                                self.pets.append('Parrot')
+                                                print(CATCHPETMSG, 'Parrot')
+                                        elif self.petchance == 5:
+                                                self.pets.append('Turtle')
+                                                print(CATCHPETMSG, 'Turtle')
+                                    self.petchance = random.randint(1, 5)
+                                    if self.petchance == 1:
+                                            self.pets.append('Chicken')
+                                            print(CATCHPETMSG, 'Chicken')
+                                    elif self.petchance == 2:
+                                            self.pets.append('Creeper')
+                                            print(CATCHPETMSG, 'Creeper')
+                                    elif self.petchance == 3:
+                                            self.pets.append('Ocelot')
+                                            print(CATCHPETMSG, 'Ocelot')
+                                    elif self.petchance == 4:
+                                            self.pets.append('Wolf')
+                                            print(CATCHPETMSG, 'Wolf')
+                                    elif self.petchance == 5:
+                                            self.pets.append('Pufferfish')
+                                            print(CATCHPETMSG, 'Pufferfish')
+                                self.petchance = random.randint(1, 5)
+                                if self.petchance == 1:
+                                        self.pets.append('Bat')
+                                        print(CATCHPETMSG, 'Bat')
+                                elif self.petchance == 2:
+                                        self.pets.append('Cow')
+                                        print(CATCHPETMSG, 'Cow')
+                                elif self.petchance == 3:
+                                        self.pets.append('Pig')
+                                        print(CATCHPETMSG, 'Pig')
+                                elif self.petchance == 4:
+                                        self.pets.append('Sheep')
+                                        print(CATCHPETMSG, 'Sheep')
+                                elif self.petchance == 5:
+                                        self.pets.append('Squid')
+                                        print(CATCHPETMSG, 'Squid')
+
+                        else: 
+                            print('You didn\'t get a pet :( Better luck next time!') 
+                            self.shards += random.randint(1, 10)
+                        print("You now have", self.shards, "shards.")
+                    else: 
+                        print("Please wait", self.huntcooldown, "seconds before hunting again!")
+
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
                 print("shards:", self.shards)
