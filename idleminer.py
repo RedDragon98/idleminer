@@ -1,19 +1,23 @@
+"An idle game based on Minecraft"
+
 import json
 import random
 import threading
 import time
+from enum import Enum
 
-prefix = "%"  # command prefix
-tickbooster = 1.0  # TPS booster
+PREFIX = "%"  # command prefix
+TICKBOOSTER = 1.0  # TPS booster
 
-datapath = "data/"  # data file path
-
-
-def dataload(file):  # loads data files
-    return json.load(open(datapath + file))
+DATAPATH = "data/"  # data file path
 
 
-class colors:  # printing colors
+def dataload(file):
+    """loads a data file"""
+    return json.load(open(DATAPATH + file, encoding="UTF-8"))
+
+
+class Colors(Enum):  # printing colors
     HEADER = '\033[95m'
     BLUE = '\033[94m'
     INFO = '\033[96m'
@@ -31,18 +35,21 @@ mines = dataload("mines.json")  # mining chances
 pticks = dataload("ticks.json")  # ticks (based on pickaxe level)
 biomes = dataload("biomes.json")  # biome list
 
-errmsg = "Invalid command"  # error during parsing
-costmsg = "You don't have enough money (upgraded till max)"  # money ran out
-upmsg = "Your %s level is %s, type is %s"
-notintmsg = "Value should be an integer"
-mineupmsg = "Upgraded mine to %s"
-catchfishmsg = "You caught a fish. +1 fishing xp"
-catchtreasuremsg = "You caught treasure. +10 fishing xp"
-catchpetmsg = "You caught a pet"
-nocatchpetmsg = "You didn't catch a pet :(. Better luck next time!"
-fishingupmsg = "Your fishing level was upgraded to %s"
+shouldexit = False
+ticks = 1
 
-helpmsg = """
+ERRMSG = "Invalid command"  # error during parsing
+COSTMSG = "You don't have enough money (upgraded till max)"  # money ran out
+UPMSG = "Your %s level is %s, type is %s"
+NOTINTMSG = "Value should be an integer"
+MINEUPMSG = "Upgraded mine to %s"
+CATCHFISHMSG = "You caught a fish. +1 fishing xp"
+CATCHTREASUREMSG = "You caught treasure. +10 fishing xp"
+CATCHPETMSG = "You caught a pet"
+NOCATCHPETMSG = "You didn't catch a pet :(. Better luck next time!"
+FISHINGUPMSG = "Your fishing level was upgraded to %s"
+
+HELPMSG = """
 s/sell: sells any resources in the inventory
 p/profile: prints stats about the IdleMiner
 f/fish: fishes for treasure
@@ -53,17 +60,17 @@ help: prints this menu again
 
 The available tool is pickaxe (more are coming)
 """
-shouldexit = False
-ticks = 1
 
 UP_P_MULIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 
 
-def colorprint(msg, esc="", color=""):  # prints with a color
-    print(color + msg + colors.ENDC + esc)
+def colorprint(msg, esc="", color=""):
+    """prints text with a color"""
+    print(color + msg + Colors.ENDC + esc)
 
 
-def progressbar(num, cap, partitions=20):  # progressbar ####--
+def progressbar(num, cap, partitions=20):
+    """progressbar ####--"""
     dashes = round(num / (cap / partitions))
     for i in range(partitions):
         if i < dashes:
@@ -74,44 +81,54 @@ def progressbar(num, cap, partitions=20):  # progressbar ####--
 
 
 def getrank(level):
-    if level >= 200:
-        return "netherite"
-    elif level >= 150:
-        return "diamond"
-    elif level >= 100:
-        return "gold"
-    elif level >= 50:
-        return "iron"
-    elif level >= 25:
-        return "stone"
-    elif level >= 0:
-        return "wooden"
+    """gets rank of a pickaxe"""
 
-    return "impossible"
+    rank = "impossible"
+    if level >= 200:
+        rank = "netherite"
+    elif level >= 150:
+        rank = "diamond"
+    elif level >= 100:
+        rank = "gold"
+    elif level >= 50:
+        rank = "iron"
+    elif level >= 25:
+        rank = "stone"
+    elif level >= 0:
+        rank = "wooden"
+
+    return rank
 
 
 def getpticks(rank):
+    """get game ticks base on rank"""
     return pticks[rank]
 
 
 class CommandParser():
+    """parses input"""
+
     def get(self, prompt=">"):
+        """gets input and returns a parsed version"""
         cmd = input(prompt)
         parsed = self.parse(cmd)
         if len(parsed) == 1:
             return parsed[0]
-        else:
-            return parsed
+
+        return parsed
 
     def parse(self, data: str):
+        """parses a string"""
         if data.strip() == "":
             return "???"
 
-        data = data.strip(prefix)
+        data = data.strip(PREFIX)
         return data.split(" ")
 
 
 class IdleMiner:
+    """Idle Miner class"""
+
     def __init__(self):
         self.cmdparse = CommandParser()
         self.money = 0  # money
@@ -140,8 +157,8 @@ class IdleMiner:
             "p": 0
         }
 
-    def get(self, prefix):
-        self.execute(self.cmdparse.get(prefix))
+    def get(self, PREFIX):
+        self.execute(self.cmdparse.get(PREFIX))
 
     def sell(self):
         for item in list(self.inventory.keys()):
@@ -150,7 +167,7 @@ class IdleMiner:
 
                               prices[item] * self.sellbooster)
                 colorprint(item, ": " + "$" + f"{money:,}" +
-                           " (x" + f"{self.inventory[item]:,}" + ")", colors.BOLD)
+                           " (x" + f"{self.inventory[item]:,}" + ")", Colors.BOLD)
                 self.money += money
                 self.inventory[item] = 0
 
@@ -164,11 +181,11 @@ class IdleMiner:
                         self.tools["p"] += 1
                         self.money -= price
                     else:
-                        colorprint(costmsg, color=colors.FAIL)
+                        colorprint(COSTMSG, color=Colors.FAIL)
                         break
 
                 ticks = getpticks(getrank(self.tools["p"]))
-                print(upmsg %
+                print(UPMSG %
                       ("pickaxe", self.tools["p"], getrank(self.tools["p"])))
             case "s" | "shovel":  # rebirth = level >= 200
                 pass
@@ -191,7 +208,7 @@ class IdleMiner:
             case "t" | "tnt":
                 pass
             case _:
-                colorprint(errmsg + " (in IdleMiner.up)", color=colors.FAIL)
+                colorprint(ERRMSG + " (in IdleMiner.up)", color=Colors.FAIL)
 
     def miningtick(self):
         num = random.randint(1, 100)
@@ -204,11 +221,11 @@ class IdleMiner:
         if self.blocksmined > 2000 * self.minelevel:
             self.minelevel += 1
             self.blocksmined = 0
-            print(mineupmsg % self.minelevel)
+            print(MINEUPMSG % self.minelevel)
         if self.fishxp / self.fishlevel >= 4:
             self.fishlevel += 1
             self.fishxp = 0
-            print(fishingupmsg % self.fishlevel)
+            print(FISHINGUPMSG % self.fishlevel)
 
     def execute(self, cmd):
         match cmd:
@@ -222,21 +239,21 @@ class IdleMiner:
                 try:
                     int(amount)
                 except:
-                    colorprint(notintmsg, color=colors.FAIL)
+                    colorprint(NOTINTMSG, color=Colors.FAIL)
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
                 if random.randint(1, 100 - self.fishlevel) == 1:
-                    print(catchtreasuremsg)  # TODO: unfinished
+                    print(CATCHTREASUREMSG)  # TODO: unfinished
                     self.money += 5000
                 else:
-                    print(catchfishmsg)
+                    print(CATCHFISHMSG)
                     self.fishxp += 1
             case "hunt" | "h":
                 if random.randint(1, self.huntchance) == 1:
-                    print(catchpetmsg)  # TODO: unfinished
+                    print(CATCHPETMSG)  # TODO: unfinished
                 else:
-                    print(nocatchpetmsg)
+                    print(NOCATCHPETMSG)
                     self.shards += random.randint(1, 10)
                     print('You now have', self.shards, 'shards.')
             case "profile" | "p":
@@ -254,17 +271,17 @@ class IdleMiner:
                 global shouldexit
                 shouldexit = True
             case "help":
-                print(helpmsg)
+                print(HELPMSG)
             case "cheat":
                 self.money += 9**999
                 self.blocksmined += 2000
             case _:
-                colorprint(errmsg + " (in IdleMiner.execute)",
-                           color=colors.FAIL)
+                colorprint(ERRMSG + " (in IdleMiner.execute)",
+                           color=Colors.FAIL)
 
 
 if __name__ == "__main__":
-    print(helpmsg)
+    print(HELPMSG)
     steve = IdleMiner()
 
     def repeatedget():
