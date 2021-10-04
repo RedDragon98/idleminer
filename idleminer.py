@@ -5,6 +5,7 @@ import random
 import threading
 import time
 from enum import Enum
+from sys import exit
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
@@ -17,7 +18,8 @@ def dataload(file):
     return json.load(open(DATAPATH + file, encoding="UTF-8"))
 
 
-class Colors(Enum):  # printing colors
+class Colors(Enum):
+    """printing colors"""
     HEADER = '\033[95m'
     BLUE = '\033[94m'
     INFO = '\033[96m'
@@ -114,8 +116,8 @@ class CommandParser():
 
     def get(self, prompt=">"):
         """gets input and returns a parsed version"""
-        cmd = input(prompt)
-        parsed = self.parse(cmd)
+        command = input(prompt)
+        parsed = self.parse(command)
         if len(parsed) == 1:
             return parsed[0]
 
@@ -162,9 +164,11 @@ class IdleMiner:
         }
 
     def get(self, PREFIX):
+        """gets and executes command"""
         self.execute(self.cmdparse.get(PREFIX))
 
     def sell(self):
+        """sells inventory"""
         for item in list(self.inventory.keys()):
             if self.inventory[item] > 0:
                 money = round(self.inventory[item] *
@@ -176,6 +180,7 @@ class IdleMiner:
                 self.inventory[item] = 0
 
     def up(self, tool, amount):
+        """upgrades tool"""
         match tool:
             case "p" | "pickaxe":  # rebirth = level >= 200
                 global ticks
@@ -215,6 +220,7 @@ class IdleMiner:
                 colorprint(ERRMSG + " (in IdleMiner.up)", color=Colors.FAIL)
 
     def miningtick(self):
+        """adds resources to inventory"""
         num = random.randint(1, 100)
         for i in mines[self.biome][self.minelevel].keys():
             if num > 100 - mines[self.biome][self.minelevel][i]:
@@ -222,6 +228,7 @@ class IdleMiner:
                 self.blocksmined += 1
 
     def update(self):
+        """update fishing and mining levels"""
         if self.blocksmined > 2000 * self.minelevel:
             self.minelevel += 1
             self.blocksmined = 0
@@ -232,6 +239,7 @@ class IdleMiner:
             print(FISHINGUPMSG % self.fishlevel)
 
     def execute(self, cmd):
+        """executes command"""
         match cmd:
             case "sell" | "s":
                 self.sell()
@@ -248,14 +256,14 @@ class IdleMiner:
                     self.up(tool, int(amount))
             case "fish" | "f":
                 if random.randint(1, 100 - self.fishlevel) == 1:
-                    print(CATCHTREASUREMSG)  # TODO: unfinished
+                    print(CATCHTREASUREMSG)
                     self.money += 5000
                 else:
                     print(CATCHFISHMSG)
                     self.fishxp += 1
             case "hunt" | "h":
                 if random.randint(1, self.huntchance) == 1:
-                    print(CATCHPETMSG)  # TODO: unfinished
+                    print(CATCHPETMSG)
                 else:
                     print(NOCATCHPETMSG)
                     self.shards += random.randint(1, 10)
@@ -320,4 +328,4 @@ if __name__ == "__main__":
         steve.update()
 
         if shouldexit:
-            exit(0)
+            sys.exit(0)
