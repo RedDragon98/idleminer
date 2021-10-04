@@ -34,9 +34,10 @@ mines = dataload("mines.json")  # mining chances
 
 pticks = dataload("ticks.json")  # ticks (based on pickaxe level)
 biomes = dataload("biomes.json")  # biome list
+quizes = dataload("quiz.json")  # list of quiz questions
 
 shouldexit = False
-ticks = 1 
+ticks = 1
 
 ERRMSG = "Invalid command"  # error during parsing
 COSTMSG = "You don't have enough money (upgraded till max)"  # money ran out
@@ -48,6 +49,8 @@ CATCHTREASUREMSG = "You caught treasure. +10 fishing xp"
 CATCHPETMSG = "You caught a pet"
 NOCATCHPETMSG = "You didn't catch a pet :(. Better luck next time!"
 FISHINGUPMSG = "Your fishing level was upgraded to %s"
+CORRECTANSWERMSG = "Correct! +$2000"
+WRONGANSWERMSG = "Wrong! Better luck next time"
 
 HELPMSG = """
 s/sell: sells any resources in the inventory
@@ -55,6 +58,7 @@ p/profile: prints stats about the IdleMiner
 f/fish: fishes for treasure
 h/hunt: catches pets
 u/upgrade tool amount: upgrades a tool by amount (eg. u p 1)
+q/quiz difficulty: gives you a quiz (eg. q easy)
 exit: exits the game !SAVING IS NOT IMPLEMENTED!
 help: prints this menu again
 
@@ -265,8 +269,25 @@ class IdleMiner:
                 progressbar(self.blocksmined, self.minelevel * 2000)
                 print("fishing level:", self.fishlevel, end=" ")
                 progressbar(self.fishxp, self.fishlevel * 4)
-            case "quiz" | "q":
-                pass
+            case["quiz" | "q", difficulty]:
+                question = random.choice(quizes[difficulty])
+                print(question["question"] + "?")
+                index = 0
+                for i in question["choices"]:
+                    print(str(index) + ": " + i)
+                    index += 1
+                answer = input("answer: ")
+                try:
+                    int(answer)
+                except:
+                    colorprint(NOTINTMSG, color=Colors.FAIL)
+
+                if int(answer) == question["answer"]:
+                    print(CORRECTANSWERMSG)
+                    self.money += 2000
+                else:
+                    print(WRONGANSWERMSG)
+
             case "exit":
                 global shouldexit
                 shouldexit = True

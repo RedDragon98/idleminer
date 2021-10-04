@@ -1,0 +1,37 @@
+{
+    "easy": [
+        {
+            "question": "How do you get a music disc?",
+            "choices": [
+                "in loot chests at y=-1 in the void",
+                "when a creeper is killed by a skeleton",
+                "when a skeleton is killed by a creeper",
+                "when a zombie is summoned by a griefer"            
+            ],
+            "answer": 1
+        },
+        {
+            "question": "How do you break obsidian",
+            "choices": [
+                "with a wooden pick -- its easy",
+                "with a lot of creepers",
+                "with tnt",
+                "with a diamond/netherite pick"            
+            ],
+            "answer": 3
+        },
+        {
+            "question": "How do you get a grass block",
+            "choices": [
+                "you just mine it",
+                "with a tool enchanted with silk touch",
+                "with tnt",
+                "with a enderite pick"            
+            ],
+            "answer": 2
+        }
+    ],
+    "medium": null,
+    "hard": null,
+    "impossible": null
+}
