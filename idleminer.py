@@ -165,7 +165,7 @@ class IdleMiner:
 
     def load(self, file):
         """loads a profile"""
-        profile = json.load(open("profiles/" + file))
+        profile = json.load(open(file))
         self.money = profile["money"]
         self.shards = profile["shards"]
         self.rc = profile["rc"]
@@ -194,7 +194,7 @@ class IdleMiner:
             "huntchance": self.huntchance,
             "tools": self.tools
         }
-        json.dump(profile, open("profiles/" + file, "w"))
+        json.dump(profile, open(file, "w"))
 
     def get(self, PREFIX):
         """gets and executes command"""
