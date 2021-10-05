@@ -165,19 +165,19 @@ class IdleMiner:
 
     def load(self, file):
         """loads a profile"""
-        profile = json.load(open(file))
-        self.money = profile["money"]
-        self.shards = profile["shards"]
-        self.rc = profile["rc"]
-        self.biomeid = profile["biomeid"]
-        self.biome = biomes[self.biomeid]
-        self.minelevel = profile["minelevel"]
-        self.blocksmined = profile["blocksmined"]
-        self.inventory = profile["inventory"]
-        self.fishxp = profile["fishxp"]
-        self.fishlevel = profile["fishlevel"]
-        self.huntchance = profile["huntchance"]
-        self.tools = profile["tools"]
+        with json.load(open(file, encoding="UTF-8")) as profile:
+            self.money = profile["money"]
+            self.shards = profile["shards"]
+            self.rc = profile["rc"]
+            self.biomeid = profile["biomeid"]
+            self.biome = biomes[self.biomeid]
+            self.minelevel = profile["minelevel"]
+            self.blocksmined = profile["blocksmined"]
+            self.inventory = profile["inventory"]
+            self.fishxp = profile["fishxp"]
+            self.fishlevel = profile["fishlevel"]
+            self.huntchance = profile["huntchance"]
+            self.tools = profile["tools"]
 
     def save(self, file):
         """saves a profile"""
@@ -194,7 +194,7 @@ class IdleMiner:
             "huntchance": self.huntchance,
             "tools": self.tools
         }
-        json.dump(profile, open(file, "w"))
+        json.dump(profile, open(file, "w", encoding="UTF-8"))
 
     def get(self, PREFIX):
         """gets and executes command"""
