@@ -6,6 +6,7 @@ import threading
 import time
 from enum import Enum
 import sys
+import os
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
@@ -346,7 +347,9 @@ class IdleMiner:
 if __name__ == "__main__":
     print(HELPMSG)
     steve = IdleMiner()
-    steve.load("profile.json")
+
+    if os.path.exists("profiles/profile.json"):
+        steve.load("profile.json")
 
     def repeatedget():
         """repeatedly gets input"""
