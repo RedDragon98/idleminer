@@ -35,12 +35,13 @@ class Colors(Enum):
 prices = dataload("prices.json")  # item prices
 mines = dataload("mines.json")  # mining chances
 
-pticks = dataload("ticks.json")  # ticks (based on pickaxe level)
+# mining multiplier (based on pickaxe level)
+mults = dataload("multipliers.json")
 biomes = dataload("biomes.json")  # biome list
 quizes = dataload("quiz.json")  # list of quiz questions
 
 shouldexit = False
-ticks = 1
+TICKS = 1
 
 ERRMSG = "Invalid command"  # error during parsing
 COSTMSG = "You don't have enough money (upgraded till max)"  # money ran out
@@ -107,9 +108,9 @@ def getrank(level):
     return rank
 
 
-def getpticks(rank):
-    """get game ticks base on rank"""
-    return pticks[rank]
+def getpmult(rank):
+    """gets pickaxe multiplier base on rank"""
+    return mults["pickaxe"][rank]
 
 
 class CommandParser():
@@ -162,22 +163,25 @@ class IdleMiner:
         self.tools = {
             "p": 0
         }
+        self.blockspertick = 0
 
     def load(self, file):
         """loads a profile"""
-        with json.load(open(file, encoding="UTF-8")) as profile:
-            self.money = profile["money"]
-            self.shards = profile["shards"]
-            self.rc = profile["rc"]
-            self.biomeid = profile["biomeid"]
-            self.biome = biomes[self.biomeid]
-            self.minelevel = profile["minelevel"]
-            self.blocksmined = profile["blocksmined"]
-            self.inventory = profile["inventory"]
-            self.fishxp = profile["fishxp"]
-            self.fishlevel = profile["fishlevel"]
-            self.huntchance = profile["huntchance"]
-            self.tools = profile["tools"]
+        profile = json.load(open(file))
+        self.money = profile["money"]
+        self.shards = profile["shards"]
+        self.rc = profile["rc"]
+        self.biomeid = profile["biomeid"]
+        self.biome = biomes[self.biomeid]
+        self.minelevel = profile["minelevel"]
+        self.blocksmined = profile["blocksmined"]
+        self.inventory = profile["inventory"]
+        self.fishxp = profile["fishxp"]
+        self.fishlevel = profile["fishlevel"]
+        self.huntchance = profile["huntchance"]
+        self.tools = profile["tools"]
+
+        self.blockspertick = getpmult(getrank(self.tools["p"]))
 
     def save(self, file):
         """saves a profile"""
@@ -216,7 +220,6 @@ class IdleMiner:
         """upgrades tool"""
         match tool:
             case "p" | "pickaxe":  # rebirth = level >= 200
-                global ticks
                 for i in range(amount):
                     price = self.tools["p"] * UP_P_MULIPLIER
                     if price <= self.money:
@@ -226,7 +229,7 @@ class IdleMiner:
                         colorprint(COSTMSG, color=Colors.FAIL)
                         break
 
-                ticks = getpticks(getrank(self.tools["p"]))
+                self.blockspertick = getpmult(getrank(self.tools["p"]))
                 print(UPMSG %
                       ("pickaxe", self.tools["p"], getrank(self.tools["p"])))
             case "s" | "shovel":  # rebirth = level >= 200
@@ -257,8 +260,8 @@ class IdleMiner:
         num = random.randint(1, 100)
         for i in mines[self.biome][self.minelevel].keys():
             if num > 100 - mines[self.biome][self.minelevel][i]:
-                self.inventory[i] += 1
-                self.blocksmined += 1
+                self.inventory[i] += self.blockspertick
+                self.blocksmined += self.blockspertick
 
     def update(self):
         """update fishing and mining levels"""
@@ -348,7 +351,7 @@ if __name__ == "__main__":
     print(HELPMSG)
     steve = IdleMiner()
 
-    if os.path.exists("profiles/profile.json"):
+    if os.path.exists("profile.json"):
         steve.load("profile.json")
 
     def repeatedget():
@@ -356,13 +359,14 @@ if __name__ == "__main__":
         while not shouldexit:
             steve.get(">")
 
-    cmd = threading.Thread(target=repeatedget)
-    cmd.daemon = True
-    cmd.start()
+    inputthread = threading.Thread(target=repeatedget)
+    inputthread.daemon = True
+    inputthread.start()
 
     # background tasks
+    sleeptime = 1 / TICKS
     while True:
-        time.sleep(1 / ticks)
+        time.sleep(sleeptime)
         steve.miningtick()
         steve.update()
 
