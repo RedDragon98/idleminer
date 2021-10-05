@@ -61,7 +61,7 @@ f/fish: fishes for treasure
 h/hunt: catches pets
 u/upgrade tool amount: upgrades a tool by amount (eg. u p 1)
 q/quiz difficulty: gives you a quiz (eg. q easy)
-exit: exits the game !SAVING IS NOT IMPLEMENTED!
+exit: exits the game
 help: prints this menu again
 
 The available tool is pickaxe (more are coming)
@@ -141,7 +141,6 @@ class IdleMiner:
         self.shards = 0  # shards for pets
         self.rc = 0  # rebirth coins
         self.huntchance = 10  # chance of pet
-        self.fishchance = 0  # chance of fish
         self.biome = "plains"  # current biome
         self.biomeid = 0  # current biome index in biome list
         self.basebpsize = 50  # base inventory size
@@ -162,6 +161,39 @@ class IdleMiner:
         self.tools = {
             "p": 0
         }
+
+    def load(self, file):
+        """loads a profile"""
+        profile = json.load(open("profiles/" + file))
+        self.money = profile["money"]
+        self.shards = profile["shards"]
+        self.rc = profile["rc"]
+        self.biomeid = profile["biomeid"]
+        self.biome = biomes[self.biomeid]
+        self.minelevel = profile["minelevel"]
+        self.blocksmined = profile["blocksmined"]
+        self.inventory = profile["inventory"]
+        self.fishxp = profile["fishxp"]
+        self.fishlevel = profile["fishlevel"]
+        self.huntchance = profile["huntchance"]
+        self.tools = profile["tools"]
+
+    def save(self, file):
+        """saves a profile"""
+        profile = {
+            "money": self.money,
+            "shards": self.shards,
+            "rc": self.rc,
+            "biomeid": self.biomeid,
+            "minelevel": self.minelevel,
+            "blocksmined": self.blocksmined,
+            "inventory": self.inventory,
+            "fishxp": self.fishxp,
+            "fishlevel": self.fishlevel,
+            "huntchance": self.huntchance,
+            "tools": self.tools
+        }
+        json.dump(profile, open("profiles/" + file, "w"))
 
     def get(self, PREFIX):
         """gets and executes command"""
@@ -297,6 +329,8 @@ class IdleMiner:
                     print(WRONGANSWERMSG)
 
             case "exit":
+                self.save("profile.json")
+
                 global shouldexit
                 shouldexit = True
             case "help":
@@ -312,6 +346,7 @@ class IdleMiner:
 if __name__ == "__main__":
     print(HELPMSG)
     steve = IdleMiner()
+    steve.load("profile.json")
 
     def repeatedget():
         """repeatedly gets input"""
