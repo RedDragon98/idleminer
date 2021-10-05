@@ -147,7 +147,7 @@ class IdleMiner:
         self.basebpsize = 50  # base inventory size
         self.bpsizebooster = 1.0  # inventory size booster
         self.sellbooster = 1.0  # booster for sell prices
-        self.minelevel = 1  # current mine level in biome
+        self.minelevel = 0  # current mine level in biome
         self.blocksmined = 0  # blocks mined in this mine level
         self.inventory = {
             "dirt": 0,
@@ -262,7 +262,7 @@ class IdleMiner:
 
     def update(self):
         """update fishing and mining levels"""
-        if self.blocksmined > 2000 * self.minelevel:
+        if self.blocksmined > 2000 * (self.minelevel + 1):
             self.minelevel += 1
             self.blocksmined = 0
             print(MINEUPMSG % self.minelevel)
@@ -307,7 +307,7 @@ class IdleMiner:
                 print("inventory:", self.inventory)
                 print("tools:", self.tools)
                 print("mine level:", self.minelevel, end=" ")
-                progressbar(self.blocksmined, self.minelevel * 2000)
+                progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
                 print("fishing level:", self.fishlevel, end=" ")
                 progressbar(self.fishxp, self.fishlevel * 4)
             case["quiz" | "q", difficulty]:
@@ -325,7 +325,7 @@ class IdleMiner:
 
                 if int(answer) == question["answer"]:
                     print(CORRECTANSWERMSG)
-                    self.money += 2000
+                    self.money += 3000
                 else:
                     print(WRONGANSWERMSG)
 

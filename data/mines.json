@@ -1,6 +1,5 @@
 {
     "plains": [
-        null,
         {
             "stone": 70,
             "coal": 10,
@@ -22,12 +21,10 @@
             "diorite": 40,
             "coal": 20,
             "iron": 13
-
         },
         "nextlevel"
     ],
     "forest": [
-        null,
         {
             "stone": 32,
             "diorite": 40,
