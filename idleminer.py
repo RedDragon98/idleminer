@@ -90,7 +90,7 @@ def progressbar(num, cap, partitions=20):
 
 
 def getrank(level):
-    """gets rank of a pickaxe"""
+    """gets rank of a tool"""
 
     rank = "impossible"
     if level >= 200:
@@ -109,9 +109,9 @@ def getrank(level):
     return rank
 
 
-def getpmult(rank):
+def getmult(tool, rank):
     """gets pickaxe multiplier base on rank"""
-    return mults["pickaxe"][rank]
+    return mults[tool][rank]
 
 
 class CommandParser():
@@ -171,8 +171,8 @@ class IdleMiner:
         }
 
         self.blockspertick = {
-            "p": getpmult(getrank(self.tools["p"])),
-            "s": getpmult(getrank(self.tools["s"]))
+            "p": getmult("p", getrank(self.tools["p"])),
+            "s": getmult("s", getrank(self.tools["s"]))
         }
 
         self.minelevel = 0
@@ -193,7 +193,8 @@ class IdleMiner:
         self.huntchance = profile["huntchance"]
         self.tools = profile["tools"]
 
-        self.blockspertick = getpmult(getrank(self.tools["p"]))
+        self.blockspertick["s"] = getmult("s", getrank(self.tools["s"]))
+        self.blockspertick["p"] = getmult("p", getrank(self.tools["p"]))
 
     def save(self, file):
         """saves a profile"""
@@ -238,7 +239,7 @@ class IdleMiner:
                 colorprint(COSTMSG, color=Colors.FAIL)
                 break
 
-        self.blockspertick[tool] = getpmult(getrank(self.tools[tool]))
+        self.blockspertick[tool] = getmult(tool, getrank(self.tools[tool]))
         print(UPMSG %
               (toolname, self.tools[tool], getrank(self.tools[tool])))
 

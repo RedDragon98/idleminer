@@ -1,5 +1,5 @@
 {
-    "pickaxe": {
+    "p": {
         "wooden": 1,
         "stone": 2,
         "iron": 5,
@@ -8,7 +8,7 @@
         "netherite": 50,
         "impossible": 20000000000
     },
-    "shovel": {
+    "s": {
         "wooden": 10,
         "stone": 20,
         "iron": 50,
