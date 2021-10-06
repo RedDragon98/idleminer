@@ -69,7 +69,8 @@ help: prints this menu again
 The available tool is pickaxe (more are coming)
 """
 
-UP_P_MULIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
+UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
+UP_S_MULTIPLIER = 100
 
 
 def colorprint(msg, esc="", color=""):
@@ -148,10 +149,14 @@ class IdleMiner:
         self.basebpsize = 50  # base inventory size
         self.bpsizebooster = 1.0  # inventory size booster
         self.sellbooster = 1.0  # booster for sell prices
-        self.minelevel = 0  # current mine level in biome
+        self.arealevels = {
+            "mine": 0,
+            "dig": 0,
+        }  # current level for different areas in biome
         self.blocksmined = 0  # blocks mined in this mine level
         self.inventory = {
             "dirt": 0,
+            "gravel": 0,
             "wood": 0,
             "stone": 0,
             "coal": 0,
@@ -161,9 +166,16 @@ class IdleMiner:
         self.fishxp = 0
         self.fishlevel = 1
         self.tools = {
-            "p": 0
+            "p": 0,
+            "s": 0,
         }
-        self.blockspertick = 0
+
+        self.blockspertick = {
+            "p": getpmult(getrank(self.tools["p"])),
+            "s": getpmult(getrank(self.tools["s"]))
+        }
+
+        self.minelevel = 0
 
     def load(self, file):
         """loads a profile"""
@@ -216,24 +228,27 @@ class IdleMiner:
                 self.money += money
                 self.inventory[item] = 0
 
+    def _individualup(self, tool, toolname, amount, multiplier):
+        for i in range(amount):
+            price = self.tools[tool] * multiplier
+            if price <= self.money:
+                self.tools[tool] += 1
+                self.money -= price
+            else:
+                colorprint(COSTMSG, color=Colors.FAIL)
+                break
+
+        self.blockspertick[tool] = getpmult(getrank(self.tools[tool]))
+        print(UPMSG %
+              (toolname, self.tools[tool], getrank(self.tools[tool])))
+
     def up(self, tool, amount):
         """upgrades tool"""
         match tool:
             case "p" | "pickaxe":  # rebirth = level >= 200
-                for i in range(amount):
-                    price = self.tools["p"] * UP_P_MULIPLIER
-                    if price <= self.money:
-                        self.tools["p"] += 1
-                        self.money -= price
-                    else:
-                        colorprint(COSTMSG, color=Colors.FAIL)
-                        break
-
-                self.blockspertick = getpmult(getrank(self.tools["p"]))
-                print(UPMSG %
-                      ("pickaxe", self.tools["p"], getrank(self.tools["p"])))
+                self._individualup("p", "pickaxe", amount, UP_P_MULTIPLIER)
             case "s" | "shovel":  # rebirth = level >= 200
-                pass
+                self._individualup("s", "shovel", amount, UP_S_MULTIPLIER)
             case "a" | "axe":  # rebirth = level >= 200
                 pass
             case "w" | "sword":  # w = weapon
@@ -258,10 +273,13 @@ class IdleMiner:
     def miningtick(self):
         """adds resources to inventory"""
         num = random.randint(1, 100)
-        for i in mines[self.biome][self.minelevel].keys():
-            if num > 100 - mines[self.biome][self.minelevel][i]:
-                self.inventory[i] += self.blockspertick
-                self.blocksmined += self.blockspertick
+        for tool in self.tools.keys():
+            chances = mines[self.biome][self.minelevel][tool]
+            for i in chances.keys():
+                if num > 100 - chances[i]:
+                    tomine = self.blockspertick[tool]
+                    self.inventory[i] += tomine
+                    self.blocksmined += tomine
 
     def update(self):
         """update fishing and mining levels"""
@@ -364,9 +382,9 @@ if __name__ == "__main__":
     inputthread.start()
 
     # background tasks
-    sleeptime = 1 / TICKS
+    SLEEPTIME = 1 / TICKS
     while True:
-        time.sleep(sleeptime)
+        time.sleep(SLEEPTIME)
         steve.miningtick()
         steve.update()
 

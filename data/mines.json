@@ -1,14 +1,25 @@
 {
     "plains": [
         {
-            "stone": 70,
-            "coal": 10,
-            "iron": 5
+            "p": {
+                "stone": 70,
+                "coal": 10,
+                "iron": 5
+            },
+            "s": {
+                "dirt": 100
+            }
         },
         {
-            "stone": 60,
-            "coal": 15,
-            "iron": 7
+            "p": {
+                "stone": 60,
+                "coal": 15,
+                "iron": 7
+            },
+            "s": {
+                "dirt": 90,
+                "gravel": 5
+            }
         },
         {
             "stone": 50,

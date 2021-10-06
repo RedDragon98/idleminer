@@ -2,6 +2,7 @@
     "dirt": 10,
     "wood": 20,
     "stone": 45,
+    "gravel": 50,
     "diorite": 60,
     "coal": 70,
     "iron": 100,
