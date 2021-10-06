@@ -1,53 +1,91 @@
 {
     "plains": [
-        null,
         {
-            "stone": 70,
-            "coal": 10,
-            "iron": 5
+            "p": {
+                "stone": 70,
+                "coal": 10,
+                "iron": 5
+            },
+            "s": {
+                "dirt": 100
+            }
         },
         {
-            "stone": 60,
-            "coal": 15,
-            "iron": 7
+            "p": {
+                "stone": 60,
+                "coal": 15,
+                "iron": 7
+            },
+            "s": {
+                "dirt": 90,
+                "gravel": 5
+            }
         },
         {
-            "stone": 50,
-            "diorite": 30,
-            "coal": 18,
-            "iron": 10
+            "p": {
+                "stone": 50,
+                "diorite": 30,
+                "coal": 18,
+                "iron": 10
+            },
+            "s": {
+                "dirt": 90,
+                "gravel": 10
+            }
         },
         {
-            "stone": 45,
-            "diorite": 40,
-            "coal": 20,
-            "iron": 13
-
+            "p": {
+                "stone": 45,
+                "diorite": 40,
+                "coal": 20,
+                "iron": 13
+            },
+            "s": {
+                "dirt": 90,
+                "gravel": 10
+            }
         },
         "nextlevel"
     ],
     "forest": [
-        null,
         {
-            "stone": 32,
-            "diorite": 40,
-            "andesite": 20,
-            "coal": 30,
-            "iron": 20
+            "p": {
+                "stone": 32,
+                "diorite": 40,
+                "andesite": 20,
+                "coal": 30,
+                "iron": 20
+            },
+            "s": {
+                "dirt": 85,
+                "gravel": 15
+            }
         },
         {
-            "stone": 28,
-            "diorite": 60,
-            "andesite": 25,
-            "coal": 50,
-            "iron": 25
+            "p": {
+                "stone": 28,
+                "diorite": 60,
+                "andesite": 25,
+                "coal": 50,
+                "iron": 25
+            },
+            "s": {
+                "dirt": 70,
+                "gravel": 30
+            }
         },
         {
-            "stone": 20,
-            "diorite": 60,
-            "andesite": 26,
-            "coal": 50,
-            "iron": 28
+            "p": {
+                "stone": 20,
+                "diorite": 60,
+                "andesite": 26,
+                "coal": 50,
+                "iron": 28
+            },
+            "s": {
+                "dirt": 60,
+                "gravel": 40
+            }
         },
         "nextlevel"
     ]

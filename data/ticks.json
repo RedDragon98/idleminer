@@ -1,9 +1,0 @@
-{
-    "wooden": 1,
-    "stone": 2,
-    "iron": 5,
-    "gold": 10,
-    "diamond": 20,
-    "netherite": 50,
-    "impossible": 20000000000
-}
