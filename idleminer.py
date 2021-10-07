@@ -292,6 +292,52 @@ class IdleMiner:
             self.fishxp = 0
             print(FISHINGUPMSG % self.fishlevel)
 
+    def profile(self):
+        print("money: $" + f"{self.money:,}")
+        print("shards:", self.shards)
+        print("inventory:", self.inventory)
+        print("tools:", self.tools)
+        print("mine level:", self.minelevel, end=" ")
+        progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
+        print("fishing level:", self.fishlevel, end=" ")
+        progressbar(self.fishxp, self.fishlevel * 4)
+
+    def hunt(self):
+        if random.randint(1, self.huntchance) == 1:
+            print(CATCHPETMSG)
+        else:
+            print(NOCATCHPETMSG)
+            self.shards += random.randint(1, 10)
+            print('You now have', self.shards, 'shards.')
+
+    def quiz(self, difficulty):
+        question = random.choice(quizes[difficulty])
+        print(question["question"] + "?")
+        index = 0
+        for i in question["choices"]:
+            print(str(index) + ": " + i)
+            index += 1
+
+        answer = input("answer: ")
+        try:
+            int(answer)
+        except ValueError:
+            colorprint(NOTINTMSG, color=Colors.FAIL)
+
+        if int(answer) == question["answer"]:
+            print(CORRECTANSWERMSG)
+            self.money += 3000
+        else:
+            print(WRONGANSWERMSG)
+
+    def fish(self):
+        if random.randint(1, 100 - self.fishlevel) == 1:
+            print(CATCHTREASUREMSG)
+            self.money += 5000
+        else:
+            print(CATCHFISHMSG)
+            self.fishxp += 1
+
     def execute(self, cmd):
         """executes command"""
         match cmd:
@@ -305,50 +351,15 @@ class IdleMiner:
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
-                if random.randint(1, 100 - self.fishlevel) == 1:
-                    print(CATCHTREASUREMSG)
-                    self.money += 5000
-                else:
-                    print(CATCHFISHMSG)
-                    self.fishxp += 1
+                self.fish()
             case "hunt" | "h":
-                if random.randint(1, self.huntchance) == 1:
-                    print(CATCHPETMSG)
-                else:
-                    print(NOCATCHPETMSG)
-                    self.shards += random.randint(1, 10)
-                    print('You now have', self.shards, 'shards.')
+                self.hunt()
             case "profile" | "p":
-                print("money: $" + f"{self.money:,}")
-                print("shards:", self.shards)
-                print("inventory:", self.inventory)
-                print("tools:", self.tools)
-                print("mine level:", self.minelevel, end=" ")
-                progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
-                print("fishing level:", self.fishlevel, end=" ")
-                progressbar(self.fishxp, self.fishlevel * 4)
+                self.profile()
             case["quiz" | "q", difficulty]:
-                question = random.choice(quizes[difficulty])
-                print(question["question"] + "?")
-                index = 0
-                for i in question["choices"]:
-                    print(str(index) + ": " + i)
-                    index += 1
-                answer = input("answer: ")
-                try:
-                    int(answer)
-                except ValueError:
-                    colorprint(NOTINTMSG, color=Colors.FAIL)
-
-                if int(answer) == question["answer"]:
-                    print(CORRECTANSWERMSG)
-                    self.money += 3000
-                else:
-                    print(WRONGANSWERMSG)
-
+                self.quiz(difficulty)
             case "exit":
                 self.save("profile.json")
-
                 global shouldexit
                 shouldexit = True
             case "help":
