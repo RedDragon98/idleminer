@@ -293,6 +293,7 @@ class IdleMiner:
             print(FISHINGUPMSG % self.fishlevel)
 
     def profile(self):
+        """prints profile"""
         print("money: $" + f"{self.money:,}")
         print("shards:", self.shards)
         print("inventory:", self.inventory)
@@ -303,6 +304,7 @@ class IdleMiner:
         progressbar(self.fishxp, self.fishlevel * 4)
 
     def hunt(self):
+        """hunts for animals"""
         if random.randint(1, self.huntchance) == 1:
             print(CATCHPETMSG)
         else:
@@ -311,6 +313,7 @@ class IdleMiner:
             print('You now have', self.shards, 'shards.')
 
     def quiz(self, difficulty):
+        """asks a quiz question"""
         question = random.choice(quizes[difficulty])
         print(question["question"] + "?")
         index = 0
@@ -331,6 +334,7 @@ class IdleMiner:
             print(WRONGANSWERMSG)
 
     def fish(self):
+        """fishes"""
         if random.randint(1, 100 - self.fishlevel) == 1:
             print(CATCHTREASUREMSG)
             self.money += 5000
