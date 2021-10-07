@@ -297,10 +297,6 @@ class IdleMiner:
         match cmd:
             case "sell" | "s":
                 self.sell()
-            case "mine":
-                pass
-            case "level":
-                pass
             case["upgrade" | "up" | "u", tool, amount]:
                 try:
                     int(amount)
