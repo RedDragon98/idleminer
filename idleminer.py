@@ -6,6 +6,7 @@ import threading
 import time
 from enum import Enum
 import sys
+import os
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
@@ -33,14 +34,14 @@ class Colors(Enum):
 
 prices = dataload("prices.json")  # item prices
 mines = dataload("mines.json")  # mining chances
-pets = dataload("pets.json")
 
-pticks = dataload("ticks.json")  # ticks (based on pickaxe level)
+# mining multiplier (based on pickaxe level)
+mults = dataload("multipliers.json")
 biomes = dataload("biomes.json")  # biome list
 quizes = dataload("quiz.json")  # list of quiz questions
 
 shouldexit = False
-ticks = 1
+TICKS = 1
 
 ERRMSG = "Invalid command"  # error during parsing
 COSTMSG = "You don't have enough money (upgraded till max)"  # money ran out
@@ -50,7 +51,7 @@ MINEUPMSG = "Upgraded mine to %s"
 CATCHFISHMSG = "You caught a fish. +1 fishing xp"
 CATCHTREASUREMSG = "You caught treasure. +10 fishing xp"
 CATCHPETMSG = "You caught a pet"
-NOCATCHPETMSG = "You didn't catch a pet :( Better luck next time!"
+NOCATCHPETMSG = "You didn't catch a pet :(. Better luck next time!"
 FISHINGUPMSG = "Your fishing level was upgraded to %s"
 CORRECTANSWERMSG = "Correct! +$2000"
 WRONGANSWERMSG = "Wrong! Better luck next time"
@@ -62,13 +63,13 @@ f/fish: fishes for treasure
 h/hunt: catches pets
 u/upgrade tool amount: upgrades a tool by amount (eg. u p 1)
 q/quiz difficulty: gives you a quiz (eg. q easy)
-exit: exits the game !SAVING IS NOT IMPLEMENTED!
+exit: exits the game
 help: prints this menu again
-
 The available tool is pickaxe (more are coming)
 """
 
-UP_P_MULIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
+UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
+UP_S_MULTIPLIER = 100
 
 
 def colorprint(msg, esc="", color=""):
@@ -88,7 +89,7 @@ def progressbar(num, cap, partitions=20):
 
 
 def getrank(level):
-    """gets rank of a pickaxe"""
+    """gets rank of a tool"""
 
     rank = "impossible"
     if level >= 200:
@@ -107,9 +108,9 @@ def getrank(level):
     return rank
 
 
-def getpticks(rank):
-    """get game ticks base on rank"""
-    return pticks[rank]
+def getmult(tool, rank):
+    """gets pickaxe multiplier base on rank"""
+    return mults[tool][rank]
 
 
 class CommandParser():
@@ -141,21 +142,20 @@ class IdleMiner:
         self.money = 0  # money
         self.shards = 0  # shards for pets
         self.rc = 0  # rebirth coins
-        self.huntchance = 100  # chance of pet
-        self.huntcooldown = 1 #cooldown for hunt
-        self.fishcooldown = 1 #cooldown for fish
-        self.quizcooldown = 1 #cooldown for quiz
-        self.fishchance = 0  # chance of fish
+        self.huntchance = 10  # chance of pet
         self.biome = "plains"  # current biome
         self.biomeid = 0  # current biome index in biome list
         self.basebpsize = 50  # base inventory size
         self.bpsizebooster = 1.0  # inventory size booster
         self.sellbooster = 1.0  # booster for sell prices
-        self.minelevel = 1  # current mine level in biome
+        self.arealevels = {
+            "mine": 0,
+            "dig": 0,
+        }  # current level for different areas in biome
         self.blocksmined = 0  # blocks mined in this mine level
-        self.pets = []
         self.inventory = {
             "dirt": 0,
+            "gravel": 0,
             "wood": 0,
             "stone": 0,
             "coal": 0,
@@ -165,8 +165,52 @@ class IdleMiner:
         self.fishxp = 0
         self.fishlevel = 1
         self.tools = {
-            "p": 0
+            "p": 0,
+            "s": 0,
         }
+
+        self.blockspertick = {
+            "p": getmult("p", getrank(self.tools["p"])),
+            "s": getmult("s", getrank(self.tools["s"]))
+        }
+
+        self.minelevel = 0
+
+    def load(self, file):
+        """loads a profile"""
+        profile = json.load(open(file))
+        self.money = profile["money"]
+        self.shards = profile["shards"]
+        self.rc = profile["rc"]
+        self.biomeid = profile["biomeid"]
+        self.biome = biomes[self.biomeid]
+        self.minelevel = profile["minelevel"]
+        self.blocksmined = profile["blocksmined"]
+        self.inventory = profile["inventory"]
+        self.fishxp = profile["fishxp"]
+        self.fishlevel = profile["fishlevel"]
+        self.huntchance = profile["huntchance"]
+        self.tools = profile["tools"]
+
+        self.blockspertick["s"] = getmult("s", getrank(self.tools["s"]))
+        self.blockspertick["p"] = getmult("p", getrank(self.tools["p"]))
+
+    def save(self, file):
+        """saves a profile"""
+        profile = {
+            "money": self.money,
+            "shards": self.shards,
+            "rc": self.rc,
+            "biomeid": self.biomeid,
+            "minelevel": self.minelevel,
+            "blocksmined": self.blocksmined,
+            "inventory": self.inventory,
+            "fishxp": self.fishxp,
+            "fishlevel": self.fishlevel,
+            "huntchance": self.huntchance,
+            "tools": self.tools
+        }
+        json.dump(profile, open(file, "w", encoding="UTF-8"))
 
     def get(self, PREFIX):
         """gets and executes command"""
@@ -184,25 +228,27 @@ class IdleMiner:
                 self.money += money
                 self.inventory[item] = 0
 
+    def _individualup(self, tool, toolname, amount, multiplier):
+        for i in range(amount):
+            price = self.tools[tool] * multiplier
+            if price <= self.money:
+                self.tools[tool] += 1
+                self.money -= price
+            else:
+                colorprint(COSTMSG, color=Colors.FAIL)
+                break
+
+        self.blockspertick[tool] = getmult(tool, getrank(self.tools[tool]))
+        print(UPMSG %
+              (toolname, self.tools[tool], getrank(self.tools[tool])))
+
     def up(self, tool, amount):
         """upgrades tool"""
         match tool:
             case "p" | "pickaxe":  # rebirth = level >= 200
-                global ticks
-                for i in range(amount):
-                    price = self.tools["p"] * UP_P_MULIPLIER
-                    if price <= self.money:
-                        self.tools["p"] += 1
-                        self.money -= price
-                    else:
-                        colorprint(COSTMSG, color=Colors.FAIL)
-                        break
-
-                ticks = getpticks(getrank(self.tools["p"]))
-                print(UPMSG %
-                      ("pickaxe", self.tools["p"], getrank(self.tools["p"])))
+                self._individualup("p", "pickaxe", amount, UP_P_MULTIPLIER)
             case "s" | "shovel":  # rebirth = level >= 200
-                pass
+                self._individualup("s", "shovel", amount, UP_S_MULTIPLIER)
             case "a" | "axe":  # rebirth = level >= 200
                 pass
             case "w" | "sword":  # w = weapon
@@ -227,14 +273,17 @@ class IdleMiner:
     def miningtick(self):
         """adds resources to inventory"""
         num = random.randint(1, 100)
-        for i in mines[self.biome][self.minelevel].keys():
-            if num > 100 - mines[self.biome][self.minelevel][i]:
-                self.inventory[i] += 1
-                self.blocksmined += 1
+        for tool in self.tools.keys():
+            chances = mines[self.biome][self.minelevel][tool]
+            for i in chances.keys():
+                if num > 100 - chances[i]:
+                    tomine = self.blockspertick[tool]
+                    self.inventory[i] += tomine
+                    self.blocksmined += tomine
 
     def update(self):
         """update fishing and mining levels"""
-        if self.blocksmined > 2000 * self.minelevel:
+        if self.blocksmined > 2000 * (self.minelevel + 1):
             self.minelevel += 1
             self.blocksmined = 0
             print(MINEUPMSG % self.minelevel)
@@ -242,15 +291,6 @@ class IdleMiner:
             self.fishlevel += 1
             self.fishxp = 0
             print(FISHINGUPMSG % self.fishlevel)
-        self.huntcooldown -= 1
-        self.fishcooldown -= 1
-        self.quizcooldown -= 1
-        if self.huntcooldown < 1:
-            self.huntcooldown == 300
-        if self.fishcooldown < 1:
-            self.fishcooldown == 300
-        if self.quizcooldown < 1:
-            self.quizcooldown == 300
 
     def execute(self, cmd):
         """executes command"""
@@ -260,8 +300,7 @@ class IdleMiner:
             case "mine":
                 pass
             case "level":
-                print(self.huntcooldown)
-                print(self.fishcooldown)
+                pass
             case["upgrade" | "up" | "u", tool, amount]:
                 try:
                     int(amount)
@@ -270,59 +309,50 @@ class IdleMiner:
                 else:
                     self.up(tool, int(amount))
             case "fish" | "f":
-                if self.fishcooldown < 1:
-                    self.fishcooldown = 300
-                    if random.randint(1, 100 - self.fishlevel) == 1:
-                        print(CATCHTREASUREMSG)
-                        self.money += 5000
-                    else:
-                        print(CATCHFISHMSG)
-                        self.fishxp += 1
-                else: print("Please wait", self.fishcooldown, "seconds before fishing again!")
+                if random.randint(1, 100 - self.fishlevel) == 1:
+                    print(CATCHTREASUREMSG)
+                    self.money += 5000
+                else:
+                    print(CATCHFISHMSG)
+                    self.fishxp += 1
             case "hunt" | "h":
-                if self.huntcooldown < 1:
-                    self.huntcooldown = 300
-                    self.huntchance = random.randint(0, 100)
-                    if self.huntchance < 10:
-                        print(random.choice(pets[0:25-(self.huntchance * 2)]))
-                    else:
-                        self.shards += random.randint(1, 10)
-                        print('You didn\'t get a pet :( You now have', self.shards, 'shards.')
-                else: print("Please wait", self.huntcooldown, 'seconds before hunting again!')
+                if random.randint(1, self.huntchance) == 1:
+                    print(CATCHPETMSG)
+                else:
+                    print(NOCATCHPETMSG)
+                    self.shards += random.randint(1, 10)
+                    print('You now have', self.shards, 'shards.')
             case "profile" | "p":
                 print("money: $" + f"{self.money:,}")
                 print("shards:", self.shards)
                 print("inventory:", self.inventory)
                 print("tools:", self.tools)
                 print("mine level:", self.minelevel, end=" ")
-                progressbar(self.blocksmined, self.minelevel * 2000)
+                progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
                 print("fishing level:", self.fishlevel, end=" ")
                 progressbar(self.fishxp, self.fishlevel * 4)
-            case "pets":
-                print(self.pets)
             case["quiz" | "q", difficulty]:
-                if self.quizcooldown < 1:
-                    self.quizcooldown == 300
-                    question = random.choice(quizes[difficulty])
-                    print(question["question"] + "?")
-                    index = 0
-                    for i in question["choices"]:
-                        print(str(index) + ": " + i)
-                        index += 1
-                    answer = input("answer: ")
-                    try:
-                        int(answer)
-                    except ValueError:
-                        colorprint(NOTINTMSG, color=Colors.FAIL)
+                question = random.choice(quizes[difficulty])
+                print(question["question"] + "?")
+                index = 0
+                for i in question["choices"]:
+                    print(str(index) + ": " + i)
+                    index += 1
+                answer = input("answer: ")
+                try:
+                    int(answer)
+                except ValueError:
+                    colorprint(NOTINTMSG, color=Colors.FAIL)
 
-                    if int(answer) == question["answer"]:
-                        print(CORRECTANSWERMSG)
-                        self.money += 2000
-                    else:
-                        print(WRONGANSWERMSG)
-                else: print("Please wait", self.quizcooldown, "seconds before quizzing again!")
+                if int(answer) == question["answer"]:
+                    print(CORRECTANSWERMSG)
+                    self.money += 3000
+                else:
+                    print(WRONGANSWERMSG)
 
-            case "exit" | "quit":
+            case "exit":
+                self.save("profile.json")
+
                 global shouldexit
                 shouldexit = True
             case "help":
@@ -333,22 +363,28 @@ class IdleMiner:
             case _:
                 colorprint(ERRMSG + " (in IdleMiner.execute)",
                            color=Colors.FAIL)
+
+
 if __name__ == "__main__":
     print(HELPMSG)
     steve = IdleMiner()
+
+    if os.path.exists("profile.json"):
+        steve.load("profile.json")
 
     def repeatedget():
         """repeatedly gets input"""
         while not shouldexit:
             steve.get(">")
 
-    cmd = threading.Thread(target=repeatedget)
-    cmd.daemon = True
-    cmd.start()
+    inputthread = threading.Thread(target=repeatedget)
+    inputthread.daemon = True
+    inputthread.start()
 
     # background tasks
+    SLEEPTIME = 1 / TICKS
     while True:
-        time.sleep(1 / ticks)
+        time.sleep(SLEEPTIME)
         steve.miningtick()
         steve.update()
 
