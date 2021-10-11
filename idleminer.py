@@ -55,6 +55,7 @@ NOCATCHPETMSG = "You didn't catch a pet :(. Better luck next time!"
 FISHINGUPMSG = "Your fishing level was upgraded to %s"
 CORRECTANSWERMSG = "Correct! +$2000"
 WRONGANSWERMSG = "Wrong! Better luck next time"
+INCOMPATDATAMSG = "Incompatible data version(unable to load profile)"
 
 HELPMSG = """
 s/sell: sells any resources in the inventory
@@ -70,6 +71,11 @@ The available tool is pickaxe (more are coming)
 
 UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
+
+PROFILE_V = "0.0.0"
+COMPAT_V = [
+    "0.0.0"
+]
 
 
 def colorprint(msg, esc="", color=""):
@@ -125,13 +131,78 @@ class CommandParser():
 
         return parsed
 
-    def parse(self, data: str):
+    @staticmethod
+    def parse(data: str):
         """parses a string"""
         if data.strip() == "":
             return "???"
 
         data = data.strip(PREFIX)
         return data.split(" ")
+
+
+class Stats:
+    """manages IdleMiner stats"""
+
+    tblksmined = 0  # total blocks mined
+    blksmined = {
+        "dirt": 0,
+        "gravel": 0,
+        "wood": 0,
+        "stone": 0,
+        "coal": 0,
+        "iron": 0,
+        "diorite": 0,
+    }  # blocks mined(per type)
+
+    petscaught = 0  # total pets caught
+    tmoneyearned = 0  # total money earned
+    tshardsearned = 0  # total shards earned
+    trcearned = 0  # total rc earned
+    tmineup = 0  # total mine upgrades
+    tbiomeup = 0  # total biome upgrades
+    tfishxp = 0  # total fishxp
+
+    def printstats(self):
+        """prints these stats"""
+
+        print("Blocks mined:", self.tblksmined,
+              "(" + str(self.blksmined) + ")")
+
+        print("Pets caught:", self.petscaught)
+        print("Total money earned:", self.tmoneyearned)
+        print("Total shards earned:", self.tshardsearned)
+        print("Total rc earned:", self.trcearned)
+        print("Total mine upgrades:", self.tmineup)
+        print("Total biome upgrades:", self.tbiomeup)
+        print("Total fish xp:", self.tfishxp)
+
+    def load(self, obj: dict):
+        """load stats from dict"""
+        self.tblksmined = obj["tblksmined"]
+        self.blksmined = obj["blksmined"]
+        self.petscaught = obj["petscaught"]
+        self.tmoneyearned = obj["tmoneyearned"]
+        self.tshardsearned = obj["tshardsearned"]
+        self.trcearned = obj["trcearned"]
+        self.tmineup = obj["tmineup"]
+        self.tbiomeup = obj["tbiomeup"]
+        self.tfishxp = obj["tfishxp"]
+
+    def save(self):
+        """saves stats to a dictionary"""
+        obj = {}
+        obj["tblksmined"] = self.tblksmined
+        obj["blksmined"] = self.blksmined
+        obj["petscaught"] = self.petscaught
+        obj["tmoneyearned"] = self.tmoneyearned
+        obj["tshardsearned"] = self.tshardsearned
+        obj["trcearned"] = self.trcearned
+        obj["tmineup"] = self.tmineup
+        obj["tbiomeup"] = self.tbiomeup
+        obj["tfishxp"] = self.tfishxp
+
+        return obj
 
 
 class IdleMiner:
@@ -148,10 +219,6 @@ class IdleMiner:
         self.basebpsize = 50  # base inventory size
         self.bpsizebooster = 1.0  # inventory size booster
         self.sellbooster = 1.0  # booster for sell prices
-        self.arealevels = {
-            "mine": 0,
-            "dig": 0,
-        }  # current level for different areas in biome
         self.blocksmined = 0  # blocks mined in this mine level
         self.inventory = {
             "dirt": 0,
@@ -175,10 +242,15 @@ class IdleMiner:
         }
 
         self.minelevel = 0
+        self.stats = Stats()
 
     def load(self, file):
         """loads a profile"""
-        profile = json.load(open(file))
+        profile = json.load(open(file, encoding="UTF-8"))
+        if (not "DATA_V" in profile) or (not profile["DATA_V"] in COMPAT_V):
+            colorprint(INCOMPATDATAMSG, color=Colors.FAIL)
+            return
+
         self.money = profile["money"]
         self.shards = profile["shards"]
         self.rc = profile["rc"]
@@ -192,12 +264,17 @@ class IdleMiner:
         self.huntchance = profile["huntchance"]
         self.tools = profile["tools"]
 
+        self.stats = Stats()
+        self.stats.load(profile["stats"])
+
         self.blockspertick["s"] = getmult("s", getrank(self.tools["s"]))
         self.blockspertick["p"] = getmult("p", getrank(self.tools["p"]))
 
     def save(self, file):
         """saves a profile"""
+
         profile = {
+            "DATA_V": PROFILE_V,
             "money": self.money,
             "shards": self.shards,
             "rc": self.rc,
@@ -208,11 +285,13 @@ class IdleMiner:
             "fishxp": self.fishxp,
             "fishlevel": self.fishlevel,
             "huntchance": self.huntchance,
-            "tools": self.tools
+            "tools": self.tools,
+            "stats": self.stats.save()
         }
+
         json.dump(profile, open(file, "w", encoding="UTF-8"))
 
-    def get(self, PREFIX):
+    def get(self):
         """gets and executes command"""
         self.execute(self.cmdparse.get(PREFIX))
 
@@ -229,7 +308,7 @@ class IdleMiner:
                 self.inventory[item] = 0
 
     def _individualup(self, tool, toolname, amount, multiplier):
-        for i in range(amount):
+        for _ in range(amount):
             price = self.tools[tool] * multiplier
             if price <= self.money:
                 self.tools[tool] += 1
@@ -242,7 +321,7 @@ class IdleMiner:
         print(UPMSG %
               (toolname, self.tools[tool], getrank(self.tools[tool])))
 
-    def up(self, tool, amount):
+    def upgrade(self, tool, amount):
         """upgrades tool"""
         match tool:
             case "p" | "pickaxe":  # rebirth = level >= 200
@@ -280,6 +359,9 @@ class IdleMiner:
                     tomine = self.blockspertick[tool]
                     self.inventory[i] += tomine
                     self.blocksmined += tomine
+
+                    self.stats.tblksmined += tomine
+                    self.stats.blksmined[i] += tomine
 
     def update(self):
         """update fishing and mining levels"""
@@ -353,17 +435,21 @@ class IdleMiner:
                 except ValueError:
                     colorprint(NOTINTMSG, color=Colors.FAIL)
                 else:
-                    self.up(tool, int(amount))
+                    self.upgrade(tool, int(amount))
             case "fish" | "f":
                 self.fish()
             case "hunt" | "h":
                 self.hunt()
             case "profile" | "p":
                 self.profile()
+                print("--------")
+                self.stats.printstats()
+
             case["quiz" | "q", difficulty]:
                 self.quiz(difficulty)
             case "exit":
                 self.save("profile.json")
+
                 global shouldexit
                 shouldexit = True
             case "help":
@@ -386,7 +472,7 @@ if __name__ == "__main__":
     def repeatedget():
         """repeatedly gets input"""
         while not shouldexit:
-            steve.get(">")
+            steve.get()
 
     inputthread = threading.Thread(target=repeatedget)
     inputthread.daemon = True
