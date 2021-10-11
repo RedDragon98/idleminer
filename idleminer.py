@@ -56,6 +56,7 @@ FISHINGUPMSG = "Your fishing level was upgraded to %s"
 CORRECTANSWERMSG = "Correct! +$2000"
 WRONGANSWERMSG = "Wrong! Better luck next time"
 INCOMPATDATAMSG = "Incompatible data version(unable to load profile)"
+COOLDOWNMSG = "Please wait %s seconds before %s again!"
 
 HELPMSG = """
 s/sell: sells any resources in the inventory
@@ -220,6 +221,10 @@ class IdleMiner:
         self.bpsizebooster = 1.0  # inventory size booster
         self.sellbooster = 1.0  # booster for sell prices
         self.blocksmined = 0  # blocks mined in this mine level
+        self.huntcooldown = 1
+        self.quizcooldown = 1
+        self.fishcooldown = 1 # cooldowns
+        self.pets = []
         self.inventory = {
             "dirt": 0,
             "gravel": 0,
@@ -373,6 +378,9 @@ class IdleMiner:
             self.fishlevel += 1
             self.fishxp = 0
             print(FISHINGUPMSG % self.fishlevel)
+        self.huntcooldown -= 1
+        self.quizcooldown -= 1
+        self.fishcooldown -= 1
 
     def profile(self):
         """prints profile"""
@@ -386,43 +394,57 @@ class IdleMiner:
         progressbar(self.fishxp, self.fishlevel * 4)
 
     def hunt(self):
-        """hunts for animals"""
-        if random.randint(1, self.huntchance) == 1:
-            print(CATCHPETMSG)
+        """hunts"""
+        if self.huntcooldown < 1:
+            self.huntcooldown = 300
+            self.huntchance = random.randint(0, 100)
+            if self.huntchance < 10:
+                print(random.choice(self.pets[0:(25-(self.huntchance * 2))]))
+            else:
+                self.shards += random.randint(1, 10)
+                print('You didn\'t get a pet :( You now have', self.shards, 'shards.')
         else:
-            print(NOCATCHPETMSG)
-            self.shards += random.randint(1, 10)
-            print('You now have', self.shards, 'shards.')
+            print(COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
     def quiz(self, difficulty):
         """asks a quiz question"""
-        question = random.choice(quizes[difficulty])
-        print(question["question"] + "?")
-        index = 0
-        for i in question["choices"]:
-            print(str(index) + ": " + i)
-            index += 1
+        if self.quizcooldown < 1:
+            self.quizcooldown = 300
+            
+            question = random.choice(quizes[difficulty])
+            print(question["question"] + "?")
+            index = 0
+            for i in question["choices"]:
+                print(str(index) + ": " + i)
+                index += 1
 
-        answer = input("answer: ")
-        try:
-            int(answer)
-        except ValueError:
-            colorprint(NOTINTMSG, color=Colors.FAIL)
-
-        if int(answer) == question["answer"]:
-            print(CORRECTANSWERMSG)
-            self.money += 3000
+            answer = input("answer: ")
+            try:
+                int(answer)
+            except ValueError:
+                colorprint(NOTINTMSG, color=Colors.FAIL)
+                return
+                
+            if int(answer) == question["answer"]:
+                print(CORRECTANSWERMSG)
+                self.money += 3000
+            else:
+                print(WRONGANSWERMSG)
         else:
-            print(WRONGANSWERMSG)
+            print(COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
 
     def fish(self):
         """fishes"""
-        if random.randint(1, 100 - self.fishlevel) == 1:
-            print(CATCHTREASUREMSG)
-            self.money += 5000
+        if self.fishcooldown < 1:
+            self.fishcooldown = 300
+            if random.randint(1, 100 - self.fishlevel) == 1:
+                print(CATCHTREASUREMSG)
+                self.money += 5000
+            else:
+                print(CATCHFISHMSG)
+                self.fishxp += 1
         else:
-            print(CATCHFISHMSG)
-            self.fishxp += 1
+            print(COOLDOWNMSG % (self.fishcooldown, "fishing"))
 
     def execute(self, cmd):
         """executes command"""
@@ -447,7 +469,7 @@ class IdleMiner:
 
             case["quiz" | "q", difficulty]:
                 self.quiz(difficulty)
-            case "exit":
+            case "exit" | "quit":
                 self.save("profile.json")
 
                 global shouldexit
