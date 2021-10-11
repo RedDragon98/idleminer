@@ -1,21 +1,21 @@
 {
     "easy": [
         {
-            "question": "How do you get a music disc?",
+            "question": "How do you get a music disc",
             "choices": [
-                "in loot chests at y=-1 in the void",
-                "when a creeper is killed by a skeleton",
-                "when a skeleton is killed by a creeper",
-                "when a zombie is summoned by a griefer"            
+                "In loot chests at y=-1 in the void",
+                "When a creeper is killed by a skeleton",
+                "When a skeleton is killed by a creeper",
+                "When a zombie is summoned by a griefer"            
             ],
             "answer": 1
         },
         {
             "question": "How do you break obsidian",
             "choices": [
-                "with a wooden pick -- its easy",
-                "with a lot of creepers",
-                "with tnt",
+                "With a wooden pick -- its easy",
+                "With a lot of creepers",
+                "With tnt",
                 "with a diamond/netherite pick"            
             ],
             "answer": 3
@@ -23,15 +23,167 @@
         {
             "question": "How do you get a grass block",
             "choices": [
-                "you just mine it",
-                "with a tool enchanted with silk touch",
-                "with tnt",
-                "with a enderite pick"            
+                "You just mine it",
+                "With a tool enchanted with silk touch",
+                "With tnt",
+                "With a enderite pick"            
+            ],
+            "answer": 1
+        }
+    ],
+    "medium": [
+        {
+            "question": "Which nametags alter a vex",
+            "choices": [
+                "Dinnerbone/Grumm",
+                "Dinnerbone/jeb_",
+                "Grumm/Johnny",
+                "Johnny/Toast"
+            ],
+            "answer": 0
+        },
+        {
+            "question": "What enchantment kills skeletons faster",
+            "choices": [
+                "Speed Kill",
+                "You can't",
+                "Sweeping Edge",
+                "Smite"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "You can get efficiency 5 on an enchanting table. True or False",
+            "choices": [
+                "True",
+                "False"
+            ],
+            "answer": 0
+        },
+        {
+            "question": "How do you get lime dye without crafting",
+            "choices": [
+                "Cactus",
+                "You can't",
+                "Sea Pickles",
+                "By shearing a zombie"
             ],
             "answer": 2
         }
     ],
-    "medium": null,
-    "hard": null,
-    "impossible": null
+    "hard": [       
+        {
+            "question": "When do tamed parrots not dance to discs",
+            "choices": [
+                "Just play a disc",
+                "Play 13",
+                "When you untame it",
+                "When you tame it while the music is playing"
+            ],
+            "answer": 3
+        },
+
+        {
+            "question": "What enchantment can turn turtles to bowls",
+            "choices": [
+                "Abracadabra",
+                "None",
+                "Channeling",
+                "Fire Aspect"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "Can tridents float",
+            "choices": [
+                "True",
+                "False"
+            ],
+            "answer": 0
+        },
+        {
+            "question": "What type of bastion have gold trophy-like structures",
+            "choices": [
+                "Bridge",
+                "Stable",
+                "Housing",
+                "Treasure"
+            ],
+            "answer": 0
+        },
+        {
+            "question": "What remains common in every Minecraft Java world other than the player",
+            "choices": [
+                "Mobs",
+                "Tree Generation",
+                "Bedrock Generation",
+                "Nothing"
+            ],
+            "answer": 2
+        }
+    ],
+    "really": [
+        {
+            "question": "What changes through updates in a world (even when loaded)",
+            "choices": [
+                "Loot chests",
+                "Structures",
+                "Villager",
+                "Nothing"
+            ],
+            "answer": 0
+        },
+
+        {
+            "question": "When does it rain in the nether",
+            "choices": [
+                "Never",
+                "When you go far quickly",
+                "When you are in a basalt delta",
+                "When water clips into the overworld"
+            ],
+            "answer": 1
+        },
+        {
+            "question": "Which version removed getting wither heads from strays (Bedrock)",
+            "choices": [
+                "1.14",
+                "1.15",
+                "1.16",
+                "It was never added"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "Which of these is a splash text",
+            "choices": [
+                "Philza had a good run!",
+                "The bees knees!",
+                "Honey, I waxed the copper!",
+                "1234 is a bad password!"
+            ],
+            "answer": 2
+        },
+        {
+            "question": "Which direction does a loyalty trident face when you throw it",
+            "choices": [
+                "North",
+                "South",
+                "East",
+                "West"
+            ],
+            "answer": 1
+        },
+        {
+            "question": "If a creeper explodes because of another creeper two blocks away, how many punches kill the creeper",
+            "choices": [
+                "It's dead",
+                "1",
+                "2",
+                "3"
+            ],
+            "answer": 1
+        }
+    ]
 }
+    
