@@ -120,6 +120,16 @@
                 "Nothing"
             ],
             "answer": 2
+        },
+        {
+            "question": "How much damage do you take from 1 punch from a zombie with no armor and no effects",
+            "choices": [
+                "1-1.5 hearts",
+                "1.5-2 hearts",
+                "2-2.5 hearts",
+                "2.5-3 hearts"
+            ],
+            "answer": 1 
         }
     ],
     "really": [
@@ -183,6 +193,26 @@
                 "3"
             ],
             "answer": 1
+        },
+        {
+            "question": "What does nbt luck data affect in MC bedrock",
+            "choices": [
+                "structures, fishing, mob drops",
+                "structures, fishing",
+                "mob drops",
+                "fishing"
+            ],
+            "answer": 3
+        },
+        {
+            "question": "How many hearts of damage do you take from a point blank creeper and an point blank end crystal explosion combined with blast protection 4, leather armor, and resistance 4 on normal mode",
+            "choices": [
+                "1 heart",
+                "1.5 hearts",
+                "2 hearts",
+                "2.5 hearts"
+            ],
+            "answer": 2
         }
     ]
 }
