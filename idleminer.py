@@ -223,7 +223,7 @@ class IdleMiner:
         self.blocksmined = 0  # blocks mined in this mine level
         self.huntcooldown = 1
         self.quizcooldown = 1
-        self.fishcooldown = 1 # cooldowns
+        self.fishcooldown = 1  # cooldowns
         self.pets = []
         self.inventory = {
             "dirt": 0,
@@ -402,7 +402,8 @@ class IdleMiner:
                 print(random.choice(self.pets[0:(25-(self.huntchance * 2))]))
             else:
                 self.shards += random.randint(1, 10)
-                print('You didn\'t get a pet :( You now have', self.shards, 'shards.')
+                print('You didn\'t get a pet :( You now have',
+                      self.shards, 'shards.')
         else:
             print(COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
@@ -410,7 +411,7 @@ class IdleMiner:
         """asks a quiz question"""
         if self.quizcooldown < 1:
             self.quizcooldown = 300
-            
+
             question = random.choice(quizes[difficulty])
             print(question["question"] + "?")
             index = 0
@@ -424,7 +425,7 @@ class IdleMiner:
             except ValueError:
                 colorprint(NOTINTMSG, color=Colors.FAIL)
                 return
-                
+
             if int(answer) == question["answer"]:
                 print(CORRECTANSWERMSG)
                 self.money += 3000
