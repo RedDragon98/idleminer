@@ -96,7 +96,7 @@ def progressbar(num, cap, partitions=20):
     print(" (" + str(num) + "/" + str(cap) + ")")
 
 
-def getrank(level):
+def getrank(level) -> str:
     """gets rank of a tool"""
 
     rank = "impossible"
@@ -116,9 +116,20 @@ def getrank(level):
     return rank
 
 
-def getmult(tool, rank):
-    """gets pickaxe multiplier base on rank"""
+def getmult(tool, rank) -> str:
+    """gets pickaxe multiplier based on rank"""
     return mults[tool][rank]
+
+
+def intcheck(integer: str) -> bool:
+    """checks if a argument is an integer, prints a error message if it is not"""
+    try:
+        int(integer)
+    except ValueError:
+        colorprint(NOTINTMSG, color=Colors.FAIL)
+        return False
+
+    return True
 
 
 class CommandParser():
@@ -451,10 +462,8 @@ class IdleMiner:
                 index += 1
 
             answer = input("answer: ")
-            try:
-                int(answer)
-            except ValueError:
-                colorprint(NOTINTMSG, color=Colors.FAIL)
+
+            if not intcheck(answer):
                 return
 
             if int(answer) == question["answer"]:
@@ -496,11 +505,7 @@ class IdleMiner:
             case "sell" | "s":
                 self.sell()
             case["upgrade" | "up" | "u", tool, amount]:
-                try:
-                    int(amount)
-                except ValueError:
-                    colorprint(NOTINTMSG, color=Colors.FAIL)
-                else:
+                if intcheck(amount):
                     self.upgrade(tool, int(amount))
             case "fish" | "f":
                 self.fish()
