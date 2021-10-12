@@ -529,27 +529,33 @@ class IdleMiner:
 
 
 if __name__ == "__main__":
-    print(HELPMSG)
-    steve = IdleMiner()
+    try:
+        print(HELPMSG)
+        steve = IdleMiner()
 
-    if os.path.exists("profile.json"):
-        steve.load("profile.json")
+        if os.path.exists("profile.json"):
+            steve.load("profile.json")
 
-    def repeatedget():
-        """repeatedly gets input"""
-        while not shouldexit:
-            steve.get()
+        def repeatedget():
+            """repeatedly gets input"""
+            while not shouldexit:
+                steve.get()
 
-    inputthread = threading.Thread(target=repeatedget)
-    inputthread.daemon = True
-    inputthread.start()
+        inputthread = threading.Thread(target=repeatedget)
+        inputthread.daemon = True
+        inputthread.start()
 
-    # background tasks
-    SLEEPTIME = 1 / TICKS
-    while True:
-        time.sleep(SLEEPTIME)
-        steve.miningtick()
-        steve.update()
+        # background tasks
+        SLEEPTIME = 1 / TICKS
+        while True:
+            time.sleep(SLEEPTIME)
+            steve.miningtick()
+            steve.update()
 
-        if shouldexit:
-            sys.exit(0)
+            if shouldexit:
+                sys.exit(0)
+
+    except (KeyboardInterrupt, SystemExit, EOFError):
+        # doesn't seem to hide the error message, but still saves
+        steve.save("profile.json")
+        sys.exit(0)
