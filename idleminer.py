@@ -59,6 +59,7 @@ CORRECTANSWERMSG = "Correct! +$2000"
 WRONGANSWERMSG = "Wrong! Better luck next time"
 INCOMPATDATAMSG = "Incompatible data version(unable to load profile)"
 COOLDOWNMSG = "Please wait %s seconds before %s again!"
+UPBIOMEMSG = "Upgraded biome to %s"
 
 HELPMSG = """
 s/sell: sells any resources in the inventory
@@ -76,9 +77,9 @@ UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 UP_H_MULTIPLIER = 50
 
-PROFILE_V = "0.0.3"  # profile version
+PROFILE_V = "0.0.4"  # profile version
 COMPAT_V = [
-    "0.0.3"
+    "0.0.4"
 ]  # compatible profile versions
 
 
@@ -168,6 +169,7 @@ class Stats:
         "coal": 0,
         "iron": 0,
         "diorite": 0,
+        "andesite": 0,
     }  # blocks mined(per type)
 
     petscaught = 0  # total pets caught
@@ -263,6 +265,7 @@ class IdleMiner:
             "coal": 0,
             "iron": 0,
             "diorite": 0,
+            "andesite": 0,
         }  # IdleMiner's inventory
         self.fishxp = 0
         self.fishlevel = 1
@@ -282,6 +285,7 @@ class IdleMiner:
         self.farmgrowth = (1200 - self.tools["h"] * 5)
         self.produce = {
             "wheat": 0,
+            "wheat-seed": 10,
             "rose": 0
         }
         self.farmlevel = 0
@@ -424,6 +428,17 @@ class IdleMiner:
             self.stats.tmineup += 1
             self.blocksmined = 0
             print(MINEUPMSG % self.minelevel)
+
+            try:
+                mines[self.biome][self.minelevel]
+            except IndexError:
+                self.biomeid += 1
+                self.biome = biomes[self.biomeid]
+                self.minelevel = 0
+                self.blocksmined = 0
+
+                print(UPBIOMEMSG % self.biome)
+
         if self.fishxp / self.fishlevel >= 4:
             self.fishlevel += 1
             self.fishxp = 0
@@ -501,9 +516,17 @@ class IdleMiner:
                 if random.randint(0, 100) <= farms[self.farmlevel][crop]:
                     grown.append(crop)
 
-            print(grown)  # TODO
+            for crop in grown:
+                amount = self.produce[crops[crop]["from"]]
+                self.produce[crops[crop]["from"]] = 0
+                for product in crops[crop]["produces"]:
+                    print(product, amount)
+                    self.produce[product] += amount
+
+            print("You grew", grown)  # TODO: all these print messages
+            print("your produce", self.produce)
         else:
-            print("please wait")  # TODO
+            print("please wait")
 
     def fish(self):
         """fishes"""

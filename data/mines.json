@@ -44,8 +44,7 @@
                 "dirt": 90,
                 "gravel": 10
             }
-        },
-        "nextlevel"
+        }
     ],
     "forest": [
         {
@@ -86,7 +85,6 @@
                 "dirt": 60,
                 "gravel": 40
             }
-        },
-        "nextlevel"
+        }
     ]
 }

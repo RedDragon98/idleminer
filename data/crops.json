@@ -1,43 +1,33 @@
 {
     "wheat": {
-        "from": [
-            "wheat-seed"
-        ],
+        "from": "wheat-seed",
         "produces": [
             "wheat-seed",
             "wheat"
         ]
     },
     "pumpkin": {
-        "from": [
-            "pumpkin-seed"
-        ],
+        "from": "pumpkin-seed",
         "produces": [
             "pumpkin-seed",
             "pumpkin"
         ]
     },
     "melon": {
-        "from": [
-            "melon-seed"
-        ],
+        "from": "melon-seed",
         "produces": [
             "melon-seed",
             "melon"
         ]
     },
     "rose": {
-        "from": [
-            "rose"
-        ],
+        "from": "rose",
         "produces": [
             "rose"
         ]
     },
     "daisy": {
-        "from": [
-            "daisy"
-        ],
+        "from": "daisy",
         "produces": [
             "daisy"
         ]
