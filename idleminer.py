@@ -73,9 +73,10 @@ The available tool is pickaxe (more are coming)
 UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 
-PROFILE_V = "0.0.1"  # profile version
+PROFILE_V = "0.0.2"  # profile version
 COMPAT_V = [
-    "0.0.1"
+    "0.0.1",
+    "0.0.2"
 ]  # compatible profile versions
 
 
@@ -229,7 +230,7 @@ class IdleMiner:
         self.cmdparse = CommandParser()
         self.money = 0  # money
         self.shards = 0  # shards for pets
-        self.rc = 0  # rebirth coins
+        self.rebirthcoins = 0  # rebirth coins
         self.huntchance = 10  # chance of pet
         self.biome = "plains"  # current biome
         self.biomeid = 0  # current biome index in biome list
@@ -274,7 +275,11 @@ class IdleMiner:
 
         self.money = profile["money"]
         self.shards = profile["shards"]
-        self.rc = profile["rc"]
+        if profile["DATA_V"] == "0.0.1":
+            self.rebirthcoins = profile["rc"]
+        else:  # v0.0.2+
+            self.rebirthcoins = profile["rebirthcoins"]
+
         self.biomeid = profile["biomeid"]
         self.biome = biomes[self.biomeid]
         self.minelevel = profile["minelevel"]
@@ -299,7 +304,7 @@ class IdleMiner:
             "DATA_V": PROFILE_V,
             "money": self.money,
             "shards": self.shards,
-            "rc": self.rc,
+            "rebirthcoins": self.rebirthcoins,
             "biomeid": self.biomeid,
             "minelevel": self.minelevel,
             "blocksmined": self.blocksmined,
