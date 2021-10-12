@@ -73,10 +73,10 @@ The available tool is pickaxe (more are coming)
 UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 
-PROFILE_V = "0.0.0"
+PROFILE_V = "0.0.1"  # profile version
 COMPAT_V = [
-    "0.0.0"
-]
+    "0.0.1"
+]  # compatible profile versions
 
 
 def colorprint(msg, esc="", color=""):
@@ -163,6 +163,10 @@ class Stats:
     tmineup = 0  # total mine upgrades
     tbiomeup = 0  # total biome upgrades
     tfishxp = 0  # total fishxp
+    tqanswered = 0  # total questions answered
+    tqcorrect = 0  # total answers correct
+    tfish = 0  # total fish caught
+    ttreasure = 0  # total treasure caught
 
     def printstats(self):
         """prints these stats"""
@@ -170,13 +174,17 @@ class Stats:
         print("Blocks mined:", self.tblksmined,
               "(" + str(self.blksmined) + ")")
 
-        print("Pets caught:", self.petscaught)
         print("Total money earned:", self.tmoneyearned)
         print("Total shards earned:", self.tshardsearned)
+        print("Pets caught:", self.petscaught)
         print("Total rc earned:", self.trcearned)
         print("Total mine upgrades:", self.tmineup)
         print("Total biome upgrades:", self.tbiomeup)
+        print("Total questions answered:", self.tqanswered,
+              "(" + str(self.tqcorrect) + " correct)")
         print("Total fish xp:", self.tfishxp)
+        print("Total fish caught:", self.tfish,
+              "(" + str(self.ttreasure) + " treasure)")
 
     def load(self, obj: dict):
         """load stats from dict"""
@@ -189,6 +197,10 @@ class Stats:
         self.tmineup = obj["tmineup"]
         self.tbiomeup = obj["tbiomeup"]
         self.tfishxp = obj["tfishxp"]
+        self.tqanswered = obj["tqanswered"]
+        self.tqcorrect = obj["tqcorrect"]
+        self.tfish = obj["tfish"]
+        self.ttreasure = obj["ttreasure"]
 
     def save(self):
         """saves stats to a dictionary"""
@@ -202,6 +214,10 @@ class Stats:
         obj["tmineup"] = self.tmineup
         obj["tbiomeup"] = self.tbiomeup
         obj["tfishxp"] = self.tfishxp
+        obj["tqanswered"] = self.tqanswered
+        obj["tqcorrect"] = self.tqcorrect
+        obj["tfish"] = self.tfish
+        obj["ttreasure"] = self.ttreasure
 
         return obj
 
@@ -268,6 +284,7 @@ class IdleMiner:
         self.fishlevel = profile["fishlevel"]
         self.huntchance = profile["huntchance"]
         self.tools = profile["tools"]
+        self.pets = profile["pets"]
 
         self.stats = Stats()
         self.stats.load(profile["stats"])
@@ -291,6 +308,7 @@ class IdleMiner:
             "fishlevel": self.fishlevel,
             "huntchance": self.huntchance,
             "tools": self.tools,
+            "pets": self.pets,
             "stats": self.stats.save()
         }
 
@@ -311,6 +329,7 @@ class IdleMiner:
                            " (x" + f"{self.inventory[item]:,}" + ")", Colors.BOLD)
                 self.money += money
                 self.inventory[item] = 0
+                self.stats.tmoneyearned += money
 
     def _individualup(self, tool, toolname, amount, multiplier):
         for _ in range(amount):
@@ -372,6 +391,7 @@ class IdleMiner:
         """update fishing and mining levels"""
         if self.blocksmined > 2000 * (self.minelevel + 1):
             self.minelevel += 1
+            self.stats.tmineup += 1
             self.blocksmined = 0
             print(MINEUPMSG % self.minelevel)
         if self.fishxp / self.fishlevel >= 4:
@@ -399,11 +419,17 @@ class IdleMiner:
             self.huntcooldown = 300
             self.huntchance = random.randint(0, 100)
             if self.huntchance < 10:
-                print(random.choice(self.pets[0:(25-(self.huntchance * 2))]))
+                pet = random.choice(self.pets[0:(25-(self.huntchance * 2))])
+                print(pet)
+
+                self.stats.petscaught += 1
             else:
-                self.shards += random.randint(1, 10)
+                shards = random.randint(1, 10)
+                self.shards += shards
                 print('You didn\'t get a pet :( You now have',
                       self.shards, 'shards.')
+
+                self.stats.tshardsearned += shards
         else:
             print(COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
@@ -428,9 +454,13 @@ class IdleMiner:
 
             if int(answer) == question["answer"]:
                 print(CORRECTANSWERMSG)
+                self.stats.tqcorrect += 1
+                self.stats.tqanswered += 1
+
                 self.money += 3000
             else:
                 print(WRONGANSWERMSG)
+                self.stats.tqanswered += 1
         else:
             print(COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
 
@@ -440,10 +470,18 @@ class IdleMiner:
             self.fishcooldown = 300
             if random.randint(1, 100 - self.fishlevel) == 1:
                 print(CATCHTREASUREMSG)
+
                 self.money += 5000
+                self.fishxp += 10
+
+                self.stats.tfishxp += 10
+                self.stats.ttreasure += 1
             else:
                 print(CATCHFISHMSG)
                 self.fishxp += 1
+
+                self.stats.tfishxp += 1
+                self.stats.tfish += 1
         else:
             print(COOLDOWNMSG % (self.fishcooldown, "fishing"))
 
