@@ -39,6 +39,8 @@ mines = dataload("mines.json")  # mining chances
 mults = dataload("multipliers.json")
 biomes = dataload("biomes.json")  # biome list
 quizes = dataload("quiz.json")  # list of quiz questions
+farms = dataload("farms.json")  # things you can grow in your farm
+crops = dataload("crops.json")  # crops and their sources
 
 shouldexit = False
 TICKS = 1
@@ -72,11 +74,11 @@ The available tool is pickaxe (more are coming)
 
 UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
+UP_H_MULTIPLIER = 50
 
-PROFILE_V = "0.0.2"  # profile version
+PROFILE_V = "0.0.3"  # profile version
 COMPAT_V = [
-    "0.0.1",
-    "0.0.2"
+    "0.0.3"
 ]  # compatible profile versions
 
 
@@ -267,6 +269,7 @@ class IdleMiner:
         self.tools = {
             "p": 0,
             "s": 0,
+            "h": 0,
         }
 
         self.blockspertick = {
@@ -275,6 +278,14 @@ class IdleMiner:
         }
 
         self.minelevel = 0
+
+        self.farmgrowth = (1200 - self.tools["h"] * 5)
+        self.produce = {
+            "wheat": 0,
+            "rose": 0
+        }
+        self.farmlevel = 0
+
         self.stats = Stats()
 
     def load(self, file):
@@ -286,10 +297,7 @@ class IdleMiner:
 
         self.money = profile["money"]
         self.shards = profile["shards"]
-        if profile["DATA_V"] == "0.0.1":
-            self.rebirthcoins = profile["rc"]
-        else:  # v0.0.2+
-            self.rebirthcoins = profile["rebirthcoins"]
+        self.rebirthcoins = profile["rebirthcoins"]
 
         self.biomeid = profile["biomeid"]
         self.biome = biomes[self.biomeid]
@@ -301,6 +309,8 @@ class IdleMiner:
         self.huntchance = profile["huntchance"]
         self.tools = profile["tools"]
         self.pets = profile["pets"]
+        self.produce = profile["produce"]
+        self.farmlevel = profile["farmlevel"]
 
         self.stats = Stats()
         self.stats.load(profile["stats"])
@@ -325,6 +335,8 @@ class IdleMiner:
             "huntchance": self.huntchance,
             "tools": self.tools,
             "pets": self.pets,
+            "produce": self.produce,
+            "farmlevel": self.farmlevel,
             "stats": self.stats.save()
         }
 
@@ -370,6 +382,8 @@ class IdleMiner:
                 self._individualup("s", "shovel", amount, UP_S_MULTIPLIER)
             case "a" | "axe":  # rebirth = level >= 200
                 pass
+            case "h" | "hoe":  # rebirth = level >= 200
+                self._individualup("h", "hoe", amount, UP_H_MULTIPLIER)
             case "w" | "sword":  # w = weapon
                 pass
             case "d" | "shield":  # d = defense
@@ -392,7 +406,7 @@ class IdleMiner:
     def miningtick(self):
         """adds resources to inventory"""
         num = random.randint(1, 100)
-        for tool in self.tools.keys():
+        for tool in ["p", "s"]:
             chances = mines[self.biome][self.minelevel][tool]
             for i in chances.keys():
                 if num > 100 - chances[i]:
@@ -417,6 +431,7 @@ class IdleMiner:
         self.huntcooldown -= 1
         self.quizcooldown -= 1
         self.fishcooldown -= 1
+        self.farmgrowth -= 1
 
     def profile(self):
         """prints profile"""
@@ -478,6 +493,18 @@ class IdleMiner:
         else:
             print(COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
 
+    def farm(self):
+        if self.farmgrowth < 1:
+            self.farmgrowth = (1200 - self.tools["h"] * 5)
+            grown = []
+            for crop in farms[self.farmlevel].keys():
+                if random.randint(0, 100) <= farms[self.farmlevel][crop]:
+                    grown.append(crop)
+
+            print(grown)  # TODO
+        else:
+            print("please wait")  # TODO
+
     def fish(self):
         """fishes"""
         if self.fishcooldown < 1:
@@ -515,9 +542,10 @@ class IdleMiner:
                 self.profile()
                 print("--------")
                 self.stats.printstats()
-
             case["quiz" | "q", difficulty]:
                 self.quiz(difficulty)
+            case "farm" | "fm":
+                self.farm()
             case "exit" | "quit":
                 self.save("profile.json")
 
@@ -526,8 +554,12 @@ class IdleMiner:
             case "help":
                 print(HELPMSG)
             case "cheat":
-                self.money += 9**999
+                self.money += 10000000
                 self.blocksmined += 2000
+                self.farmgrowth = 0
+                self.huntcooldown = 0
+                self.fishcooldown = 0
+                self.quizcooldown = 0
             case _:
                 colorprint(ERRMSG + " (in IdleMiner.execute)",
                            color=Colors.FAIL)
