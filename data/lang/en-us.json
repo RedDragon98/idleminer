@@ -1,0 +1,19 @@
+{
+    "ERRMSG": "Invalid Command",
+    "COSTMSG": "You don't have enough money (upgraded till max)",
+    "UPMSG": "Your %s level is %s, type is %s",
+    "NOTINTMSG": "Value should be an integer",
+    "MINEUPMSG": "Upgraded mine to %s",
+    "CATCHFISHMSG": "You caught a fish. +1 fishing xp",
+    "CATCHTREASUREMSG": "You caught treasure. +10 fishing xp",
+    "CATCHPETMSG": "You caught a pet",
+    "NOCATCHPETMSG": "You didn't catch a pet :(. Better luck next time!",
+    "FISHINGUPMSG": "Your fishing level was upgraded to %s",
+    "CORRECTANSWERMSG": "Correct! +$2000",
+    "WRONGANSWERMSG": "Wrong! Better luck next time",
+    "INCOMPATDATAMSG": "Incompatible data version(unable to load profile)",
+    "COOLDOWNMSG": "Please wait %s seconds before %s again!",
+    "UPBIOMEMSG": "Upgraded biome to %s",
+    "GROWMSG": "You grew:",
+    "HELPMSG": " \ns/sell: sells any resources in the inventory\np/profile: prints stats about the IdleMiner\nf/fish: fishes for treasure\nh/hunt: catches pets\nu/upgrade tool amount: upgrades a tool by amount (eg. u p 1)\nq/quiz difficulty: gives you a quiz (eg. q easy)\nexit/quit: exits the game\nf/farm: farms\nhelp: prints this menu again\nThe available tools are pickaxe, shovel, and hoe"
+}

@@ -7,9 +7,11 @@ import time
 from enum import Enum
 import sys
 import os
+import yaml
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
+LANGUAGE: str = yaml.safe_load(open("lang"))
 
 DATAPATH = "data/"  # data file path
 
@@ -36,51 +38,51 @@ prices = dataload("prices.json")  # item prices
 mines = dataload("mines.json")  # mining chances
 
 # mining multiplier (based on pickaxe level)
-mults = dataload("multipliers.json")
-biomes = dataload("biomes.json")  # biome list
-quizes = dataload("quiz.json")  # list of quiz questions
-farms = dataload("farms.json")  # things you can grow in your farm
-crops = dataload("crops.json")  # crops and their sources
+mults: dict = dataload("multipliers.json")
+biomes: list = dataload("biomes.json")  # biome list
+quizes: dict = dataload("quiz.json")  # list of quiz questions
+farms: list = dataload("farms.json")  # things you can grow in your farm
+crops: dict = dataload("crops.json")  # crops and their sources
 
 shouldexit = False
 TICKS = 1
 
-ERRMSG = "Invalid command"  # error during parsing
-COSTMSG = "You don't have enough money (upgraded till max)"  # money ran out
-UPMSG = "Your %s level is %s, type is %s"
-NOTINTMSG = "Value should be an integer"
-MINEUPMSG = "Upgraded mine to %s"
-CATCHFISHMSG = "You caught a fish. +1 fishing xp"
-CATCHTREASUREMSG = "You caught treasure. +10 fishing xp"
-CATCHPETMSG = "You caught a pet"
-NOCATCHPETMSG = "You didn't catch a pet :(. Better luck next time!"
-FISHINGUPMSG = "Your fishing level was upgraded to %s"
-CORRECTANSWERMSG = "Correct! +$2000"
-WRONGANSWERMSG = "Wrong! Better luck next time"
-INCOMPATDATAMSG = "Incompatible data version(unable to load profile)"
-COOLDOWNMSG = "Please wait %s seconds before %s again!"
-UPBIOMEMSG = "Upgraded biome to %s"
-GROWMSG = "You grew:"
+langdata: dict = dataload("lang/" + LANGUAGE + ".json")
 
-HELPMSG = """
-s/sell: sells any resources in the inventory
-p/profile: prints stats about the IdleMiner
-f/fish: fishes for treasure
-h/hunt: catches pets
-u/upgrade tool amount: upgrades a tool by amount (eg. u p 1)
-q/quiz difficulty: gives you a quiz (eg. q easy)
-exit: exits the game
-help: prints this menu again
-The available tool is pickaxe (more are coming)
-"""
+
+class Lang:
+    ERRMSG: None
+    COSTMSG: None
+    UPMSG: None
+    NOTINTMSG = None
+    MINEUPMSG = None
+    CATCHFISHMSG = None
+    CATCHTREASUREMSG = None
+    CATCHPETMSG = None
+    NOCATCHPETMSG = None
+    FISHINGUPMSG = None
+    CORRECTANSWERMSG = None
+    WRONGANSWERMSG = None
+    INCOMPATDATAMSG = None
+    COOLDOWNMSG = None
+    UPBIOMEMSG = None
+    GROWMSG = None
+    HELPMSG = None
+
+    def __init__(self, langpack: dict):
+        for key in langpack.keys():
+            setattr(self, key, langpack[key])
+
+
+lang = Lang(langdata)
 
 UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 UP_H_MULTIPLIER = 50
 
-PROFILE_V = "0.0.4"  # profile version
+PROFILE_V = "0.0.5"  # profile version
 COMPAT_V = [
-    "0.0.4"
+    "0.0.5"
 ]  # compatible profile versions
 
 
@@ -130,7 +132,7 @@ def intcheck(integer: str) -> bool:
     try:
         int(integer)
     except ValueError:
-        colorprint(NOTINTMSG, color=Colors.FAIL)
+        colorprint(lang.NOTINTMSG, color=Colors.FAIL)
         return False
 
     return True
@@ -226,7 +228,7 @@ class Stats:
         obj["blksmined"] = self.blksmined
         obj["petscaught"] = self.petscaught
         obj["tmoneyearned"] = self.tmoneyearned
-        obj["tslapissearned"] = self.tlapisearned
+        obj["tslapisearned"] = self.tlapisearned
         obj["trcearned"] = self.trcearned
         obj["tmineup"] = self.tmineup
         obj["tbiomeup"] = self.tbiomeup
@@ -297,7 +299,7 @@ class IdleMiner:
         """loads a profile"""
         profile = json.load(open(file, encoding="UTF-8"))
         if (not "DATA_V" in profile) or (not profile["DATA_V"] in COMPAT_V):
-            colorprint(INCOMPATDATAMSG, color=Colors.FAIL)
+            colorprint(lang.INCOMPATDATAMSG, color=Colors.FAIL)
             return
 
         self.money = profile["money"]
@@ -371,11 +373,11 @@ class IdleMiner:
                 self.tools[tool] += 1
                 self.money -= price
             else:
-                colorprint(COSTMSG, color=Colors.FAIL)
+                colorprint(lang.COSTMSG, color=Colors.FAIL)
                 break
 
         self.blockspertick[tool] = getmult(tool, getrank(self.tools[tool]))
-        print(UPMSG %
+        print(lang.UPMSG %
               (toolname, self.tools[tool], getrank(self.tools[tool])))
 
     def upgrade(self, tool, amount):
@@ -406,7 +408,8 @@ class IdleMiner:
             case "t" | "tnt":
                 pass
             case _:
-                colorprint(ERRMSG + " (in IdleMiner.up)", color=Colors.FAIL)
+                colorprint(lang.ERRMSG + " (in IdleMiner.up)",
+                           color=Colors.FAIL)
 
     def miningtick(self):
         """adds resources to inventory"""
@@ -428,7 +431,7 @@ class IdleMiner:
             self.minelevel += 1
             self.stats.tmineup += 1
             self.blocksmined = 0
-            print(MINEUPMSG % self.minelevel)
+            print(lang.MINEUPMSG % self.minelevel)
 
             try:
                 mines[self.biome][self.minelevel]
@@ -438,12 +441,12 @@ class IdleMiner:
                 self.minelevel = 0
                 self.blocksmined = 0
 
-                print(UPBIOMEMSG % self.biome)
+                print(lang.UPBIOMEMSG % self.biome)
 
         if self.fishxp / self.fishlevel >= 4:
             self.fishlevel += 1
             self.fishxp = 0
-            print(FISHINGUPMSG % self.fishlevel)
+            print(lang.FISHINGUPMSG % self.fishlevel)
         self.huntcooldown -= 1
         self.quizcooldown -= 1
         self.fishcooldown -= 1
@@ -479,7 +482,7 @@ class IdleMiner:
 
                 self.stats.tlapisearned += lapis
         else:
-            print(COOLDOWNMSG % (self.huntcooldown, "hunting"))
+            print(lang.COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
     def quiz(self, difficulty):
         """asks a quiz question"""
@@ -499,16 +502,16 @@ class IdleMiner:
                 return
 
             if int(answer) == question["answer"]:
-                print(CORRECTANSWERMSG)
+                print(lang.CORRECTANSWERMSG)
                 self.stats.tqcorrect += 1
                 self.stats.tqanswered += 1
 
                 self.money += 3000
             else:
-                print(WRONGANSWERMSG)
+                print(lang.WRONGANSWERMSG)
                 self.stats.tqanswered += 1
         else:
-            print(COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
+            print(lang.COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
 
     def farm(self):
         """farms"""
@@ -525,16 +528,16 @@ class IdleMiner:
                 for product in crops[crop]["produces"]:
                     self.produce[product] += amount
 
-            print(GROWMSG, str(grown).strip("[] ").replace("'", ""))
+            print(lang.GROWMSG, str(grown).strip("[] ").replace("'", ""))
         else:
-            print(COOLDOWNMSG % (self.farmgrowth, "farming"))
+            print(lang.COOLDOWNMSG % (self.farmgrowth, "farming"))
 
     def fish(self):
         """fishes"""
         if self.fishcooldown < 1:
             self.fishcooldown = 300
             if random.randint(1, 100 - self.fishlevel) == 1:
-                print(CATCHTREASUREMSG)
+                print(lang.CATCHTREASUREMSG)
 
                 self.money += 5000
                 self.fishxp += 10
@@ -542,13 +545,13 @@ class IdleMiner:
                 self.stats.tfishxp += 10
                 self.stats.ttreasure += 1
             else:
-                print(CATCHFISHMSG)
+                print(lang.CATCHFISHMSG)
                 self.fishxp += 1
 
                 self.stats.tfishxp += 1
                 self.stats.tfish += 1
         else:
-            print(COOLDOWNMSG % (self.fishcooldown, "fishing"))
+            print(lang.COOLDOWNMSG % (self.fishcooldown, "fishing"))
 
     def execute(self, cmd):
         """executes command"""
@@ -576,7 +579,7 @@ class IdleMiner:
                 global shouldexit
                 shouldexit = True
             case "help":
-                print(HELPMSG)
+                print(lang.HELPMSG)
             case "cheat":
                 self.money += 10000000
                 self.blocksmined += 2000
@@ -585,13 +588,13 @@ class IdleMiner:
                 self.fishcooldown = 0
                 self.quizcooldown = 0
             case _:
-                colorprint(ERRMSG + " (in IdleMiner.execute)",
+                colorprint(lang.ERRMSG + " (in IdleMiner.execute)",
                            color=Colors.FAIL)
 
 
 if __name__ == "__main__":
     try:
-        print(HELPMSG)
+        print(lang.HELPMSG)
         steve = IdleMiner()
 
         if os.path.exists("profile.json"):

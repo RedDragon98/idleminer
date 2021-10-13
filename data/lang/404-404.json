@@ -1,0 +1,19 @@
+{
+    "ERRMSG": "oh no error",
+    "COSTMSG": "oh no you don't have enough money :(",
+    "UPMSG": ":) you upgraded your %s to %s (%s)",
+    "NOTINTMSG": "no! it wasn't an int :(",
+    "MINEUPMSG": "upped mine to %s",
+    "CATCHFISHMSG": "wow you caught a fish",
+    "CATCHTREASUREMSG": "awesome you caught treasure",
+    "CATCHPETMSG": "pet!",
+    "NOCATCHPETMSG": "no pet :(",
+    "FISHINGUPMSG": "fishing level went %s",
+    "CORRECTANSWERMSG": "correct you earned a lot of money",
+    "WRONGANSWERMSG": "wrong better luck later :D",
+    "INCOMPATDATAMSG": "oops we could not load the profile",
+    "COOLDOWNMSG": "wait %s D3BaNaNa units before %s",
+    "UPBIOMEMSG": "upped biome to %s",
+    "GROWMSG": "you grew",
+    "HELPMSG": " \ns/sell: sells it\np/profile: prints profile\nf/fish: treasure!\nh/hunt: more pets\nu/upgrade tool amount: upgrades a tool (eg. u p 1)\nq/quiz difficulty: get quizzed (eg. q easy)\nexit/quit: exit the game now\nf/farm: farms\nhelp: prints this again(and again)\nuse the pickaxe, shovel, and hoe because their awesome"
+}
