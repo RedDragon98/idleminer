@@ -11,7 +11,7 @@ import yaml
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
-LANGUAGE: str = yaml.safe_load(open("lang"))
+LANGUAGE: str = yaml.safe_load(open("lang.yml"))
 
 DATAPATH = "data/"  # data file path
 
@@ -228,7 +228,7 @@ class Stats:
         obj["blksmined"] = self.blksmined
         obj["petscaught"] = self.petscaught
         obj["tmoneyearned"] = self.tmoneyearned
-        obj["tslapisearned"] = self.tlapisearned
+        obj["tlapisearned"] = self.tlapisearned
         obj["trcearned"] = self.trcearned
         obj["tmineup"] = self.tmineup
         obj["tbiomeup"] = self.tbiomeup
