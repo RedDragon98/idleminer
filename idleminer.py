@@ -60,6 +60,7 @@ WRONGANSWERMSG = "Wrong! Better luck next time"
 INCOMPATDATAMSG = "Incompatible data version(unable to load profile)"
 COOLDOWNMSG = "Please wait %s seconds before %s again!"
 UPBIOMEMSG = "Upgraded biome to %s"
+GROWMSG = "You grew:"
 
 HELPMSG = """
 s/sell: sells any resources in the inventory
@@ -454,6 +455,7 @@ class IdleMiner:
         print("shards:", self.shards)
         print("inventory:", self.inventory)
         print("tools:", self.tools)
+        print("produce:", self.produce)
         print("mine level:", self.minelevel, end=" ")
         progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
         print("fishing level:", self.fishlevel, end=" ")
@@ -509,6 +511,7 @@ class IdleMiner:
             print(COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
 
     def farm(self):
+        """farms"""
         if self.farmgrowth < 1:
             self.farmgrowth = (1200 - self.tools["h"] * 5)
             grown = []
@@ -520,13 +523,11 @@ class IdleMiner:
                 amount = self.produce[crops[crop]["from"]]
                 self.produce[crops[crop]["from"]] = 0
                 for product in crops[crop]["produces"]:
-                    print(product, amount)
                     self.produce[product] += amount
 
-            print("You grew", grown)  # TODO: all these print messages
-            print("your produce", self.produce)
+            print(GROWMSG, str(grown).strip("[] ").replace("'", ""))
         else:
-            print("please wait")
+            print(COOLDOWNMSG % (self.farmgrowth, "farming"))
 
     def fish(self):
         """fishes"""

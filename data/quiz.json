@@ -6,7 +6,7 @@
                 "In loot chests at y=-1 in the void",
                 "When a creeper is killed by a skeleton",
                 "When a skeleton is killed by a creeper",
-                "When a zombie is summoned by a griefer"            
+                "When a zombie is summoned by a griefer"
             ],
             "answer": 1
         },
@@ -16,7 +16,7 @@
                 "With a wooden pick -- its easy",
                 "With a lot of creepers",
                 "With tnt",
-                "with a diamond/netherite pick"            
+                "with a diamond/netherite pick"
             ],
             "answer": 3
         },
@@ -26,7 +26,7 @@
                 "You just mine it",
                 "With a tool enchanted with silk touch",
                 "With tnt",
-                "With a enderite pick"            
+                "With a enderite pick"
             ],
             "answer": 1
         }
@@ -71,7 +71,7 @@
             "answer": 2
         }
     ],
-    "hard": [       
+    "hard": [
         {
             "question": "When do tamed parrots not dance to discs",
             "choices": [
@@ -82,7 +82,6 @@
             ],
             "answer": 3
         },
-
         {
             "question": "What enchantment can turn turtles to bowls",
             "choices": [
@@ -129,7 +128,7 @@
                 "2-2.5 hearts",
                 "2.5-3 hearts"
             ],
-            "answer": 1 
+            "answer": 1
         }
     ],
     "really": [
@@ -143,7 +142,6 @@
             ],
             "answer": 0
         },
-
         {
             "question": "When does it rain in the nether",
             "choices": [
@@ -216,4 +214,3 @@
         }
     ]
 }
-    
