@@ -175,7 +175,7 @@ class Stats:
 
     petscaught = 0  # total pets caught
     tmoneyearned = 0  # total money earned
-    tshardsearned = 0  # total shards earned
+    tlapisearned = 0  # total lapis earned
     trcearned = 0  # total rc earned
     tmineup = 0  # total mine upgrades
     tbiomeup = 0  # total biome upgrades
@@ -192,7 +192,7 @@ class Stats:
               "(" + str(self.blksmined) + ")")
 
         print("Total money earned:", self.tmoneyearned)
-        print("Total shards earned:", self.tshardsearned)
+        print("Total lapis earned:", self.tlapisearned)
         print("Pets caught:", self.petscaught)
         print("Total rc earned:", self.trcearned)
         print("Total mine upgrades:", self.tmineup)
@@ -209,7 +209,7 @@ class Stats:
         self.blksmined = obj["blksmined"]
         self.petscaught = obj["petscaught"]
         self.tmoneyearned = obj["tmoneyearned"]
-        self.tshardsearned = obj["tshardsearned"]
+        self.tlapisearned = obj["tlapisearned"]
         self.trcearned = obj["trcearned"]
         self.tmineup = obj["tmineup"]
         self.tbiomeup = obj["tbiomeup"]
@@ -226,7 +226,7 @@ class Stats:
         obj["blksmined"] = self.blksmined
         obj["petscaught"] = self.petscaught
         obj["tmoneyearned"] = self.tmoneyearned
-        obj["tshardsearned"] = self.tshardsearned
+        obj["tslapissearned"] = self.tlapisearned
         obj["trcearned"] = self.trcearned
         obj["tmineup"] = self.tmineup
         obj["tbiomeup"] = self.tbiomeup
@@ -245,7 +245,7 @@ class IdleMiner:
     def __init__(self):
         self.cmdparse = CommandParser()
         self.money = 0  # money
-        self.shards = 0  # shards for pets
+        self.lapis = 0  # lapis for pets and other things
         self.rebirthcoins = 0  # rebirth coins
         self.huntchance = 10  # chance of pet
         self.biome = "plains"  # current biome
@@ -301,7 +301,7 @@ class IdleMiner:
             return
 
         self.money = profile["money"]
-        self.shards = profile["shards"]
+        self.lapis = profile["lapis"]
         self.rebirthcoins = profile["rebirthcoins"]
 
         self.biomeid = profile["biomeid"]
@@ -329,7 +329,7 @@ class IdleMiner:
         profile = {
             "DATA_V": PROFILE_V,
             "money": self.money,
-            "shards": self.shards,
+            "lapis": self.lapis,
             "rebirthcoins": self.rebirthcoins,
             "biomeid": self.biomeid,
             "minelevel": self.minelevel,
@@ -452,7 +452,7 @@ class IdleMiner:
     def profile(self):
         """prints profile"""
         print("money: $" + f"{self.money:,}")
-        print("shards:", self.shards)
+        print("lapis:", self.lapis)
         print("inventory:", self.inventory)
         print("tools:", self.tools)
         print("produce:", self.produce)
@@ -472,12 +472,12 @@ class IdleMiner:
 
                 self.stats.petscaught += 1
             else:
-                shards = random.randint(1, 10)
-                self.shards += shards
+                lapis = random.randint(1, 10)
+                self.lapis += lapis
                 print('You didn\'t get a pet :( You now have',
-                      self.shards, 'shards.')
+                      self.lapis, 'lapis.')
 
-                self.stats.tshardsearned += shards
+                self.stats.tlapisearned += lapis
         else:
             print(COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
