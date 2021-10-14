@@ -518,8 +518,11 @@ class IdleMiner:
             return False
 
         if int(answer) == question["answer"]:
+            self.stats.tqcorrect += 1
+            self.stats.tqanswered += 1
             return True
 
+        self.stats.tqanswered += 1
         return False
 
     def quiz(self, difficulty):
@@ -529,13 +532,10 @@ class IdleMiner:
 
             if self._quiz(difficulty):
                 print(lang.CORRECTANSWERMSG)
-                self.stats.tqcorrect += 1
-                self.stats.tqanswered += 1
 
                 self.money += 3000
             else:
                 print(lang.WRONGANSWERMSG)
-                self.stats.tqanswered += 1
         else:
             print(lang.COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
 
@@ -588,14 +588,14 @@ class IdleMiner:
         mobhp = mobs[horde]["hp"]
         mobdmg = mobs[horde]["dmg"]\
 
-        hp = self.battlelevel + 1 * 10
+        stevehp = self.battlelevel + 1 * 10
 
         print("Fighting:", horde, "with hp:", mobhp,
-              "and damage:", str(mobdmg) + ".", "You have", hp)
+              "and damage:", str(mobdmg) + ".", "You have", stevehp)
         cont = input("Do you want to continue(y/N)?")
 
         if cont == "y":
-            while hp > 0 and mobhp > 0:
+            while stevehp > 0 and mobhp > 0:
                 if mobhp > 100 and self._quiz("really"):
                     mobhp -= 10
                     print(lang.MOBHITMSG % (10, mobhp))
@@ -609,10 +609,10 @@ class IdleMiner:
                     mobhp -= 1
                     print(lang.MOBHITMSG % (1, mobhp))
                 else:
-                    hp -= mobdmg
-                    print(lang.MOBHURTMSG % (mobdmg, hp))
+                    stevehp -= mobdmg
+                    print(lang.MOBHURTMSG % (mobdmg, stevehp))
 
-            if hp == 0:
+            if stevehp == 0:
                 print(lang.DEADMSG)
 
             else:
