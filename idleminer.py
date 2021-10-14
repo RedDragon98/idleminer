@@ -180,20 +180,20 @@ class Stats:
     def printstats(self):
         """prints these stats"""
 
-        print("Blocks mined:", self.tblksmined,
-              "(" + str(self.blksmined) + ")")
+        c.print("[magenta]Blocks mined[white]:", self.tblksmined,
+                "(" + str(self.blksmined) + ")")
 
-        print("Total money earned:", self.tmoneyearned)
-        print("Total lapis earned:", self.tlapisearned)
-        print("Pets caught:", self.petscaught)
-        print("Total rc earned:", self.trcearned)
-        print("Total mine upgrades:", self.tmineup)
-        print("Total biome upgrades:", self.tbiomeup)
-        print("Total questions answered:", self.tqanswered,
-              "(" + str(self.tqcorrect) + " correct)")
-        print("Total fish xp:", self.tfishxp)
-        print("Total fish caught:", self.tfish,
-              "(" + str(self.ttreasure) + " treasure)")
+        c.print("[magenta]Total money earned[white]:", self.tmoneyearned)
+        c.print("[magenta]Total lapis earned[white]:", self.tlapisearned)
+        c.print("[magenta]Pets caught[white]:", self.petscaught)
+        c.print("[magenta]Total rc earned[white]:", self.trcearned)
+        c.print("[magenta]Total mine upgrades[white]:", self.tmineup)
+        c.print("[magenta]Total biome upgrades[white]:", self.tbiomeup)
+        c.print("[magenta]Total questions answered[white]:", self.tqanswered,
+                "(" + str(self.tqcorrect) + " correct)")
+        c.print("[magenta]Total fish xp[white]:", self.tfishxp)
+        c.print("[magenta]Total fish caught[white]:", self.tfish,
+                "(" + str(self.ttreasure) + " treasure)")
 
     def load(self, obj: dict):
         """load stats from dict"""
@@ -456,14 +456,14 @@ class IdleMiner:
 
     def profile(self):
         """prints profile"""
-        print("money: $" + f"{self.money:,}")
-        print("lapis:", self.lapis)
-        print("inventory:", self.inventory)
-        print("tools:", self.tools)
-        print("produce:", self.produce)
-        print("mine level:", self.minelevel, end=" ")
-        c.print(self.blocksmined, (self.minelevel + 1) * 2000)
-        print("fishing level:", self.fishlevel, end=" ")
+        c.print("[blue]money[white]:", f"{self.money:,}")
+        c.print("[blue]lapis[white]:", self.lapis)
+        c.print("[blue]inventory[white]:", self.inventory)
+        c.print("[blue]tools[white]:", self.tools)
+        c.print("[blue]produce[white]:", self.produce)
+        c.print("[blue]mine level[white]:", self.minelevel, end=" ")
+        progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
+        c.print("[blue]fishing level[white]:", self.fishlevel, end=" ")
         progressbar(self.fishxp, self.fishlevel * 4)
 
     def hunt(self):
