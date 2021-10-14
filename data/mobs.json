@@ -1,0 +1,27 @@
+{
+    "zombie": {
+        "hp": 5,
+        "dmg": 1,
+        "xp": 1,
+        "drops": {
+            "flesh": 95
+        }
+    },
+    "skeleton": {
+        "hp": 5,
+        "dmg": 1,
+        "xp": 1,
+        "drops": {
+            "bones": 50
+        }
+    },
+    "creeper": {
+        "hp": 5,
+        "dmg": 1,
+        "xp": 1,
+        "drops": {
+            "gunpowder": 95,
+            "disc": 1
+        }
+    }
+}

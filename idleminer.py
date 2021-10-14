@@ -43,6 +43,7 @@ biomes: list = dataload("biomes.json")  # biome list
 quizes: dict = dataload("quiz.json")  # list of quiz questions
 farms: list = dataload("farms.json")  # things you can grow in your farm
 crops: dict = dataload("crops.json")  # crops and their sources
+mobs: dict = dataload("mobs.json")  # list of mobs
 
 shouldexit = False
 TICKS = 1
@@ -51,6 +52,7 @@ langdata: dict = dataload("lang/" + LANGUAGE + ".json")
 
 
 class Lang:
+    """defines the text messages"""
     ERRMSG: None
     COSTMSG: None
     UPMSG: None
@@ -68,6 +70,10 @@ class Lang:
     UPBIOMEMSG = None
     GROWMSG = None
     HELPMSG = None
+    MOBHITMSG = None
+    MOBHURTMSG = None
+    WINMSG = None
+    DEADMSG = None
 
     def __init__(self, langpack: dict):
         for key in langpack.keys():
@@ -246,20 +252,27 @@ class IdleMiner:
 
     def __init__(self):
         self.cmdparse = CommandParser()
+
         self.money = 0  # money
         self.lapis = 0  # lapis for pets and other things
         self.rebirthcoins = 0  # rebirth coins
-        self.huntchance = 10  # chance of pet
+
         self.biome = "plains"  # current biome
         self.biomeid = 0  # current biome index in biome list
+
         self.basebpsize = 50  # base inventory size
         self.bpsizebooster = 1.0  # inventory size booster
+
         self.sellbooster = 1.0  # booster for sell prices
+
         self.blocksmined = 0  # blocks mined in this mine level
-        self.huntcooldown = 1
+
         self.quizcooldown = 1
-        self.fishcooldown = 1  # cooldowns
+
         self.pets = []
+        self.huntcooldown = 1
+        self.huntchance = 10  # chance of pet
+
         self.inventory = {
             "dirt": 0,
             "gravel": 0,
@@ -270,6 +283,8 @@ class IdleMiner:
             "diorite": 0,
             "andesite": 0,
         }  # IdleMiner's inventory
+
+        self.fishcooldown = 1  # cooldowns
         self.fishxp = 0
         self.fishlevel = 1
         self.tools = {
@@ -292,6 +307,9 @@ class IdleMiner:
             "rose": 0
         }
         self.farmlevel = 0
+
+        self.battlelevel = 0
+        self.battlexp = 0
 
         self.stats = Stats()
 
@@ -484,24 +502,32 @@ class IdleMiner:
         else:
             print(lang.COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
+    def _quiz(self, difficulty):
+        """internal function for quizzes; returns whether the answer is correct"""
+        question = random.choice(quizes[difficulty])
+
+        print(question["question"] + "?")
+        index = 0
+        for i in question["choices"]:
+            print(str(index) + ": " + i)
+            index += 1
+
+        answer = input("answer: ")
+
+        if not intcheck(answer):
+            return False
+
+        if int(answer) == question["answer"]:
+            return True
+
+        return False
+
     def quiz(self, difficulty):
         """asks a quiz question"""
         if self.quizcooldown < 1:
             self.quizcooldown = 300
 
-            question = random.choice(quizes[difficulty])
-            print(question["question"] + "?")
-            index = 0
-            for i in question["choices"]:
-                print(str(index) + ": " + i)
-                index += 1
-
-            answer = input("answer: ")
-
-            if not intcheck(answer):
-                return
-
-            if int(answer) == question["answer"]:
+            if self._quiz(difficulty):
                 print(lang.CORRECTANSWERMSG)
                 self.stats.tqcorrect += 1
                 self.stats.tqanswered += 1
@@ -553,6 +579,46 @@ class IdleMiner:
         else:
             print(lang.COOLDOWNMSG % (self.fishcooldown, "fishing"))
 
+    def battle(self):
+        """battle a horde of mobs"""
+
+        horde = random.choice(
+            list(mobs.keys())[0:self.battlelevel + 1 * 3])
+
+        mobhp = mobs[horde]["hp"]
+        mobdmg = mobs[horde]["dmg"]\
+
+        hp = self.battlelevel + 1 * 10
+
+        print("Fighting:", horde, "with hp:", mobhp,
+              "and damage:", str(mobdmg) + ".", "You have", hp)
+        cont = input("Do you want to continue(y/N)?")
+
+        if cont == "y":
+            while hp > 0 and mobhp > 0:
+                if mobhp > 100 and self._quiz("really"):
+                    mobhp -= 10
+                    print(lang.MOBHITMSG % (10, mobhp))
+                elif mobhp > 50 and self._quiz("hard"):
+                    mobhp -= 4
+                    print(lang.MOBHITMSG % (4, mobhp))
+                elif mobhp > 20 and self._quiz("medium"):
+                    mobhp -= 2
+                    print(lang.MOBHITMSG % (2, mobhp))
+                elif self._quiz("easy"):
+                    mobhp -= 1
+                    print(lang.MOBHITMSG % (1, mobhp))
+                else:
+                    hp -= mobdmg
+                    print(lang.MOBHURTMSG % (mobdmg, hp))
+
+            if hp == 0:
+                print(lang.DEADMSG)
+
+            else:
+                self.battlexp += 1
+                print(lang.WINMSG % 1)
+
     def execute(self, cmd):
         """executes command"""
         match cmd:
@@ -573,6 +639,8 @@ class IdleMiner:
                 self.quiz(difficulty)
             case "farm" | "fm":
                 self.farm()
+            case "battle" | "b":
+                self.battle()
             case "exit" | "quit":
                 self.save("profile.json")
 
@@ -587,6 +655,8 @@ class IdleMiner:
                 self.huntcooldown = 0
                 self.fishcooldown = 0
                 self.quizcooldown = 0
+            case ":(":
+                print("Oof.")
             case _:
                 colorprint(lang.ERRMSG + " (in IdleMiner.execute)",
                            color=Colors.FAIL)

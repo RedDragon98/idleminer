@@ -15,5 +15,9 @@
     "COOLDOWNMSG": "Please wait %s seconds before %s again!",
     "UPBIOMEMSG": "Upgraded biome to %s",
     "GROWMSG": "You grew:",
-    "HELPMSG": " \ns/sell: sells any resources in the inventory\np/profile: prints stats about the IdleMiner\nf/fish: fishes for treasure\nh/hunt: catches pets\nu/upgrade tool amount: upgrades a tool by amount (eg. u p 1)\nq/quiz difficulty: gives you a quiz (eg. q easy)\nexit/quit: exits the game\nf/farm: farms\nhelp: prints this menu again\nThe available tools are pickaxe, shovel, and hoe"
+    "HELPMSG": " \ns/sell: sells any resources in the inventory\np/profile: prints stats about the IdleMiner\nf/fish: fishes for treasure\nh/hunt: catches pets\nu/upgrade tool amount: upgrades a tool by amount (eg. u p 1)\nq/quiz difficulty: gives you a quiz (eg. q easy)\nexit/quit: exits the game\nf/farm: farms\nhelp: prints this menu again\nThe available tools are pickaxe, shovel, and hoe",
+    "MOBHITMSG": "You hit the mob: -%s mob health (%s mob health left)",
+    "MOBHURTMSG": "You were hurt by the mob: -%s health (%s health left)",
+    "DEADMSG": "You died(respawning...)",
+    "WINMSG": "You killed the mob: +%s battle xp"
 }

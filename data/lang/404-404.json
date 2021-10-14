@@ -15,5 +15,9 @@
     "COOLDOWNMSG": "wait %s D3BaNaNa units before %s",
     "UPBIOMEMSG": "upped biome to %s",
     "GROWMSG": "you grew",
-    "HELPMSG": " \ns/sell: sells it\np/profile: prints profile\nf/fish: treasure!\nh/hunt: more pets\nu/upgrade tool amount: upgrades a tool (eg. u p 1)\nq/quiz difficulty: get quizzed (eg. q easy)\nexit/quit: exit the game now\nf/farm: farms\nhelp: prints this again(and again)\nuse the pickaxe, shovel, and hoe because their awesome"
+    "HELPMSG": " \ns/sell: sells it\np/profile: prints profile\nf/fish: treasure!\nh/hunt: more pets\nu/upgrade tool amount: upgrades a tool (eg. u p 1)\nq/quiz difficulty: get quizzed (eg. q easy)\nexit/quit: exit the game now\nf/farm: farms\nhelp: prints this again(and again)\nuse the pickaxe, shovel, and hoe because their awesome",
+    "MOBHITMSG": "ouch says mob: -%s health for it",
+    "MOBHURTMSG": "oof :( -%s health",
+    "DEADMSG": "oh no you died(respawning...) what if you were in hardcore?",
+    "WINMSG": "yay you killed it! +%s xp yay"
 }
