@@ -4,10 +4,12 @@ import json
 import random
 import threading
 import time
-from enum import Enum
 import sys
 import os
 import yaml
+import rich
+
+c = rich.get_console()
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
@@ -19,19 +21,6 @@ DATAPATH = "data/"  # data file path
 def dataload(file):
     """loads a data file"""
     return json.load(open(DATAPATH + file, encoding="UTF-8"))
-
-
-class Colors(Enum):
-    """printing colors"""
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    INFO = '\033[96m'
-    SUCCESS = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
 
 prices = dataload("prices.json")  # item prices
@@ -92,11 +81,6 @@ COMPAT_V = [
 ]  # compatible profile versions
 
 
-def colorprint(msg, esc="", color=""):
-    """prints text with a color"""
-    print(color.value + msg + Colors.ENDC.value + esc)
-
-
 def progressbar(num, cap, partitions=20):
     """progressbar ####--"""
     dashes = round(num / (cap / partitions))
@@ -138,7 +122,7 @@ def intcheck(integer: str) -> bool:
     try:
         int(integer)
     except ValueError:
-        colorprint(lang.NOTINTMSG, color=Colors.FAIL)
+        c.print(lang.NOTINTMSG, style="red")
         return False
 
     return True
@@ -317,7 +301,7 @@ class IdleMiner:
         """loads a profile"""
         profile = json.load(open(file, encoding="UTF-8"))
         if (not "DATA_V" in profile) or (not profile["DATA_V"] in COMPAT_V):
-            colorprint(lang.INCOMPATDATAMSG, color=Colors.FAIL)
+            c.print(lang.INCOMPATDATAMSG, style="red")
             return
 
         self.money = profile["money"]
@@ -378,8 +362,8 @@ class IdleMiner:
                 money = round(self.inventory[item] *
 
                               prices[item] * self.sellbooster)
-                colorprint(item, ": " + "$" + f"{money:,}" +
-                           " (x" + f"{self.inventory[item]:,}" + ")", Colors.BOLD)
+                c.print(item, ": " + "$" + f"{money:,}" +
+                        " (x" + f"{self.inventory[item]:,}" + ")", style="red")
                 self.money += money
                 self.inventory[item] = 0
                 self.stats.tmoneyearned += money
@@ -391,7 +375,7 @@ class IdleMiner:
                 self.tools[tool] += 1
                 self.money -= price
             else:
-                colorprint(lang.COSTMSG, color=Colors.FAIL)
+                c.print(lang.COSTMSG, style="red")
                 break
 
         self.blockspertick[tool] = getmult(tool, getrank(self.tools[tool]))
@@ -426,8 +410,8 @@ class IdleMiner:
             case "t" | "tnt":
                 pass
             case _:
-                colorprint(lang.ERRMSG + " (in IdleMiner.up)",
-                           color=Colors.FAIL)
+                c.print(lang.ERRMSG + " (in IdleMiner.up)",
+                        style="red")
 
     def miningtick(self):
         """adds resources to inventory"""
@@ -478,7 +462,7 @@ class IdleMiner:
         print("tools:", self.tools)
         print("produce:", self.produce)
         print("mine level:", self.minelevel, end=" ")
-        progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
+        c.print(self.blocksmined, (self.minelevel + 1) * 2000)
         print("fishing level:", self.fishlevel, end=" ")
         progressbar(self.fishxp, self.fishlevel * 4)
 
@@ -656,10 +640,10 @@ class IdleMiner:
                 self.fishcooldown = 0
                 self.quizcooldown = 0
             case ":(":
-                print("Oof.")
+                c.print("Oof", style="red")
             case _:
-                colorprint(lang.ERRMSG + " (in IdleMiner.execute)",
-                           color=Colors.FAIL)
+                c.print(lang.ERRMSG + " (in IdleMiner.execute)",
+                        style="red")
 
 
 if __name__ == "__main__":
