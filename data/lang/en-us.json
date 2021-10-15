@@ -19,5 +19,6 @@
     "MOBHITMSG": "You hit the mob: -%s mob health (%s mob health left)",
     "MOBHURTMSG": "You were hurt by the mob: -%s health (%s health left)",
     "DEADMSG": "You died(respawning...)",
-    "WINMSG": "You killed the mob: +%s battle xp"
+    "WINMSG": "You killed the mob: +%s battle xp",
+    "BATTLEUPMSG": "Your battle level is now %s"
 }

@@ -63,6 +63,7 @@ class Lang:
     MOBHURTMSG = None
     WINMSG = None
     DEADMSG = None
+    BATTLEUPMSG = None
 
     def __init__(self, langpack: dict):
         for key in langpack.keys():
@@ -75,9 +76,9 @@ UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 UP_H_MULTIPLIER = 50
 
-PROFILE_V = "0.0.5"  # profile version
+PROFILE_V = "0.0.6"  # profile version
 COMPAT_V = [
-    "0.0.5"
+    "0.0.6"
 ]  # compatible profile versions
 
 
@@ -320,6 +321,8 @@ class IdleMiner:
         self.pets = profile["pets"]
         self.produce = profile["produce"]
         self.farmlevel = profile["farmlevel"]
+        self.battlelevel = profile["battlelevel"]
+        self.battlexp = profile["battlexp"]
 
         self.stats = Stats()
         self.stats.load(profile["stats"])
@@ -346,7 +349,9 @@ class IdleMiner:
             "pets": self.pets,
             "produce": self.produce,
             "farmlevel": self.farmlevel,
-            "stats": self.stats.save()
+            "stats": self.stats.save(),
+            "battlelevel": self.battlelevel,
+            "battlexp": self.battlexp,
         }
 
         json.dump(profile, open(file, "w", encoding="UTF-8"))
@@ -449,6 +454,11 @@ class IdleMiner:
             self.fishlevel += 1
             self.fishxp = 0
             c.print(lang.FISHINGUPMSG % self.fishlevel)
+        if self.battlexp / (self.battlelevel + 1) >= 5:
+            self.battlelevel += 1
+            self.battlexp = 0
+            c.print(lang.BATTLEUPMSG % self.battlelevel)
+
         self.huntcooldown -= 1
         self.quizcooldown -= 1
         self.fishcooldown -= 1
@@ -465,6 +475,8 @@ class IdleMiner:
         progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
         c.print("[blue]fishing level[/blue]:", self.fishlevel, end=" ")
         progressbar(self.fishxp, self.fishlevel * 4)
+        c.print("[blue]battle level[/blue]:", self.battlelevel, end=" ")
+        progressbar(self.battlexp, (self.battlelevel + 1) * 5)
 
     def hunt(self):
         """hunts"""
