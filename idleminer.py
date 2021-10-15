@@ -698,8 +698,11 @@ class IdleMiner:
                 self.huntcooldown = 0
                 self.fishcooldown = 0
                 self.quizcooldown = 0
+            # easter eggs?
             case ":(":
                 c.print("Oof", style="red")
+            case ":)":
+                c.print("Yay", style="green")
             case _:
                 c.print(lang.ERRMSG + " (in IdleMiner.execute)",
                         style="red")
