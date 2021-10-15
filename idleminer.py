@@ -401,8 +401,8 @@ class IdleMiner:
                 money = round(self.inventory[item] *
 
                               prices[item] * self.sellbooster)
-                c.print(item, ": " + "$" + f"{money:,}" +
-                        " (x" + f"{self.inventory[item]:,}" + ")", style="red")
+                print(item + ": " + "$" + f"{money:,}" +
+                      " (x" + f"{self.inventory[item]:,}" + ")")
                 self.money += money
                 self.inventory[item] = 0
                 self.stats.tmoneyearned += money
