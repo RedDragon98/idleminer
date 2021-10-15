@@ -13,7 +13,15 @@ c = rich.get_console()
 
 PREFIX = "%"  # command prefix
 TICKBOOSTER = 1.0  # TPS booster
-LANGUAGE: str = yaml.safe_load(open("lang.yml"))
+
+
+def configload(file):
+    """loads a config file"""
+    return yaml.safe_load(open("config/" + file))
+
+
+LANGUAGE: str = configload("lang.yml")
+COLORS: bool = configload("colors.yml")
 
 DATAPATH = "data/"  # data file path
 
@@ -59,6 +67,7 @@ class Lang:
     UPBIOMEMSG = None
     GROWMSG = None
     HELPMSG = None
+    HELPMSGC = None
     MOBHITMSG = None
     MOBHURTMSG = None
     WINMSG = None
@@ -72,6 +81,10 @@ class Lang:
 
 lang = Lang(langdata)
 
+HELPMSG = lang.HELPMSG
+if COLORS:
+    HELPMSG = lang.HELPMSGC
+
 UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 UP_H_MULTIPLIER = 50
@@ -84,13 +97,17 @@ COMPAT_V = [
 
 def progressbar(num, cap, partitions=20):
     """progressbar ####--"""
+    out = print
+    if COLORS:
+        out = c.print
+
     dashes = round(num / (cap / partitions))
     for i in range(partitions):
         if i < dashes:
-            c.print("#", end="")
+            out("#", end="")
         else:
-            c.print("-", end="")
-    c.print(" (" + str(num) + "/" + str(cap) + ")")
+            out("-", end="")
+    out(" (" + str(num) + "/" + str(cap) + ")")
 
 
 def getrank(level) -> str:
@@ -181,20 +198,37 @@ class Stats:
     def printstats(self):
         """prints these stats"""
 
-        c.print("[magenta]Blocks mined[/magenta]:", self.tblksmined,
-                "(" + str(self.blksmined) + ")")
+        if COLORS:
+            c.print("[magenta]Blocks mined[/magenta]:", self.tblksmined,
+                    "(" + str(self.blksmined) + ")")
 
-        c.print("[magenta]Total money earned[/magenta]:", self.tmoneyearned)
-        c.print("[magenta]Total lapis earned[/magenta]:", self.tlapisearned)
-        c.print("[magenta]Pets caught[/magenta]:", self.petscaught)
-        c.print("[magenta]Total rc earned[/magenta]:", self.trcearned)
-        c.print("[magenta]Total mine upgrades[/magenta]:", self.tmineup)
-        c.print("[magenta]Total biome upgrades[/magenta]:", self.tbiomeup)
-        c.print("[magenta]Total questions answered[/magenta]:", self.tqanswered,
-                "(" + str(self.tqcorrect) + " [green]correct[/green])")
-        c.print("[magenta]Total fish xp[/magenta]:", self.tfishxp)
-        c.print("[magenta]Total fish caught[/magenta]:", self.tfish,
-                "(" + str(self.ttreasure) + " [green]treasure[/green])")
+            c.print("[magenta]Total money earned[/magenta]:",
+                    self.tmoneyearned)
+            c.print("[magenta]Total lapis earned[/magenta]:",
+                    self.tlapisearned)
+            c.print("[magenta]Pets caught[/magenta]:", self.petscaught)
+            c.print("[magenta]Total rc earned[/magenta]:", self.trcearned)
+            c.print("[magenta]Total mine upgrades[/magenta]:", self.tmineup)
+            c.print("[magenta]Total biome upgrades[/magenta]:", self.tbiomeup)
+            c.print("[magenta]Total questions answered[/magenta]:", self.tqanswered,
+                    "(" + str(self.tqcorrect) + " [green]correct[/green])")
+            c.print("[magenta]Total fish xp[/magenta]:", self.tfishxp)
+            c.print("[magenta]Total fish caught[/magenta]:", self.tfish,
+                    "(" + str(self.ttreasure) + " [green]treasure[/green])")
+        else:
+            print("Blocks mined:", self.tblksmined,
+                  "(" + str(self.blksmined) + ")")
+            print("Total money earned:", self.tmoneyearned)
+            print("Total lapis earned:", self.tlapisearned)
+            print("Pets caught:", self.petscaught)
+            print("Total rc earned:", self.trcearned)
+            print("Total mine upgrades:", self.tmineup)
+            print("Total biome upgrades:", self.tbiomeup)
+            print("Total questions answered:", self.tqanswered,
+                  "(" + str(self.tqcorrect) + " correct)")
+            print("Total fish xp:", self.tfishxp)
+            print("Total fish caught:", self.tfish,
+                  "(" + str(self.ttreasure) + " treasure)")
 
     def load(self, obj: dict):
         """load stats from dict"""
@@ -466,17 +500,30 @@ class IdleMiner:
 
     def profile(self):
         """prints profile"""
-        c.print("[blue]money[/blue]:", f"{self.money:,}")
-        c.print("[blue]lapis[/blue]:", self.lapis)
-        c.print("[blue]inventory[/blue]:", self.inventory)
-        c.print("[blue]tools[/blue]:", self.tools)
-        c.print("[blue]produce[/blue]:", self.produce)
-        c.print("[blue]mine level[/blue]:", self.minelevel, end=" ")
-        progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
-        c.print("[blue]fishing level[/blue]:", self.fishlevel, end=" ")
-        progressbar(self.fishxp, self.fishlevel * 4)
-        c.print("[blue]battle level[/blue]:", self.battlelevel, end=" ")
-        progressbar(self.battlexp, (self.battlelevel + 1) * 5)
+        if COLORS:
+            c.print("[blue]money[/blue]:", f"{self.money:,}")
+            c.print("[blue]lapis[/blue]:", self.lapis)
+            c.print("[blue]inventory[/blue]:", self.inventory)
+            c.print("[blue]tools[/blue]:", self.tools)
+            c.print("[blue]produce[/blue]:", self.produce)
+            c.print("[blue]mine level[/blue]:", self.minelevel, end=" ")
+            progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
+            c.print("[blue]fishing level[/blue]:", self.fishlevel, end=" ")
+            progressbar(self.fishxp, self.fishlevel * 4)
+            c.print("[blue]battle level[/blue]:", self.battlelevel, end=" ")
+            progressbar(self.battlexp, (self.battlelevel + 1) * 5)
+        else:
+            print("money:", f"{self.money:,}")
+            print("lapis:", self.lapis)
+            print("inventory:", self.inventory)
+            print("tools:", self.tools)
+            print("produce:", self.produce)
+            print("mine level:", self.minelevel, end=" ")
+            progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
+            print("fishing level:", self.fishlevel, end=" ")
+            progressbar(self.fishxp, self.fishlevel * 4)
+            print("battle level:", self.battlelevel, end=" ")
+            progressbar(self.battlexp, (self.battlelevel + 1) * 5)
 
     def hunt(self):
         """hunts"""
@@ -643,7 +690,7 @@ class IdleMiner:
                 global shouldexit
                 shouldexit = True
             case "help":
-                c.print(lang.HELPMSG)
+                c.print(HELPMSG)
             case "cheat":
                 self.money += 10000000
                 self.blocksmined += 2000
@@ -660,7 +707,7 @@ class IdleMiner:
 
 if __name__ == "__main__":
     try:
-        c.print(lang.HELPMSG)
+        c.print(HELPMSG)
         steve = IdleMiner()
 
         if os.path.exists("profile.json"):
