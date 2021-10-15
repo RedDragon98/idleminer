@@ -629,7 +629,7 @@ class IdleMiner:
             list(mobs.keys())[0:self.battlelevel + 1 * 3])
 
         mobhp = mobs[horde]["hp"]
-        mobdmg = mobs[horde]["dmg"]\
+        mobdmg = mobs[horde]["dmg"]
 
         stevehp = self.battlelevel + 1 * 10
 
