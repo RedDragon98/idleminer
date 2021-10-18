@@ -530,7 +530,8 @@ class IdleMiner:
         if self.huntcooldown < 1:
             self.huntcooldown = 300
             self.huntchance = random.randint(0, 100)
-            if self.huntchance < 10:
+            if self.huntchance < 10:  # FIXME: pets.json is missing
+                print(self.pets)
                 pet = random.choice(self.pets[0:(25-(self.huntchance * 2))])
                 c.print(pet)
 
@@ -549,10 +550,16 @@ class IdleMiner:
         """internal function for quizzes; returns whether the answer is correct"""
         question = random.choice(quizes[difficulty])
 
-        c.print(question["question"] + "?")
+        if COLORS:
+            c.print(question["question"] + "?")
+        else:
+            print(question["question"] + "?")
         index = 0
         for i in question["choices"]:
-            c.print(str(index) + ": " + i)
+            if COLORS:
+                c.print(str(index) + ": " + i)
+            else:
+                print(str(index) + ": " + i)
             index += 1
 
         answer = input("answer: ")
@@ -626,31 +633,34 @@ class IdleMiner:
         """battle a horde of mobs"""
 
         horde = random.choice(
-            list(mobs.keys())[0:self.battlelevel + 1 * 3])
+            list(mobs.keys())[0:(self.battlelevel + 1) * 3])
 
         mobhp = mobs[horde]["hp"]
         mobdmg = mobs[horde]["dmg"]
 
-        stevehp = self.battlelevel + 1 * 10
+        stevehp = (self.battlelevel + 1) * 10
 
         c.print("Fighting:", horde, "with hp:", mobhp,
-                "and damage:", str(mobdmg) + ".", "You have", stevehp)
+                "and damage:", str(mobdmg) + ".", "You have", stevehp, "hp")
         cont = input("Do you want to continue(y/N)?")
 
         if cont == "y":
             while stevehp > 0 and mobhp > 0:
-                if mobhp > 100 and self._quiz("really"):
-                    mobhp -= 10
-                    c.print(lang.MOBHITMSG % (10, mobhp))
-                elif mobhp > 50 and self._quiz("hard"):
-                    mobhp -= 4
-                    c.print(lang.MOBHITMSG % (4, mobhp))
-                elif mobhp > 20 and self._quiz("medium"):
-                    mobhp -= 2
-                    c.print(lang.MOBHITMSG % (2, mobhp))
-                elif self._quiz("easy"):
-                    mobhp -= 1
-                    c.print(lang.MOBHITMSG % (1, mobhp))
+                difficulty = "easy"
+                damage = 1
+                if mobhp >= 100:
+                    difficulty = "really"
+                    damage = 10
+                elif mobhp >= 50:
+                    difficulty = "hard"
+                    damage = 4
+                elif mobhp >= 20:
+                    difficulty = "medium"
+                    damage = 2
+
+                if self._quiz(difficulty):
+                    mobhp -= damage
+                    print(lang.MOBHITMSG % (damage, mobhp))
                 else:
                     stevehp -= mobdmg
                     c.print(lang.MOBHURTMSG % (mobdmg, stevehp))
@@ -659,7 +669,7 @@ class IdleMiner:
                 c.print(lang.DEADMSG)
 
             else:
-                self.battlexp += 1
+                self.battlexp += mobs[horde]["xp"]
                 c.print(lang.WINMSG % 1)
 
     def execute(self, cmd):

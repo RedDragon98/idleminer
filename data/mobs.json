@@ -17,11 +17,37 @@
     },
     "creeper": {
         "hp": 5,
-        "dmg": 1,
+        "dmg": 10,
         "xp": 1,
         "drops": {
             "gunpowder": 95,
             "disc": 1
+        }
+    },
+    "baby-zombie": {
+        "hp": 15,
+        "dmg": 2,
+        "xp": 3,
+        "drops": {
+            "flesh": 100
+        }
+    },
+    "enderman": {
+        "hp": 30,
+        "dmg": 5,
+        "xp": 10,
+        "drops": {
+            "ender-pearl": 55
+        }
+    },
+    "witch": {
+        "hp": 35,
+        "dmg": 10,
+        "xp": 15,
+        "drops": {
+            "gunpowder": 20,
+            "fermented-spider-eye": 20,
+            "glass-bottle": 10
         }
     }
 }
