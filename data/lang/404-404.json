@@ -16,6 +16,7 @@
     "UPBIOMEMSG": "[b][i]upped[/i][/b] biome to %s",
     "GROWMSG": "you [green]grew[/green]",
     "HELPMSG": " \ns/sell: sells it\np/profile: prints profile\nf/fish: treasure!\nh/hunt: more pets\nu/upgrade tool amount: upgrades a tool (eg. u p 1)\nq/quiz difficulty: get quizzed (eg. q easy)\nexit/quit: exit the game now\nf/farm: farms\nhelp: prints this again(and again)\nuse the pickaxe, shovel, and hoe because their awesome",
+    "HELPMSGC": " \ns/sell: sells it\np/profile: prints profile\nf/fish: treasure!\nh/hunt: more pets\nu/upgrade tool amount: upgrades a tool (eg. u p 1)\nq/quiz difficulty: get quizzed (eg. q easy)\nexit/quit: exit the game now\nf/farm: farms\nhelp: prints this again(and again)\nuse the pickaxe, shovel, and hoe because their awesome",
     "MOBHITMSG": "ouch says [red]mob[/red]: -%s health for it(%s left)",
     "MOBHURTMSG": "oof :( -%s [red]health[/red] (%s left)",
     "DEADMSG": "oh no you [red]died[/red]([yellow]respawning[/yellow]...) [i]what if you were in hardcore?[/i]",
