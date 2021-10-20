@@ -46,6 +46,8 @@ crops: dict = dataload("crops.json")  # crops and their sources
 mobs: dict = dataload("mobs.json")  # list of mobs
 
 shouldexit = False
+
+
 TICKS = 1
 
 langdata: dict = dataload("lang/" + LANGUAGE + ".json")
@@ -341,11 +343,13 @@ class IdleMiner:
 
     def update(self):
         """update fishing and mining levels"""
+        toprint = []
+
         if self.blocksmined > 2000 * (self.minelevel + 1):
             self.minelevel += 1
             self.stats.tmineup += 1
             self.blocksmined = 0
-            c.print(lang.MINEUPMSG % self.minelevel)
+            toprint.append(lang.MINEUPMSG % self.minelevel)
 
             try:
                 mines[self.biome][self.minelevel]
@@ -355,21 +359,23 @@ class IdleMiner:
                 self.minelevel = 0
                 self.blocksmined = 0
 
-                c.print(lang.UPBIOMEMSG % self.biome)
+                toprint.append(lang.UPBIOMEMSG % self.biome)
 
         if self.fishxp / self.fishlevel >= 4:
             self.fishlevel += 1
             self.fishxp = 0
-            c.print(lang.FISHINGUPMSG % self.fishlevel)
+            toprint.append(lang.FISHINGUPMSG % self.fishlevel)
         if self.battlexp / (self.battlelevel + 1) >= 5:
             self.battlelevel += 1
             self.battlexp = 0
-            c.print(lang.BATTLEUPMSG % self.battlelevel)
+            toprint.append(lang.BATTLEUPMSG % self.battlelevel)
 
         self.huntcooldown -= 1
         self.quizcooldown -= 1
         self.fishcooldown -= 1
         self.farmgrowth -= 1
+
+        return toprint
 
     def profile(self):
         """prints profile"""
@@ -592,6 +598,7 @@ class IdleMiner:
 
 
 if __name__ == "__main__":
+    queue = []
     try:
         c.print(HELPMSG)
         steve = IdleMiner()
@@ -601,8 +608,14 @@ if __name__ == "__main__":
 
         def repeatedget():
             """repeatedly gets input"""
+            global queue
+
             while not shouldexit:
                 steve.get()
+                for i in queue:
+                    print(i)
+
+                queue = []
 
         inputthread = threading.Thread(target=repeatedget)
         inputthread.daemon = True
@@ -613,7 +626,7 @@ if __name__ == "__main__":
         while True:
             time.sleep(SLEEPTIME)
             steve.miningtick()
-            steve.update()
+            queue.extend(steve.update())
 
             if shouldexit:
                 sys.exit(0)
