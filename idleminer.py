@@ -345,7 +345,7 @@ class IdleMiner:
         """update fishing and mining levels"""
         toprint = []
 
-        if self.blocksmined > 2000 * (self.minelevel + 1):
+        if self.blocksmined >= 2000 * (self.minelevel + 1):
             self.minelevel += 1
             self.stats.tmineup += 1
             self.blocksmined = 0
