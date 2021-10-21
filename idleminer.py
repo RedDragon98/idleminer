@@ -454,6 +454,15 @@ class IdleMiner:
         self.stats.tqanswered += 1
         return False
 
+    def _takeFood(self):
+        """internal function to take food from produce"""
+        for i in self.produce.keys():
+            if self.produce[i] > 0:
+                self.produce[i] -= 1
+                return i
+
+        return None
+
     def quiz(self, difficulty):
         """asks a quiz question"""
         if self.quizcooldown < 1:
@@ -543,6 +552,15 @@ class IdleMiner:
                 else:
                     stevehp -= mobdmg
                     c.print(lang.MOBHURTMSG % (mobdmg, stevehp))
+
+                eat = input(lang.WOULDLIKETOEATMSG % stevehp)
+                if eat:
+                    food = self._takeFood()
+                    if food:
+                        print(lang.ATEMSG % food)
+                        stevehp += 1
+                    else:
+                        c.print(lang.NOFOODMSG)
 
             if stevehp == 0:
                 c.print(lang.DEADMSG)

@@ -20,5 +20,8 @@
     "MOBHITMSG": "ouch says [red]mob[/red]: -%s health for it(%s left)",
     "MOBHURTMSG": "oof :( -%s [red]health[/red] (%s left)",
     "DEADMSG": "oh no you [red]died[/red]([yellow]respawning[/yellow]...) [i]what if you were in hardcore?[/i]",
-    "WINMSG": "[b]yay[/b] you [red]killed[/red] it! +%s [b]x[/b][i]p[/i] [green]yay[/green]"
+    "WINMSG": "[b]yay[/b] you [red]killed[/red] it! +%s [b]x[/b][i]p[/i] [green]yay[/green]",
+    "ATEMSG": "you [i]devoured[/i] %s: +infinity(1) hp",
+    "NOFOODMSG": "[red]oh[/red] [yellow]no[/yellow]: [yellow]no[/yellow] [red]food[/red]",
+    "WOULDLIKETOEATMSG": "would [i]you[/i] like to [b]eat[/b]?"
 }

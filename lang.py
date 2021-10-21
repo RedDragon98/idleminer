@@ -24,6 +24,9 @@ MOBHURTMSG: str
 WINMSG: str
 DEADMSG: str
 BATTLEUPMSG: str
+WOULDLIKETOEATMSG: str
+ATEMSG: str
+NOFOODMSG: str
 
 
 def load(langpack: dict):

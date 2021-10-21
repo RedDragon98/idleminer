@@ -21,5 +21,8 @@
     "MOBHURTMSG": "You were hurt by the mob: -%s health (%s health left)",
     "DEADMSG": "You died(respawning...)",
     "WINMSG": "You killed the mob: +%s battle xp",
-    "BATTLEUPMSG": "Your battle level is now %s"
+    "BATTLEUPMSG": "Your battle level is now %s",
+    "ATEMSG": "You ate %s: +1 hp",
+    "NOFOODMSG": "[red]No food to eat[/red]",
+    "WOULDLIKETOEATMSG": "You have %s health, would you like to eat?(y/N)"
 }
