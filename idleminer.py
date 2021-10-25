@@ -454,7 +454,7 @@ class IdleMiner:
         self.stats.tqanswered += 1
         return False
 
-    def _takeFood(self):
+    def _takefood(self):
         """internal function to take food from produce"""
         for i in self.produce.keys():
             if self.produce[i] > 0:
@@ -555,7 +555,7 @@ class IdleMiner:
 
                 eat = input(lang.WOULDLIKETOEATMSG % stevehp)
                 if eat:
-                    food = self._takeFood()
+                    food = self._takefood()
                     if food:
                         print(lang.ATEMSG % food)
                         stevehp += 1
