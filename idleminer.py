@@ -62,9 +62,9 @@ UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 UP_H_MULTIPLIER = 50
 
-PROFILE_V = "0.0.6"  # profile version
+PROFILE_V = "0.0.7"  # profile version
 COMPAT_V = [
-    "0.0.6"
+    "0.0.7"
 ]  # compatible profile versions
 
 
@@ -198,7 +198,8 @@ class IdleMiner:
         self.produce = {
             "wheat": 0,
             "wheat-seed": 10,
-            "rose": 0
+            "rose": 0,
+            "fish": 0
         }
         self.farmlevel = 0
 
@@ -269,18 +270,26 @@ class IdleMiner:
         """gets and executes command"""
         self.execute(self.cmdparse.get(PREFIX))
 
-    def sell(self):
-        """sells inventory"""
-        for item in list(self.inventory.keys()):
-            if self.inventory[item] > 0:
-                money = round(self.inventory[item] *
-
+    def _sell(self, itemstosell: dict):
+        """internal function to sell from a dictionary"""
+        for item in list(itemstosell.keys()):
+            if itemstosell[item] > 0:
+                money = round(itemstosell[item] *
                               prices[item] * self.sellbooster)
                 print(item + ": " + "$" + f"{money:,}" +
-                      " (x" + f"{self.inventory[item]:,}" + ")")
+                      " (x" + f"{itemstosell[item]:,}" + ")")
                 self.money += money
-                self.inventory[item] = 0
+                itemstosell[item] = 0
                 self.stats.tmoneyearned += money
+
+        return itemstosell
+
+    def sell(self, sproduce=False):
+        """sells inventory"""
+        if sproduce:
+            self.produce = self._sell(self.produce)
+        else:
+            self.inventory = self._sell(self.inventory)
 
     def _individualup(self, tool, toolname, amount, multiplier):
         for _ in range(amount):
@@ -409,7 +418,7 @@ class IdleMiner:
         if self.huntcooldown < 1:
             self.huntcooldown = 300
             self.huntchance = random.randint(0, 100)
-            if self.huntchance < 10:  # FIXME: pets.json is missing
+            if self.huntchance < 10:
                 print(self.pets)
                 pet = random.choice(self.pets[0:(25-(self.huntchance * 2))])
                 c.print(pet)
@@ -512,6 +521,8 @@ class IdleMiner:
                 c.print(lang.CATCHFISHMSG)
                 self.fishxp += 1
 
+                self.produce["fish"] += 1
+
                 self.stats.tfishxp += 1
                 self.stats.tfish += 1
         else:
@@ -572,8 +583,10 @@ class IdleMiner:
     def execute(self, cmd):
         """executes command"""
         match cmd:
-            case "sell" | "s":
+            case["sell" | "s"]:
                 self.sell()
+            case["sellproduce" | "sp"]:
+                self.sell(True)
             case["upgrade" | "up" | "u", tool, amount]:
                 if intcheck(amount):
                     self.upgrade(tool, int(amount))
