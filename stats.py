@@ -1,22 +1,13 @@
 """idleminer statistics"""
 
+import resources
+
 
 class Stats:
     """manages IdleMiner stats"""
 
     tblksmined = 0  # total blocks mined
-    blksmined = {
-        "dirt": 0,
-        "gravel": 0,
-        "wood": 0,
-        "stone": 0,
-        "coal": 0,
-        "iron": 0,
-        "diorite": 0,
-        "andesite": 0,
-        "leaves": 0,
-        "glow-berry": 0
-    }  # blocks mined(per type)
+    blksmined = resources.Resources()  # blocks mined(per type)
 
     petscaught = 0  # total pets caught
     tmoneyearned = 0  # total money earned
@@ -35,7 +26,7 @@ class Stats:
 
         if colors:
             console.print("[magenta]Blocks mined[/magenta]:", self.tblksmined,
-                          "(" + str(self.blksmined) + ")")
+                          "(" + str(self.blksmined.save()) + ")")
 
             console.print("[magenta]Total money earned[/magenta]:",
                           self.tmoneyearned)
@@ -55,7 +46,7 @@ class Stats:
                           "(" + str(self.ttreasure) + " [green]treasure[/green])")
         else:
             print("Blocks mined:", self.tblksmined,
-                  "(" + str(self.blksmined) + ")")
+                  "(" + str(self.blksmined.save()) + ")")
             print("Total money earned:", self.tmoneyearned)
             print("Total lapis earned:", self.tlapisearned)
             print("Pets caught:", self.petscaught)
@@ -71,7 +62,7 @@ class Stats:
     def load(self, obj: dict):
         """load stats from dict"""
         self.tblksmined = obj["tblksmined"]
-        self.blksmined = obj["blksmined"]
+        self.blksmined = resources.load(obj["blksmined"])
         self.petscaught = obj["petscaught"]
         self.tmoneyearned = obj["tmoneyearned"]
         self.tlapisearned = obj["tlapisearned"]
@@ -88,7 +79,7 @@ class Stats:
         """saves stats to a dictionary"""
         obj = {}
         obj["tblksmined"] = self.tblksmined
-        obj["blksmined"] = self.blksmined
+        obj["blksmined"] = self.blksmined.save()
         obj["petscaught"] = self.petscaught
         obj["tmoneyearned"] = self.tmoneyearned
         obj["tlapisearned"] = self.tlapisearned

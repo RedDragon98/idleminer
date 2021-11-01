@@ -340,7 +340,7 @@ class IdleMiner:
                     self.blocksmined += tomine
 
                     self.stats.tblksmined += tomine
-                    self.stats.blksmined[i] += tomine
+                    self.stats.blksmined.modify(i, tomine)
 
     def update(self):
         """update fishing and mining levels"""
