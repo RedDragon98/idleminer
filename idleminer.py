@@ -589,9 +589,9 @@ class IdleMiner:
     def execute(self, cmd):
         """executes command"""
         match cmd:
-            case["sell" | "s"]:
+            case "s":
                 self.sell()
-            case["sellproduce" | "sp"]:
+            case "sp":
                 self.sell(True)
             case["upgrade" | "up" | "u", tool, amount]:
                 if intcheck(amount):

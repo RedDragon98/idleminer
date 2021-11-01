@@ -1,5 +1,7 @@
 {
     "dirt": 5,
+    "wheat-seed": 5,
+    "wheat": 20,
     "wood": 20,
     "stone": 45,
     "leaves": 50,
@@ -7,6 +9,8 @@
     "diorite": 60,
     "coal": 70,
     "glow-berry": 70,
+    "rose": 70,
+    "fish": 80,
     "iron": 100,
     "gold": 180,
     "andesite": 200,

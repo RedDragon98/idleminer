@@ -14,6 +14,8 @@ class Stats:
         "iron": 0,
         "diorite": 0,
         "andesite": 0,
+        "leaves": 0,
+        "glow-berry": 0
     }  # blocks mined(per type)
 
     petscaught = 0  # total pets caught
