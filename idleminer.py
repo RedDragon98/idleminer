@@ -61,10 +61,11 @@ if COLORS:
 UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 UP_H_MULTIPLIER = 50
+UP_A_MULTIPLIER = 120
 
-PROFILE_V = "0.0.7"  # profile version
+PROFILE_V = "0.0.8"  # profile version
 COMPAT_V = [
-    "0.0.7"
+    "0.0.8"
 ]  # compatible profile versions
 
 
@@ -104,7 +105,7 @@ def getrank(level) -> str:
 
 
 def getmult(tool, rank) -> str:
-    """gets pickaxe multiplier based on rank"""
+    """gets multiplier based on rank"""
     return mults[tool][rank]
 
 
@@ -176,6 +177,8 @@ class IdleMiner:
             "iron": 0,
             "diorite": 0,
             "andesite": 0,
+            "leaves": 0,
+            "glow-berry": 0
         }  # IdleMiner's inventory
 
         self.fishcooldown = 1  # cooldowns
@@ -185,11 +188,13 @@ class IdleMiner:
             "p": 0,
             "s": 0,
             "h": 0,
+            "a": 0,
         }
 
         self.blockspertick = {
             "p": getmult("p", getrank(self.tools["p"])),
-            "s": getmult("s", getrank(self.tools["s"]))
+            "s": getmult("s", getrank(self.tools["s"])),
+            "a": getmult("a", getrank(self.tools["a"]))
         }
 
         self.minelevel = 0
@@ -201,6 +206,7 @@ class IdleMiner:
             "rose": 0,
             "fish": 0
         }
+
         self.farmlevel = 0
 
         self.battlelevel = 0
@@ -313,7 +319,7 @@ class IdleMiner:
             case "s" | "shovel":  # rebirth = level >= 200
                 self._individualup("s", "shovel", amount, UP_S_MULTIPLIER)
             case "a" | "axe":  # rebirth = level >= 200
-                pass
+                self._individualup("a", "axe", amount, UP_A_MULTIPLIER)
             case "h" | "hoe":  # rebirth = level >= 200
                 self._individualup("h", "hoe", amount, UP_H_MULTIPLIER)
             case "w" | "sword":  # w = weapon
@@ -339,7 +345,7 @@ class IdleMiner:
     def miningtick(self):
         """adds resources to inventory"""
         num = random.randint(1, 100)
-        for tool in ["p", "s"]:
+        for tool in ["p", "s", "a"]:  # hoe doesn't get ticks
             chances = mines[self.biome][self.minelevel][tool]
             for i in chances.keys():
                 if num > 100 - chances[i]:

@@ -8,6 +8,9 @@
             },
             "s": {
                 "dirt": 100
+            },
+            "a": {
+                "wood": 100
             }
         },
         {
@@ -19,6 +22,10 @@
             "s": {
                 "dirt": 90,
                 "gravel": 5
+            },
+            "a": {
+                "wood": 90,
+                "leaves": 10
             }
         },
         {
@@ -31,6 +38,10 @@
             "s": {
                 "dirt": 90,
                 "gravel": 10
+            },
+            "a": {
+                "wood": 90,
+                "leaves": 10
             }
         },
         {
@@ -43,6 +54,10 @@
             "s": {
                 "dirt": 90,
                 "gravel": 10
+            },
+            "a": {
+                "wood": 90,
+                "leaves": 20
             }
         }
     ],
@@ -58,6 +73,11 @@
             "s": {
                 "dirt": 85,
                 "gravel": 15
+            },
+            "a": {
+                "wood": 90,
+                "leaves": 20,
+                "glow-berry": 5
             }
         },
         {
@@ -71,6 +91,11 @@
             "s": {
                 "dirt": 70,
                 "gravel": 30
+            },
+            "a": {
+                "wood": 90,
+                "leaves": 25,
+                "glow-berry": 5
             }
         },
         {
@@ -84,6 +109,11 @@
             "s": {
                 "dirt": 60,
                 "gravel": 40
+            },
+            "a": {
+                "wood": 90,
+                "leaves": 30,
+                "glow-berry": 5
             }
         }
     ]
