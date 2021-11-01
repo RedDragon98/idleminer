@@ -11,6 +11,7 @@ import rich
 
 import lang
 from stats import Stats
+import resources
 
 c = rich.get_console()
 
@@ -168,18 +169,7 @@ class IdleMiner:
         self.huntcooldown = 1
         self.huntchance = 10  # chance of pet
 
-        self.inventory = {
-            "dirt": 0,
-            "gravel": 0,
-            "wood": 0,
-            "stone": 0,
-            "coal": 0,
-            "iron": 0,
-            "diorite": 0,
-            "andesite": 0,
-            "leaves": 0,
-            "glow-berry": 0
-        }  # IdleMiner's inventory
+        self.inventory = resources.Resources()  # IdleMiner's inventory
 
         self.fishcooldown = 1  # cooldowns
         self.fishxp = 0
@@ -200,12 +190,8 @@ class IdleMiner:
         self.minelevel = 0
 
         self.farmgrowth = (1200 - self.tools["h"] * 5)
-        self.produce = {
-            "wheat": 0,
-            "wheat-seed": 10,
-            "rose": 0,
-            "fish": 0
-        }
+        self.produce = resources.Resources()
+        self.produce.set("wheat-seed", 10)
 
         self.farmlevel = 0
 
@@ -229,13 +215,13 @@ class IdleMiner:
         self.biome = biomes[self.biomeid]
         self.minelevel = profile["minelevel"]
         self.blocksmined = profile["blocksmined"]
-        self.inventory = profile["inventory"]
+        self.inventory = resources.load(profile["inventory"])
         self.fishxp = profile["fishxp"]
         self.fishlevel = profile["fishlevel"]
         self.huntchance = profile["huntchance"]
         self.tools = profile["tools"]
         self.pets = profile["pets"]
-        self.produce = profile["produce"]
+        self.produce = resources.load(profile["produce"])
         self.farmlevel = profile["farmlevel"]
         self.battlelevel = profile["battlelevel"]
         self.battlexp = profile["battlexp"]
@@ -257,13 +243,13 @@ class IdleMiner:
             "biomeid": self.biomeid,
             "minelevel": self.minelevel,
             "blocksmined": self.blocksmined,
-            "inventory": self.inventory,
+            "inventory": self.inventory.save(),
             "fishxp": self.fishxp,
             "fishlevel": self.fishlevel,
             "huntchance": self.huntchance,
             "tools": self.tools,
             "pets": self.pets,
-            "produce": self.produce,
+            "produce": self.produce.save(),
             "farmlevel": self.farmlevel,
             "stats": self.stats.save(),
             "battlelevel": self.battlelevel,
@@ -276,16 +262,16 @@ class IdleMiner:
         """gets and executes command"""
         self.execute(self.cmdparse.get(PREFIX))
 
-    def _sell(self, itemstosell: dict):
+    def _sell(self, itemstosell: resources.Resources):
         """internal function to sell from a dictionary"""
-        for item in list(itemstosell.keys()):
-            if itemstosell[item] > 0:
-                money = round(itemstosell[item] *
+        for item in list(itemstosell.list()):
+            if itemstosell.get(item) > 0:
+                money = round(itemstosell.get(item) *
                               prices[item] * self.sellbooster)
                 print(item + ": " + "$" + f"{money:,}" +
-                      " (x" + f"{itemstosell[item]:,}" + ")")
+                      " (x" + f"{itemstosell.get(item):,}" + ")")
                 self.money += money
-                itemstosell[item] = 0
+                itemstosell.zero(item)
                 self.stats.tmoneyearned += money
 
         return itemstosell
@@ -350,7 +336,7 @@ class IdleMiner:
             for i in chances.keys():
                 if num > 100 - chances[i]:
                     tomine = self.blockspertick[tool]
-                    self.inventory[i] += tomine
+                    self.inventory.modify(i, tomine)
                     self.blocksmined += tomine
 
                     self.stats.tblksmined += tomine
@@ -397,9 +383,9 @@ class IdleMiner:
         if COLORS:
             c.print("[blue]money[/blue]:", f"{self.money:,}")
             c.print("[blue]lapis[/blue]:", self.lapis)
-            c.print("[blue]inventory[/blue]:", self.inventory)
+            c.print("[blue]inventory[/blue]:", self.inventory.save())
             c.print("[blue]tools[/blue]:", self.tools)
-            c.print("[blue]produce[/blue]:", self.produce)
+            c.print("[blue]produce[/blue]:", self.produce.save())
             c.print("[blue]mine level[/blue]:", self.minelevel, end=" ")
             progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
             c.print("[blue]fishing level[/blue]:", self.fishlevel, end=" ")
@@ -409,9 +395,9 @@ class IdleMiner:
         else:
             print("money:", f"{self.money:,}")
             print("lapis:", self.lapis)
-            print("inventory:", self.inventory)
+            print("inventory:", self.inventory.save())
             print("tools:", self.tools)
-            print("produce:", self.produce)
+            print("produce:", self.produce.save())
             print("mine level:", self.minelevel, end=" ")
             progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
             print("fishing level:", self.fishlevel, end=" ")
@@ -471,9 +457,9 @@ class IdleMiner:
 
     def _takefood(self):
         """internal function to take food from produce"""
-        for i in self.produce.keys():
-            if self.produce[i] > 0:
-                self.produce[i] -= 1
+        for i in self.produce.list():
+            if self.produce.get(i) > 0:
+                self.produce.modify(i, -1)
                 return i
 
         return None
@@ -502,10 +488,10 @@ class IdleMiner:
                     grown.append(crop)
 
             for crop in grown:
-                amount = self.produce[crops[crop]["from"]]
-                self.produce[crops[crop]["from"]] = 0
+                amount = self.produce.get(crops[crop]["from"])
+                self.produce.zero(crops[crop]["from"])
                 for product in crops[crop]["produces"]:
-                    self.produce[product] += amount
+                    self.produce.modify(product, amount)
 
             c.print(lang.GROWMSG, str(grown).strip("[] ").replace("'", ""))
         else:
@@ -527,7 +513,7 @@ class IdleMiner:
                 c.print(lang.CATCHFISHMSG)
                 self.fishxp += 1
 
-                self.produce["fish"] += 1
+                self.produce.modify("fish", 1)
 
                 self.stats.tfishxp += 1
                 self.stats.tfish += 1

@@ -18,6 +18,18 @@ class Resources:
         """gets amount of resources"""
         return self.resdict[resource]
 
+    def zero(self, resource: str):
+        """sets resource to zero"""
+        self.resdict[resource] = 0
+
+    def set(self, resource: str, amount: int):
+        """set resource to amount"""
+        self.resdict[resource] = amount
+
+    def list(self):
+        """lists resources"""
+        return list(self.resdict.keys())
+
     def save(self) -> dict:
         """returns dict representation"""
         return self.resdict
