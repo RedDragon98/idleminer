@@ -27,6 +27,10 @@ def configload(file):
 LANGUAGE: str = configload("lang.yml")
 COLORS: bool = configload("colors.yml")
 
+idleprint = print
+if COLORS:
+    idleprint = c.print
+
 DATAPATH = "data/"  # data file path
 
 
@@ -74,17 +78,14 @@ COMPAT_V = [
 
 def progressbar(num, cap, partitions=20):
     """progressbar ####--"""
-    out = print
-    if COLORS:
-        out = c.print
 
     dashes = round(num / (cap / partitions))
     for i in range(partitions):
         if i < dashes:
-            out("#", end="")
+            idleprint("#", end="")
         else:
-            out("-", end="")
-    out(" (" + str(num) + "/" + str(cap) + ")")
+            idleprint("-", end="")
+    idleprint(" (" + str(num) + "/" + str(cap) + ")")
 
 
 def getrank(level) -> str:
@@ -117,7 +118,7 @@ def intcheck(integer: str) -> bool:
     try:
         int(integer)
     except ValueError:
-        c.print(lang.NOTINTMSG, style="red")
+        idleprint(lang.NOTINTMSG, style="red")
         return False
 
     return True
@@ -201,7 +202,7 @@ class IdleMiner:
         """loads a profile"""
         profile = json.load(open(file, encoding="UTF-8"))
         if (not "DATA_V" in profile) or (not profile["DATA_V"] in COMPAT_V):
-            c.print(lang.INCOMPATDATAMSG, style="red")
+            idleprint(lang.INCOMPATDATAMSG, style="red")
             return
 
         self.money = profile["money"]
@@ -265,8 +266,8 @@ class IdleMiner:
             if itemstosell.get(item) > 0:
                 money = round(itemstosell.get(item) *
                               prices[item] * self.sellbooster)
-                print(item + ": " + "$" + f"{money:,}" +
-                      " (x" + f"{itemstosell.get(item):,}" + ")")
+                idleprint(item + ": " + "$" + f"{money:,}" +
+                          " (x" + f"{itemstosell.get(item):,}" + ")")
                 self.money += money
                 itemstosell.zero(item)
                 self.stats.tmoneyearned += money
@@ -287,12 +288,12 @@ class IdleMiner:
                 self.tools.modify(tool, 1)
                 self.money -= price
             else:
-                c.print(lang.COSTMSG, style="red")
+                idleprint(lang.COSTMSG, style="red")
                 break
 
         self.blockspertick[tool] = getmult(tool, getrank(self.tools.get(tool)))
-        c.print(lang.UPMSG %
-                (toolname, self.tools.get(tool), getrank(self.tools.get(tool))))
+        idleprint(lang.UPMSG %
+                  (toolname, self.tools.get(tool), getrank(self.tools.get(tool))))
 
     def upgrade(self, tool, amount):
         """upgrades tool"""
@@ -322,8 +323,8 @@ class IdleMiner:
             case "t" | "tnt":
                 pass
             case _:
-                c.print(lang.ERRMSG + " (in IdleMiner.up)",
-                        style="red")
+                idleprint(lang.ERRMSG + " (in IdleMiner.up)",
+                          style="red")
 
     def miningtick(self):
         """adds resources to inventory"""
@@ -382,28 +383,28 @@ class IdleMiner:
     def profile(self):
         """prints profile"""
         if COLORS:
-            c.print("[blue]money[/blue]:", f"{self.money:,}")
-            c.print("[blue]lapis[/blue]:", self.lapis)
-            c.print("[blue]inventory[/blue]:", self.inventory.save())
-            c.print("[blue]tools[/blue]:", self.tools.save())
-            c.print("[blue]produce[/blue]:", self.produce.save())
-            c.print("[blue]mine level[/blue]:", self.minelevel, end=" ")
+            idleprint("[blue]money[/blue]:", f"{self.money:,}")
+            idleprint("[blue]lapis[/blue]:", self.lapis)
+            idleprint("[blue]inventory[/blue]:", self.inventory.save())
+            idleprint("[blue]tools[/blue]:", self.tools.save())
+            idleprint("[blue]produce[/blue]:", self.produce.save())
+            idleprint("[blue]mine level[/blue]:", self.minelevel, end=" ")
             progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
-            c.print("[blue]fishing level[/blue]:", self.fishlevel, end=" ")
+            idleprint("[blue]fishing level[/blue]:", self.fishlevel, end=" ")
             progressbar(self.fishxp, self.fishlevel * 4)
-            c.print("[blue]battle level[/blue]:", self.battlelevel, end=" ")
+            idleprint("[blue]battle level[/blue]:", self.battlelevel, end=" ")
             progressbar(self.battlexp, (self.battlelevel + 1) * 5)
         else:
-            print("money:", f"{self.money:,}")
-            print("lapis:", self.lapis)
-            print("inventory:", self.inventory.save())
-            print("tools:", self.tools.save())
-            print("produce:", self.produce.save())
-            print("mine level:", self.minelevel, end=" ")
+            idleprint("money:", f"{self.money:,}")
+            idleprint("lapis:", self.lapis)
+            idleprint("inventory:", self.inventory.save())
+            idleprint("tools:", self.tools.save())
+            idleprint("produce:", self.produce.save())
+            idleprint("mine level:", self.minelevel, end=" ")
             progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
-            print("fishing level:", self.fishlevel, end=" ")
+            idleprint("fishing level:", self.fishlevel, end=" ")
             progressbar(self.fishxp, self.fishlevel * 4)
-            print("battle level:", self.battlelevel, end=" ")
+            idleprint("battle level:", self.battlelevel, end=" ")
             progressbar(self.battlexp, (self.battlelevel + 1) * 5)
 
     def hunt(self):
@@ -413,33 +414,33 @@ class IdleMiner:
             self.huntchance = random.randint(0, 100)
             if self.huntchance < 10:
                 pet = random.choice(pets[0:(25-(self.huntchance * 2))])
-                c.print(pet)
+                idleprint(pet)
 
                 self.stats.petscaught += 1
             else:
                 lapis = random.randint(1, 10)
                 self.lapis += lapis
-                c.print('You didn\'t get a pet :( You now have',
-                        self.lapis, 'lapis.')
+                idleprint('You didn\'t get a pet :( You now have',
+                          self.lapis, 'lapis.')
 
                 self.stats.tlapisearned += lapis
         else:
-            c.print(lang.COOLDOWNMSG % (self.huntcooldown, "hunting"))
+            idleprint(lang.COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
     def _quiz(self, difficulty):
         """internal function for quizzes; returns whether the answer is correct"""
         question = random.choice(quizes[difficulty])
 
         if COLORS:
-            c.print(question["question"] + "?")
+            idleprint(question["question"] + "?")
         else:
-            print(question["question"] + "?")
+            idleprint(question["question"] + "?")
         index = 0
         for i in question["choices"]:
             if COLORS:
-                c.print(str(index) + ": " + i)
+                idleprint(str(index) + ": " + i)
             else:
-                print(str(index) + ": " + i)
+                idleprint(str(index) + ": " + i)
             index += 1
 
         answer = input("answer: ")
@@ -470,13 +471,14 @@ class IdleMiner:
             self.quizcooldown = 300
 
             if self._quiz(difficulty):
-                c.print(lang.CORRECTANSWERMSG)
+                idleprint(lang.CORRECTANSWERMSG)
 
                 self.money += 3000
             else:
-                c.print(lang.WRONGANSWERMSG)
+                idleprint(lang.WRONGANSWERMSG)
         else:
-            c.print(lang.COOLDOWNMSG % (self.quizcooldown, "getting quizzed"))
+            idleprint(lang.COOLDOWNMSG %
+                      (self.quizcooldown, "getting quizzed"))
 
     def farm(self):
         """farms"""
@@ -494,16 +496,16 @@ class IdleMiner:
                     self.produce.modify(
                         product, amount * getmult("h", getrank(self.tools.get("h"))))
 
-            c.print(lang.GROWMSG, str(grown).strip("[] ").replace("'", ""))
+            idleprint(lang.GROWMSG, str(grown).strip("[] ").replace("'", ""))
         else:
-            c.print(lang.COOLDOWNMSG % (self.farmgrowth, "farming"))
+            idleprint(lang.COOLDOWNMSG % (self.farmgrowth, "farming"))
 
     def fish(self):
         """fishes"""
         if self.fishcooldown < 1:
             self.fishcooldown = 300
             if random.randint(1, 100 - self.fishlevel) == 1:
-                c.print(lang.CATCHTREASUREMSG)
+                idleprint(lang.CATCHTREASUREMSG)
 
                 self.money += 5000
                 self.fishxp += 10
@@ -511,7 +513,7 @@ class IdleMiner:
                 self.stats.tfishxp += 10
                 self.stats.ttreasure += 1
             else:
-                c.print(lang.CATCHFISHMSG)
+                idleprint(lang.CATCHFISHMSG)
                 self.fishxp += 1
 
                 self.produce.modify("fish", 1)
@@ -519,7 +521,7 @@ class IdleMiner:
                 self.stats.tfishxp += 1
                 self.stats.tfish += 1
         else:
-            c.print(lang.COOLDOWNMSG % (self.fishcooldown, "fishing"))
+            idleprint(lang.COOLDOWNMSG % (self.fishcooldown, "fishing"))
 
     def battle(self):
         """battle a horde of mobs"""
@@ -532,8 +534,8 @@ class IdleMiner:
 
         stevehp = (self.battlelevel + 1) * 10
 
-        c.print("Fighting:", horde, "with hp:", mobhp,
-                "and damage:", str(mobdmg) + ".", "You have", stevehp, "hp")
+        idleprint("Fighting:", horde, "with hp:", mobhp,
+                  "and damage:", str(mobdmg) + ".", "You have", stevehp, "hp")
         cont = input("Do you want to continue(y/N)?")
 
         if cont == "y":
@@ -554,26 +556,26 @@ class IdleMiner:
                     dmgdone = damage * \
                         getmult("w", getrank(self.tools.get("w")))
                     mobhp -= dmgdone
-                    print(lang.MOBHITMSG % (dmgdone, mobhp))
+                    idleprint(lang.MOBHITMSG % (dmgdone, mobhp))
                 else:
                     stevehp -= mobdmg
-                    c.print(lang.MOBHURTMSG % (mobdmg, stevehp))
+                    idleprint(lang.MOBHURTMSG % (mobdmg, stevehp))
 
                 eat = input(lang.WOULDLIKETOEATMSG % stevehp)
                 if eat:
                     food = self._takefood()
                     if food:
-                        print(lang.ATEMSG % food)
+                        idleprint(lang.ATEMSG % food)
                         stevehp += 1
                     else:
-                        c.print(lang.NOFOODMSG)
+                        idleprint(lang.NOFOODMSG)
 
             if stevehp == 0:
-                c.print(lang.DEADMSG)
+                idleprint(lang.DEADMSG)
 
             else:
                 self.battlexp += mobs[horde]["xp"]
-                c.print(lang.WINMSG % 1)
+                idleprint(lang.WINMSG % 1)
 
     def execute(self, cmd):
         """executes command"""
@@ -591,8 +593,8 @@ class IdleMiner:
                 self.hunt()
             case "profile" | "p":
                 self.profile()
-                c.print("--------")
-                self.stats.printstats(COLORS, c)
+                idleprint("--------")
+                self.stats.printstats(idleprint, COLORS)
             case["quiz" | "q", difficulty]:
                 self.quiz(difficulty)
             case "farm" | "fm":
@@ -605,7 +607,7 @@ class IdleMiner:
                 global shouldexit
                 shouldexit = True
             case "help":
-                c.print(HELPMSG)
+                idleprint(HELPMSG)
             case "cheat":
                 self.money += 10000000
                 self.blocksmined += 2000
@@ -615,18 +617,18 @@ class IdleMiner:
                 self.quizcooldown = 0
             # easter eggs?
             case ":(":
-                c.print("Oof", style="red")
+                idleprint("Oof", style="red")
             case ":)":
-                c.print("Yay", style="green")
+                idleprint("Yay", style="green")
             case _:
-                c.print(lang.ERRMSG + " (in IdleMiner.execute)",
-                        style="red")
+                idleprint(lang.ERRMSG + " (in IdleMiner.execute)",
+                          style="red")
 
 
 if __name__ == "__main__":
     queue = []
     try:
-        c.print(HELPMSG)
+        idleprint(HELPMSG)
         steve = IdleMiner()
 
         if os.path.exists("profile.json"):
@@ -639,7 +641,7 @@ if __name__ == "__main__":
             while not shouldexit:
                 steve.get()
                 for i in queue:
-                    print(i)
+                    idleprint(i)
 
                 queue = []
 

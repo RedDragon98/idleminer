@@ -21,43 +21,43 @@ class Stats:
     tfish = 0  # total fish caught
     ttreasure = 0  # total treasure caught
 
-    def printstats(self, colors: bool, console):
+    def printstats(self, idleprint, colors):
         """prints these stats"""
 
         if colors:
-            console.print("[magenta]Blocks mined[/magenta]:", self.tblksmined,
-                          "(" + str(self.blksmined.save()) + ")")
+            idleprint("[magenta]Blocks mined[/magenta]:", self.tblksmined,
+                      "(" + str(self.blksmined.save()) + ")")
 
-            console.print("[magenta]Total money earned[/magenta]:",
-                          self.tmoneyearned)
-            console.print("[magenta]Total lapis earned[/magenta]:",
-                          self.tlapisearned)
-            console.print("[magenta]Pets caught[/magenta]:", self.petscaught)
-            console.print(
+            idleprint("[magenta]Total money earned[/magenta]:",
+                      self.tmoneyearned)
+            idleprint("[magenta]Total lapis earned[/magenta]:",
+                      self.tlapisearned)
+            idleprint("[magenta]Pets caught[/magenta]:", self.petscaught)
+            idleprint(
                 "[magenta]Total rc earned[/magenta]:", self.trcearned)
-            console.print(
+            idleprint(
                 "[magenta]Total mine upgrades[/magenta]:", self.tmineup)
-            console.print(
+            idleprint(
                 "[magenta]Total biome upgrades[/magenta]:", self.tbiomeup)
-            console.print("[magenta]Total questions answered[/magenta]:", self.tqanswered,
-                          "(" + str(self.tqcorrect) + " [green]correct[/green])")
-            console.print("[magenta]Total fish xp[/magenta]:", self.tfishxp)
-            console.print("[magenta]Total fish caught[/magenta]:", self.tfish,
-                          "(" + str(self.ttreasure) + " [green]treasure[/green])")
+            idleprint("[magenta]Total questions answered[/magenta]:", self.tqanswered,
+                      "(" + str(self.tqcorrect) + " [green]correct[/green])")
+            idleprint("[magenta]Total fish xp[/magenta]:", self.tfishxp)
+            idleprint("[magenta]Total fish caught[/magenta]:", self.tfish,
+                      "(" + str(self.ttreasure) + " [green]treasure[/green])")
         else:
-            print("Blocks mined:", self.tblksmined,
-                  "(" + str(self.blksmined.save()) + ")")
-            print("Total money earned:", self.tmoneyearned)
-            print("Total lapis earned:", self.tlapisearned)
-            print("Pets caught:", self.petscaught)
-            print("Total rc earned:", self.trcearned)
-            print("Total mine upgrades:", self.tmineup)
-            print("Total biome upgrades:", self.tbiomeup)
-            print("Total questions answered:", self.tqanswered,
-                  "(" + str(self.tqcorrect) + " correct)")
-            print("Total fish xp:", self.tfishxp)
-            print("Total fish caught:", self.tfish,
-                  "(" + str(self.ttreasure) + " treasure)")
+            idleprint("Blocks mined:", self.tblksmined,
+                      "(" + str(self.blksmined.save()) + ")")
+            idleprint("Total money earned:", self.tmoneyearned)
+            idleprint("Total lapis earned:", self.tlapisearned)
+            idleprint("Pets caught:", self.petscaught)
+            idleprint("Total rc earned:", self.trcearned)
+            idleprint("Total mine upgrades:", self.tmineup)
+            idleprint("Total biome upgrades:", self.tbiomeup)
+            idleprint("Total questions answered:", self.tqanswered,
+                      "(" + str(self.tqcorrect) + " correct)")
+            idleprint("Total fish xp:", self.tfishxp)
+            idleprint("Total fish caught:", self.tfish,
+                      "(" + str(self.ttreasure) + " treasure)")
 
     def load(self, obj: dict):
         """load stats from dict"""
