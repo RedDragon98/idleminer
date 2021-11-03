@@ -23,7 +23,6 @@ def configload(file):
     """loads a config file"""
     return yaml.safe_load(open("config/" + file, encoding="UTF-8"))
 
-
 LANGUAGE: str = configload("lang.yml")
 COLORS: bool = configload("colors.yml")
 
@@ -288,7 +287,10 @@ class IdleMiner:
                 self.tools.modify(tool, 1)
                 self.money -= price
             else:
-                idleprint(lang.COSTMSG, style="red")
+                if COLORS:
+                    idleprint(lang.COSTMSG, style="red")
+                else:
+                    idleprint(lang.COSTMSG)
                 break
 
         self.blockspertick[tool] = getmult(tool, getrank(self.tools.get(tool)))
@@ -323,8 +325,10 @@ class IdleMiner:
             case "t" | "tnt":
                 pass
             case _:
-                idleprint(lang.ERRMSG + " (in IdleMiner.up)",
-                          style="red")
+                if COLORS:
+                    idleprint(lang.ERRMSG + " (in IdleMiner.up)", style="red")
+                else:
+                    idleprint(lang.ERRMSG + " (in IdleMiner.up)")
 
     def miningtick(self):
         """adds resources to inventory"""
@@ -551,7 +555,6 @@ class IdleMiner:
                 elif mobhp >= 20:
                     difficulty = "medium"
                     damage = 2
-
                 if self._quiz(difficulty):
                     dmgdone = damage * \
                         getmult("w", getrank(self.tools.get("w")))
@@ -621,8 +624,11 @@ class IdleMiner:
             case ":)":
                 idleprint("Yay", style="green")
             case _:
-                idleprint(lang.ERRMSG + " (in IdleMiner.execute)",
-                          style="red")
+                if COLORS:
+                    idleprint(lang.ERRMSG + " (in IdleMiner.execute)",
+                            style="red")
+                else:
+                    idleprint(lang.ERRMSG + " (in IdleMiner.execute)")
 
 
 if __name__ == "__main__":
