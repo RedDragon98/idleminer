@@ -487,7 +487,7 @@ class IdleMiner:
                 amount = self.produce.get(crops[crop]["from"])
                 self.produce.zero(crops[crop]["from"])
                 for product in crops[crop]["produces"]:
-                    self.produce.modify(product, amount)
+                    self.produce.modify(product, amount * getmult("h", getrank(self.tools.get("h"))))
 
             c.print(lang.GROWMSG, str(grown).strip("[] ").replace("'", ""))
         else:
