@@ -45,6 +45,7 @@ quizes: dict = dataload("quiz.json")  # list of quiz questions
 farms: list = dataload("farms.json")  # things you can grow in your farm
 crops: dict = dataload("crops.json")  # crops and their sources
 mobs: dict = dataload("mobs.json")  # list of mobs
+pets: list = dataload("pets.json")
 
 shouldexit = False
 
@@ -327,7 +328,7 @@ class IdleMiner:
     def miningtick(self):
         """adds resources to inventory"""
         num = random.randint(1, 100)
-        for tool in ["p", "s", "a"]:  # hoe doesn't get ticks
+        for tool in ["p", "s", "a"]:  # some tools doesn't get ticks
             chances = mines[self.biome][self.minelevel][tool]
             for i in chances.keys():
                 if num > 100 - chances[i]:
@@ -343,20 +344,24 @@ class IdleMiner:
         toprint = []
 
         if self.blocksmined >= 2000 * (self.minelevel + 1):
-            self.minelevel += 1
-            self.stats.tmineup += 1
-            self.blocksmined = 0
-            toprint.append(lang.MINEUPMSG % self.minelevel)
-
             try:
-                mines[self.biome][self.minelevel]
+                mines[self.biome][self.minelevel + 1]
             except IndexError:
-                self.biomeid += 1
-                self.biome = biomes[self.biomeid]
-                self.minelevel = 0
-                self.blocksmined = 0
+                if self.biomeid + 1 >= len(mines):
+                    pass  # no more biome upgrades
+                else:
+                    self.biomeid += 1
 
-                toprint.append(lang.UPBIOMEMSG % self.biome)
+                    self.biome = biomes[self.biomeid]
+                    self.minelevel = 0
+                    self.blocksmined = 0
+
+                    toprint.append(lang.UPBIOMEMSG % self.biome)
+            else:
+                self.minelevel += 1
+                self.stats.tmineup += 1
+                self.blocksmined = 0
+                toprint.append(lang.MINEUPMSG % self.minelevel)
 
         if self.fishxp / self.fishlevel >= 4:
             self.fishlevel += 1
@@ -407,8 +412,7 @@ class IdleMiner:
             self.huntcooldown = 300
             self.huntchance = random.randint(0, 100)
             if self.huntchance < 10:
-                print(self.pets)
-                pet = random.choice(self.pets[0:(25-(self.huntchance * 2))])
+                pet = random.choice(pets[0:(25-(self.huntchance * 2))])
                 c.print(pet)
 
                 self.stats.petscaught += 1
@@ -487,7 +491,8 @@ class IdleMiner:
                 amount = self.produce.get(crops[crop]["from"])
                 self.produce.zero(crops[crop]["from"])
                 for product in crops[crop]["produces"]:
-                    self.produce.modify(product, amount * getmult("h", getrank(self.tools.get("h"))))
+                    self.produce.modify(
+                        product, amount * getmult("h", getrank(self.tools.get("h"))))
 
             c.print(lang.GROWMSG, str(grown).strip("[] ").replace("'", ""))
         else:
