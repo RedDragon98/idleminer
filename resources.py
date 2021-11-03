@@ -16,7 +16,10 @@ class Resources:
 
     def get(self, resource):
         """gets amount of resources"""
-        return self.resdict[resource]
+        if resource in self.resdict:
+            return self.resdict[resource]
+        else:
+            return 0
 
     def zero(self, resource: str):
         """sets resource to zero"""

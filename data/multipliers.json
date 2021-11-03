@@ -25,5 +25,14 @@
         "diamond": 60,
         "netherite": 100,
         "impossible": 20000000000
+    },
+    "w": {
+        "wooden": 1,
+        "stone": 1,
+        "iron": 2,
+        "gold": 3,
+        "diamond": 4,
+        "netherite": 5,
+        "impossible": 20000000000
     }
 }

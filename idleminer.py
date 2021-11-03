@@ -63,10 +63,11 @@ UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
 UP_S_MULTIPLIER = 100
 UP_H_MULTIPLIER = 50
 UP_A_MULTIPLIER = 120
+UP_W_MULTIPLIER = 150
 
-PROFILE_V = "0.0.8"  # profile version
+PROFILE_V = "0.0.9"  # profile version
 COMPAT_V = [
-    "0.0.8"
+    "0.0.9"
 ]  # compatible profile versions
 
 
@@ -174,22 +175,17 @@ class IdleMiner:
         self.fishcooldown = 1  # cooldowns
         self.fishxp = 0
         self.fishlevel = 1
-        self.tools = {
-            "p": 0,
-            "s": 0,
-            "h": 0,
-            "a": 0,
-        }
+        self.tools = resources.Resources()
 
         self.blockspertick = {
-            "p": getmult("p", getrank(self.tools["p"])),
-            "s": getmult("s", getrank(self.tools["s"])),
-            "a": getmult("a", getrank(self.tools["a"]))
+            "p": getmult("p", getrank(self.tools.get("p"))),
+            "s": getmult("s", getrank(self.tools.get("s"))),
+            "a": getmult("a", getrank(self.tools.get("a")))
         }
 
         self.minelevel = 0
 
-        self.farmgrowth = (1200 - self.tools["h"] * 5)
+        self.farmgrowth = (1200 - self.tools.get("h") * 5)
         self.produce = resources.Resources()
         self.produce.set("wheat-seed", 10)
 
@@ -219,7 +215,7 @@ class IdleMiner:
         self.fishxp = profile["fishxp"]
         self.fishlevel = profile["fishlevel"]
         self.huntchance = profile["huntchance"]
-        self.tools = profile["tools"]
+        self.tools = resources.load(profile["tools"])
         self.pets = profile["pets"]
         self.produce = resources.load(profile["produce"])
         self.farmlevel = profile["farmlevel"]
@@ -229,8 +225,8 @@ class IdleMiner:
         self.stats = Stats()
         self.stats.load(profile["stats"])
 
-        self.blockspertick["s"] = getmult("s", getrank(self.tools["s"]))
-        self.blockspertick["p"] = getmult("p", getrank(self.tools["p"]))
+        self.blockspertick["s"] = getmult("s", getrank(self.tools.get("s")))
+        self.blockspertick["p"] = getmult("p", getrank(self.tools.get("p")))
 
     def save(self, file):
         """saves a profile"""
@@ -247,7 +243,7 @@ class IdleMiner:
             "fishxp": self.fishxp,
             "fishlevel": self.fishlevel,
             "huntchance": self.huntchance,
-            "tools": self.tools,
+            "tools": self.tools.save(),
             "pets": self.pets,
             "produce": self.produce.save(),
             "farmlevel": self.farmlevel,
@@ -285,17 +281,17 @@ class IdleMiner:
 
     def _individualup(self, tool, toolname, amount, multiplier):
         for _ in range(amount):
-            price = self.tools[tool] * multiplier
+            price = self.tools.get(tool) * multiplier
             if price <= self.money:
-                self.tools[tool] += 1
+                self.tools.modify(tool, 1)
                 self.money -= price
             else:
                 c.print(lang.COSTMSG, style="red")
                 break
 
-        self.blockspertick[tool] = getmult(tool, getrank(self.tools[tool]))
+        self.blockspertick[tool] = getmult(tool, getrank(self.tools.get(tool)))
         c.print(lang.UPMSG %
-                (toolname, self.tools[tool], getrank(self.tools[tool])))
+                (toolname, self.tools.get(tool), getrank(self.tools.get(tool))))
 
     def upgrade(self, tool, amount):
         """upgrades tool"""
@@ -309,7 +305,7 @@ class IdleMiner:
             case "h" | "hoe":  # rebirth = level >= 200
                 self._individualup("h", "hoe", amount, UP_H_MULTIPLIER)
             case "w" | "sword":  # w = weapon
-                pass
+                self._individualup("w", "sword", amount, UP_W_MULTIPLIER)
             case "d" | "shield":  # d = defense
                 pass
             case "e" | "enchanting-table":
@@ -384,7 +380,7 @@ class IdleMiner:
             c.print("[blue]money[/blue]:", f"{self.money:,}")
             c.print("[blue]lapis[/blue]:", self.lapis)
             c.print("[blue]inventory[/blue]:", self.inventory.save())
-            c.print("[blue]tools[/blue]:", self.tools)
+            c.print("[blue]tools[/blue]:", self.tools.save())
             c.print("[blue]produce[/blue]:", self.produce.save())
             c.print("[blue]mine level[/blue]:", self.minelevel, end=" ")
             progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
@@ -396,7 +392,7 @@ class IdleMiner:
             print("money:", f"{self.money:,}")
             print("lapis:", self.lapis)
             print("inventory:", self.inventory.save())
-            print("tools:", self.tools)
+            print("tools:", self.tools.save())
             print("produce:", self.produce.save())
             print("mine level:", self.minelevel, end=" ")
             progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
@@ -481,7 +477,7 @@ class IdleMiner:
     def farm(self):
         """farms"""
         if self.farmgrowth < 1:
-            self.farmgrowth = (1200 - self.tools["h"] * 5)
+            self.farmgrowth = (1200 - self.tools.get("h") * 5)
             grown = []
             for crop in farms[self.farmlevel].keys():
                 if random.randint(0, 100) <= farms[self.farmlevel][crop]:
@@ -550,8 +546,10 @@ class IdleMiner:
                     damage = 2
 
                 if self._quiz(difficulty):
-                    mobhp -= damage
-                    print(lang.MOBHITMSG % (damage, mobhp))
+                    dmgdone = damage * \
+                        getmult("w", getrank(self.tools.get("w")))
+                    mobhp -= dmgdone
+                    print(lang.MOBHITMSG % (dmgdone, mobhp))
                 else:
                     stevehp -= mobdmg
                     c.print(lang.MOBHURTMSG % (mobdmg, stevehp))
