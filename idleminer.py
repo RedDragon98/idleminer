@@ -23,6 +23,7 @@ def configload(file):
     """loads a config file"""
     return yaml.safe_load(open("config/" + file, encoding="UTF-8"))
 
+
 LANGUAGE: str = configload("lang.yml")
 COLORS: bool = configload("colors.yml")
 
@@ -435,10 +436,7 @@ class IdleMiner:
         """internal function for quizzes; returns whether the answer is correct"""
         question = random.choice(quizes[difficulty])
 
-        if COLORS:
-            idleprint(question["question"] + "?")
-        else:
-            idleprint(question["question"] + "?")
+        idleprint(question["question"] + "?")
         index = 0
         for i in question["choices"]:
             if COLORS:
@@ -626,7 +624,7 @@ class IdleMiner:
             case _:
                 if COLORS:
                     idleprint(lang.ERRMSG + " (in IdleMiner.execute)",
-                            style="red")
+                              style="red")
                 else:
                     idleprint(lang.ERRMSG + " (in IdleMiner.execute)")
 
