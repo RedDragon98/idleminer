@@ -24,10 +24,24 @@ def configload(file):
     return yaml.safe_load(open("config/" + file, encoding="UTF-8"))
 
 
+def printlist(msg, end):
+    index = 0
+    for i in msg:
+        index += 1
+        if index == len(msg):
+            print(i, end="")
+        else:
+            print(i, end=" ")
+
+    print(end, end="")
+
+
 LANGUAGE: str = configload("lang.yml")
 COLORS: bool = configload("colors.yml")
 
-idleprint = print
+
+idleprint = lambda *msg, style=None, end="\n": printlist(msg, end)
+
 if COLORS:
     idleprint = c.print
 
@@ -288,10 +302,7 @@ class IdleMiner:
                 self.tools.modify(tool, 1)
                 self.money -= price
             else:
-                if COLORS:
-                    idleprint(lang.COSTMSG, style="red")
-                else:
-                    idleprint(lang.COSTMSG)
+                idleprint(lang.COSTMSG, style="red")
                 break
 
         self.blockspertick[tool] = getmult(tool, getrank(self.tools.get(tool)))
@@ -326,10 +337,7 @@ class IdleMiner:
             case "t" | "tnt":
                 pass
             case _:
-                if COLORS:
-                    idleprint(lang.ERRMSG + " (in IdleMiner.up)", style="red")
-                else:
-                    idleprint(lang.ERRMSG + " (in IdleMiner.up)")
+                idleprint(lang.ERRMSG + " (in IdleMiner.up)", style="red")
 
     def miningtick(self):
         """adds resources to inventory"""
@@ -387,30 +395,25 @@ class IdleMiner:
 
     def profile(self):
         """prints profile"""
-        if COLORS:
-            idleprint("[blue]money[/blue]:", f"{self.money:,}")
-            idleprint("[blue]lapis[/blue]:", self.lapis)
-            idleprint("[blue]inventory[/blue]:", self.inventory.save())
-            idleprint("[blue]tools[/blue]:", self.tools.save())
-            idleprint("[blue]produce[/blue]:", self.produce.save())
-            idleprint("[blue]mine level[/blue]:", self.minelevel, end=" ")
-            progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
-            idleprint("[blue]fishing level[/blue]:", self.fishlevel, end=" ")
-            progressbar(self.fishxp, self.fishlevel * 4)
-            idleprint("[blue]battle level[/blue]:", self.battlelevel, end=" ")
-            progressbar(self.battlexp, (self.battlelevel + 1) * 5)
-        else:
-            idleprint("money:", f"{self.money:,}")
-            idleprint("lapis:", self.lapis)
-            idleprint("inventory:", self.inventory.save())
-            idleprint("tools:", self.tools.save())
-            idleprint("produce:", self.produce.save())
-            idleprint("mine level:", self.minelevel, end=" ")
-            progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
-            idleprint("fishing level:", self.fishlevel, end=" ")
-            progressbar(self.fishxp, self.fishlevel * 4)
-            idleprint("battle level:", self.battlelevel, end=" ")
-            progressbar(self.battlexp, (self.battlelevel + 1) * 5)
+        idleprint("money:", style="blue", end=" ")
+        idleprint(f"{self.money:,}")
+        idleprint("lapis:", style="blue", end=" ")
+        idleprint(self.lapis)
+        idleprint("inventory:", style="blue", end=" ")
+        idleprint(self.inventory.save())
+        idleprint("tools:", style="blue", end=" ")
+        idleprint(self.tools.save())
+        idleprint("produce:", style="blue", end=" ")
+        idleprint(self.produce.save())
+        idleprint("mine level:", style="blue", end=" ")
+        idleprint(self.minelevel, end=" ")
+        progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
+        idleprint("fishing level:", style="blue", end=" ")
+        idleprint(self.fishlevel, end=" ")
+        progressbar(self.fishxp, self.fishlevel * 4)
+        idleprint("battle level:", style="blue", end=" ")
+        idleprint(self.battlelevel, end="")
+        progressbar(self.battlexp, (self.battlelevel + 1) * 5)
 
     def hunt(self):
         """hunts"""
@@ -439,10 +442,7 @@ class IdleMiner:
         idleprint(question["question"] + "?")
         index = 0
         for i in question["choices"]:
-            if COLORS:
-                idleprint(str(index) + ": " + i)
-            else:
-                idleprint(str(index) + ": " + i)
+            idleprint(str(index) + ": " + i)
             index += 1
 
         answer = input("answer: ")
@@ -622,11 +622,8 @@ class IdleMiner:
             case ":)":
                 idleprint("Yay", style="green")
             case _:
-                if COLORS:
-                    idleprint(lang.ERRMSG + " (in IdleMiner.execute)",
-                              style="red")
-                else:
-                    idleprint(lang.ERRMSG + " (in IdleMiner.execute)")
+                idleprint(lang.ERRMSG + " (in IdleMiner.execute)",
+                          style="red")
 
 
 if __name__ == "__main__":
