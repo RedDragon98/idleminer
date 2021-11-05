@@ -1,7 +1,10 @@
-# idleminer
+# Idleminer
 An idle game based on Minecraft(*the original idleminer is a discord bot*)
 
-Tutorial:
+To play the game, run launcher.py(python >= 3.10) and type ```n``` when prompted for story mode
+Story mode tutorial coming soon
+
+## Idleminer Tutorial
 The most often run command is ```%s```, which sells your inventory. If nothing gets sold, you should re-run the command after a second.
 
 ![image](https://user-images.githubusercontent.com/91714238/137562413-46f4cbba-f97b-4a0b-9d93-a01e842ee2cc.png)
