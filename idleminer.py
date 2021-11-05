@@ -613,7 +613,7 @@ class IdleMiner:
                           style="red")
 
 
-if __name__ == "__main__":
+def main():
     queue = []
     try:
         idleprint(HELPMSG)
@@ -651,3 +651,7 @@ if __name__ == "__main__":
         # doesn't seem to hide the error message, but still saves
         steve.save("profile.json")
         sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()

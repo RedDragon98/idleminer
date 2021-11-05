@@ -2,7 +2,9 @@
 import idleminer
 import eventsys
 
-# so we don't confuse with idleminer.steve?
-alex = idleminer.IdleMiner()
 
-eventsys.call("open")
+def main():
+    alex = idleminer.IdleMiner()
+
+    eventsys.call("open")
+    # TODO
