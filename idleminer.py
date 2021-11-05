@@ -349,7 +349,7 @@ class IdleMiner:
         """update fishing and mining levels"""
         toprint = []
 
-        if self.blocksmined >= 2000 * (self.minelevel + 1):
+        if self.blocksmined >= 4000 * (self.minelevel + 1):
             try:
                 mines[self.biome][self.minelevel + 1]
             except IndexError:
