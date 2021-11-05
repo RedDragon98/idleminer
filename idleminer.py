@@ -64,6 +64,7 @@ farms: list = dataload("farms.json")  # things you can grow in your farm
 crops: dict = dataload("crops.json")  # crops and their sources
 mobs: dict = dataload("mobs.json")  # list of mobs
 pets: list = dataload("pets.json")
+tools: list = dataload("tools.json")
 
 shouldexit = False
 
@@ -77,12 +78,6 @@ lang.load(langdata)
 HELPMSG = lang.HELPMSG
 if COLORS:
     HELPMSG = lang.HELPMSGC
-
-UP_P_MULTIPLIER = 210  # upgrading pickaxe costs UP_P_MULTIPLIER * level
-UP_S_MULTIPLIER = 100
-UP_H_MULTIPLIER = 50
-UP_A_MULTIPLIER = 120
-UP_W_MULTIPLIER = 150
 
 PROFILE_V = "0.0.9"  # profile version
 COMPAT_V = [
@@ -311,33 +306,23 @@ class IdleMiner:
 
     def upgrade(self, tool, amount):
         """upgrades tool"""
-        match tool:
-            case "p" | "pickaxe":  # rebirth = level >= 200
-                self._individualup("p", "pickaxe", amount, UP_P_MULTIPLIER)
-            case "s" | "shovel":  # rebirth = level >= 200
-                self._individualup("s", "shovel", amount, UP_S_MULTIPLIER)
-            case "a" | "axe":  # rebirth = level >= 200
-                self._individualup("a", "axe", amount, UP_A_MULTIPLIER)
-            case "h" | "hoe":  # rebirth = level >= 200
-                self._individualup("h", "hoe", amount, UP_H_MULTIPLIER)
-            case "w" | "sword":  # w = weapon
-                self._individualup("w", "sword", amount, UP_W_MULTIPLIER)
-            case "d" | "shield":  # d = defense
-                pass
-            case "e" | "enchanting-table":
-                pass
-            case "b" | "boots":
-                pass
-            case "l" | "leggings":
-                pass
-            case "c" | "chestplate":
-                pass
-            case "h" | "helmet":
-                pass
-            case "t" | "tnt":
-                pass
-            case _:
-                idleprint(lang.ERRMSG + " (in IdleMiner.up)", style="red")
+        index = 0
+        toolid = 0
+        for _toolid in tools.keys():
+            if tool in (_toolid, tools[_toolid]["name"]):
+                toolid = _toolid
+                break
+
+            index += 1
+
+        if toolid != 0:
+            self._individualup(
+                toolid, tools[toolid]["name"], amount, tools[toolid]["multiplier"])
+
+            return
+
+        # if nothing matches
+        idleprint(lang.ERRMSG + " (in IdleMiner.up)", style="red")
 
     def miningtick(self):
         """adds resources to inventory"""
@@ -540,43 +525,45 @@ class IdleMiner:
                   "and damage:", str(mobdmg) + ".", "You have", stevehp, "hp")
         cont = input("Do you want to continue(y/N)?")
 
-        if cont == "y":
-            while stevehp > 0 and mobhp > 0:
-                difficulty = "easy"
-                damage = 1
-                if mobhp >= 100:
-                    difficulty = "really"
-                    damage = 10
-                elif mobhp >= 50:
-                    difficulty = "hard"
-                    damage = 4
-                elif mobhp >= 20:
-                    difficulty = "medium"
-                    damage = 2
-                if self._quiz(difficulty):
-                    dmgdone = damage * \
-                        getmult("w", getrank(self.tools.get("w")))
-                    mobhp -= dmgdone
-                    idleprint(lang.MOBHITMSG % (dmgdone, mobhp))
-                else:
-                    stevehp -= mobdmg
-                    idleprint(lang.MOBHURTMSG % (mobdmg, stevehp))
+        if cont == "n":
+            return
 
-                eat = input(lang.WOULDLIKETOEATMSG % stevehp)
-                if eat:
-                    food = self._takefood()
-                    if food:
-                        idleprint(lang.ATEMSG % food)
-                        stevehp += 1
-                    else:
-                        idleprint(lang.NOFOODMSG)
-
-            if stevehp == 0:
-                idleprint(lang.DEADMSG)
-
+        while stevehp > 0 and mobhp > 0:
+            difficulty = "easy"
+            damage = 1
+            if mobhp >= 100:
+                difficulty = "really"
+                damage = 10
+            elif mobhp >= 50:
+                difficulty = "hard"
+                damage = 4
+            elif mobhp >= 20:
+                difficulty = "medium"
+                damage = 2
+            if self._quiz(difficulty):
+                dmgdone = damage * \
+                    getmult("w", getrank(self.tools.get("w")))
+                mobhp -= dmgdone
+                idleprint(lang.MOBHITMSG % (dmgdone, mobhp))
             else:
-                self.battlexp += mobs[horde]["xp"]
-                idleprint(lang.WINMSG % 1)
+                stevehp -= mobdmg
+                idleprint(lang.MOBHURTMSG % (mobdmg, stevehp))
+
+            eat = input(lang.WOULDLIKETOEATMSG % stevehp)
+            if eat:
+                food = self._takefood()
+                if food:
+                    idleprint(lang.ATEMSG % food)
+                    stevehp += 1
+                else:
+                    idleprint(lang.NOFOODMSG)
+
+        if stevehp == 0:
+            idleprint(lang.DEADMSG)
+
+        else:
+            self.battlexp += mobs[horde]["xp"]
+            idleprint(lang.WINMSG % 1)
 
     def execute(self, cmd):
         """executes command"""
