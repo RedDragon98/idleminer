@@ -24,7 +24,7 @@ class Stats:
     def printstats(self, idleprint, colors):
         """prints these stats"""
 
-        if colors:
+        if colors:  # TODO use new idleprint: replace color blocks with style=""
             idleprint("[magenta]Blocks mined[/magenta]:", self.tblksmined,
                       "(" + str(self.blksmined.save()) + ")")
 
