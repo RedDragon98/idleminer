@@ -67,6 +67,7 @@ pets: list = dataload("pets.json")
 tools: list = dataload("tools.json")
 
 shouldexit = False
+lastminelevel = False
 
 
 TICKS = 1
@@ -340,9 +341,10 @@ class IdleMiner:
 
     def update(self):
         """update fishing and mining levels"""
+        global lastminelevel
         toprint = []
 
-        if self.blocksmined >= 4000 * (self.minelevel + 1):
+        if self.blocksmined >= 4000 * (self.minelevel + 1) and not lastminelevel:
             try:
                 mines[self.biome][self.minelevel + 1]
             except IndexError:
@@ -356,6 +358,8 @@ class IdleMiner:
                     self.blocksmined = 0
 
                     toprint.append(lang.UPBIOMEMSG % self.biome)
+
+                lastminelevel = True
             else:
                 self.minelevel += 1
                 self.stats.tmineup += 1
@@ -390,9 +394,12 @@ class IdleMiner:
         idleprint(self.tools.save())
         idleprint("produce:", style="blue", end=" ")
         idleprint(self.produce.save())
-        idleprint("mine level:", style="blue", end=" ")
-        idleprint(self.minelevel, end=" ")
-        progressbar(self.blocksmined, (self.minelevel + 1) * 2000)
+        if lastminelevel:
+            idleprint(lang.LASTMINELEVELMSG)
+        else:
+            idleprint("mine level:", style="blue", end=" ")
+            idleprint(self.minelevel, end=" ")
+            progressbar(self.blocksmined, (self.minelevel + 1) * 4000)
         idleprint("fishing level:", style="blue", end=" ")
         idleprint(self.fishlevel, end=" ")
         progressbar(self.fishxp, self.fishlevel * 4)
@@ -624,9 +631,10 @@ def main():
 
         def repeatedget():
             """repeatedly gets input"""
-            global queue
 
             while not shouldexit:
+                nonlocal queue
+
                 steve.get()
                 for i in queue:
                     idleprint(i)

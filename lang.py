@@ -27,6 +27,7 @@ BATTLEUPMSG: str
 WOULDLIKETOEATMSG: str
 ATEMSG: str
 NOFOODMSG: str
+LASTMINELEVELMSG: str
 
 
 def load(langpack: dict):

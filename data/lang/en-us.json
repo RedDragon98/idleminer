@@ -24,5 +24,6 @@
     "BATTLEUPMSG": "Your battle level is now %s",
     "ATEMSG": "You ate %s: +1 hp",
     "NOFOODMSG": "[red]No food to eat[/red]",
-    "WOULDLIKETOEATMSG": "You have %s health, would you like to eat?(y/N)"
+    "WOULDLIKETOEATMSG": "You have %s health, would you like to eat?(y/N)",
+    "LASTMINELEVELMSG": "You are on the last mine level"
 }
