@@ -4,7 +4,13 @@ import eventsys
 
 
 def main():
+    """runs the story mode program"""
     alex = idleminer.IdleMiner()
 
-    eventsys.call("open")
+    eventsys.call("open", alex)
+
     # TODO
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,52 @@
+{
+    "open": {
+        "description": [
+            "Your name is Steve and you have decided to start a new world",
+            "Like everyone else, your ultimate goal is to mine bedrock",
+            "You spawned in a desert"
+        ],
+        "triggers": "$MOVE desert-1"
+    },
+    "desert": {
+        "1": {
+            "actions": {
+                "left": {
+                    "description": [
+                        "You see a mesa on the left(perhaps some mineshafts?)"
+                    ],
+                    "triggers": "$MOVE mesa-1",
+                    "conditional": {
+                        "%HAS pickaxe=any": {
+                            "description": "You find a mineshaft right away",
+                            "triggers": "$MOVE mesa-mineshaft-1"
+                        }
+                    }
+                },
+                "right": {
+                    "description": [
+                        "You see a village on the right"
+                    ],
+                    "triggers": "$MOVE desert-village-1",
+                    "conditional": {
+                        "%HAS hoe=any": {
+                            "description": "You mine some haybales",
+                            "triggers": "$MINE haybale 5"
+                        }
+                    }
+                },
+                "forward": {
+                    "description": [
+                        "There is a giant sand dune"
+                    ],
+                    "triggers": "$MOVE desert-2",
+                    "conditional": {
+                        "%HAS shovel=any": {
+                            "description": "You mine some sand",
+                            "triggers": "$MINE sand 3"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
