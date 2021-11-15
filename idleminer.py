@@ -25,6 +25,7 @@ def configload(file):
 
 
 def printlist(msg, end):
+    """prints list"""
     index = 0
     for i in msg:
         index += 1
@@ -210,7 +211,8 @@ class IdleMiner:
 
     def load(self, file):
         """loads a profile"""
-        profile = json.load(open(file, encoding="UTF-8"))
+        with open(file, encoding="utf-8"):
+            profile = json.load(file)
         if (not "DATA_V" in profile) or (not profile["DATA_V"] in COMPAT_V):
             idleprint(lang.INCOMPATDATAMSG, style="red")
             return
@@ -264,7 +266,8 @@ class IdleMiner:
             "battlexp": self.battlexp,
         }
 
-        json.dump(profile, open(file, "w", encoding="UTF-8"))
+        with open(file, "w", encoding="utf-8"):
+            json.dump(profile, file)
 
     def get(self):
         """gets and executes command"""
@@ -621,6 +624,7 @@ class IdleMiner:
 
 
 def main():
+    """runs idleminer input thread and event loop"""
     queue = []
     try:
         idleprint(HELPMSG)
@@ -646,9 +650,8 @@ def main():
         inputthread.start()
 
         # background tasks
-        SLEEPTIME = 1 / TICKS
         while True:
-            time.sleep(SLEEPTIME)
+            time.sleep(1 / TICKS)
             steve.miningtick()
             queue.extend(steve.update())
 
