@@ -25,5 +25,6 @@
     "ATEMSG": "You ate %s: +1 hp",
     "NOFOODMSG": "[red]No food to eat[/red]",
     "WOULDLIKETOEATMSG": "You have %s health, would you like to eat?(y/N)",
-    "LASTMINELEVELMSG": "You are on the last mine level"
+    "LASTMINELEVELMSG": "You are on the last mine level",
+    "NOLAPISMSG": "You don't have enough lapis"
 }

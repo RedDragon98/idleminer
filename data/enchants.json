@@ -1,0 +1,14 @@
+{
+    "a": {
+        "Efficiency I": {
+            "lapis": 1,
+            "tools": ["p", "a", "s"],
+            "effects": {
+                "speed": 1
+            },
+            "uncompat": {
+    
+            }
+        }
+    }
+}

@@ -66,6 +66,7 @@ crops: dict = dataload("crops.json")  # crops and their sources
 mobs: dict = dataload("mobs.json")  # list of mobs
 pets: list = dataload("pets.json")
 tools: list = dataload("tools.json")
+enchants: dict = dataload("enchants.json")
 
 shouldexit = False
 lastminelevel = False
@@ -430,6 +431,15 @@ class IdleMiner:
         else:
             idleprint(lang.COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
+    def enchant(self):
+        tier = chr(random.choice([1]) + 96)
+        enchant = random.choice(list(enchants[tier].keys()))
+        enchantjson = enchants[tier][enchant]
+        if self.lapis >= enchantjson["lapis"]:
+            self.lapis -= enchantjson["lapis"] # TODO actually add enchants
+        else: 
+            print(lang.NOLAPISMSG)
+
     def _quiz(self, difficulty):
         """internal function for quizzes; returns whether the answer is correct"""
         question = random.choice(quizes[difficulty])
@@ -599,9 +609,10 @@ class IdleMiner:
                 self.farm()
             case "battle" | "b":
                 self.battle()
+            case "enchant" | "e":
+                self.enchant()
             case "exit" | "quit":
                 self.save("profile.json")
-
                 global shouldexit
                 shouldexit = True
             case "help":
