@@ -11,7 +11,7 @@
     "FISHINGUPMSG": "Your fishing level was upgraded to %s",
     "CORRECTANSWERMSG": "Correct! +$2000",
     "WRONGANSWERMSG": "Wrong! Better luck next time",
-    "INCOMPATDATAMSG": "Incompatible data version(unable to load profile)",
+    "INCOMPATDATAMSG": "Incompatible data version (unable to load profile)",
     "COOLDOWNMSG": "Please wait %s seconds before %s again!",
     "UPBIOMEMSG": "Upgraded biome to %s",
     "GROWMSG": "You grew:",
