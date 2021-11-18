@@ -30,6 +30,7 @@ NOFOODMSG: str
 LASTMINELEVELMSG: str
 NOLAPISMSG: str
 BADPROFILEMSG: str
+INVALIDTOOLMSG: str
 
 
 def load(langpack: dict):

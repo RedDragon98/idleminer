@@ -26,5 +26,6 @@
     "WOULDLIKETOEATMSG": "you have %s health would [i]you[/i] like to [b]eat[/b] amogus?😁😁",
     "LASTMINELEVELMSG": "oh no no more mine levels what will you do know",
     "NOLAPISMSG": "no no more lapis eat 🎂🎂",
-    "BADPROFILEMSG": "lost your progress(tm)"
+    "BADPROFILEMSG": "lost your progress(tm)",
+    "INVALIDTOOLMSG": "you chose a bad tool"
 }

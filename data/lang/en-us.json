@@ -27,5 +27,6 @@
     "WOULDLIKETOEATMSG": "You have %s health, would you like to eat?(y/N)",
     "LASTMINELEVELMSG": "You are on the last mine level",
     "NOLAPISMSG": "You don't have enough lapis",
-    "BADPROFILEMSG": "Could not load profile"
+    "BADPROFILEMSG": "Could not load profile",
+    "INVALIDTOOLMSG": "Invalid tool"
 }

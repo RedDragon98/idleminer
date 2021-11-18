@@ -82,10 +82,12 @@ HELPMSG = lang.HELPMSG
 if COLORS:
     HELPMSG = lang.HELPMSGC
 
-PROFILE_V = "0.0.9"  # profile version
+PROFILE_V = "0.0.10"  # profile version
 COMPAT_V = [
-    "0.0.9"
+    "0.0.10"
 ]  # compatible profile versions
+
+pbooster = 0
 
 
 def progressbar(num, cap, partitions=20):
@@ -212,11 +214,13 @@ class IdleMiner:
 
     def load(self, file):
         """loads a profile"""
-        with open(file, encoding="utf-8") as f:
+        with open(file, encoding="utf-8") as jsonfile:
             try:
-                profile = json.load(f)
-            except:
-                print(lang.BADPROFILEMSG)
+                profile = json.load(jsonfile)
+            except json.JSONDecodeError:
+                idleprint(lang.BADPROFILEMSG, style="red")
+                return
+
         if (not "DATA_V" in profile) or (not profile["DATA_V"] in COMPAT_V):
             idleprint(lang.INCOMPATDATAMSG, style="red")
             return
@@ -339,7 +343,7 @@ class IdleMiner:
             chances = mines[self.biome][self.minelevel][tool]
             for i in chances.keys():
                 if num > 100 - chances[i]:
-                    tomine = self.blockspertick[tool]
+                    tomine = self.blockspertick[tool] + pbooster
                     self.inventory.modify(i, tomine)
                     self.blocksmined += tomine
 
@@ -435,13 +439,26 @@ class IdleMiner:
             idleprint(lang.COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
     def enchant(self):
+        """enchants random tool with random enchant"""
         tier = chr(random.choice([1]) + 96)
         enchant = random.choice(list(enchants[tier].keys()))
         enchantjson = enchants[tier][enchant]
-        if self.lapis >= enchantjson["lapis"]:
-            self.lapis -= enchantjson["lapis"]  # TODO actually add enchants
-        else:
-            print(lang.NOLAPISMSG)
+        if input(enchant + "is available, would you like to use it").lower().startswith("y"):
+            if self.lapis >= enchantjson["lapis"]:
+                tool = input("What tool would you like to enchant? " +
+                             str(enchantjson["tools"]) + " are valid tools: ")
+                if tool in enchantjson["tools"]:
+                    for effect in enchantjson["effects"].keys():
+                        if effect == "speed":
+                            global pbooster
+                            # TODO other tools than p
+                            pbooster += enchantjson["effects"]["speed"]
+
+                    self.lapis -= enchantjson["lapis"]
+                else:
+                    print(lang.INVALIDTOOLMSG)
+            else:
+                print(lang.NOLAPISMSG)
 
     def _quiz(self, difficulty):
         """internal function for quizzes; returns whether the answer is correct"""
