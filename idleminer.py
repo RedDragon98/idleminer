@@ -212,8 +212,11 @@ class IdleMiner:
 
     def load(self, file):
         """loads a profile"""
-        with open(file, encoding="utf-8"):
-            profile = json.load(file)
+        with open(file, encoding="utf-8") as f:
+            try:
+                profile = json.load(f)
+            except:
+                print(lang.BADPROFILEMSG)
         if (not "DATA_V" in profile) or (not profile["DATA_V"] in COMPAT_V):
             idleprint(lang.INCOMPATDATAMSG, style="red")
             return
@@ -436,8 +439,8 @@ class IdleMiner:
         enchant = random.choice(list(enchants[tier].keys()))
         enchantjson = enchants[tier][enchant]
         if self.lapis >= enchantjson["lapis"]:
-            self.lapis -= enchantjson["lapis"] # TODO actually add enchants
-        else: 
+            self.lapis -= enchantjson["lapis"]  # TODO actually add enchants
+        else:
             print(lang.NOLAPISMSG)
 
     def _quiz(self, difficulty):

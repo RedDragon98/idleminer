@@ -28,6 +28,8 @@ WOULDLIKETOEATMSG: str
 ATEMSG: str
 NOFOODMSG: str
 LASTMINELEVELMSG: str
+NOLAPISMSG: str
+BADPROFILEMSG: str
 
 
 def load(langpack: dict):

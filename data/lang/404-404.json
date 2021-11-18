@@ -25,5 +25,6 @@
     "NOFOODMSG": "[red]oh[/red] [yellow]no[/yellow]: [yellow]no[/yellow] [red]food[/red]",
     "WOULDLIKETOEATMSG": "you have %s health would [i]you[/i] like to [b]eat[/b] amogus?😁😁",
     "LASTMINELEVELMSG": "oh no no more mine levels what will you do know",
-    "NOLAPISMSG": "no no more lapis eat 🎂🎂"
+    "NOLAPISMSG": "no no more lapis eat 🎂🎂",
+    "BADPROFILEMSG": "lost your progress(tm)"
 }
