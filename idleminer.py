@@ -274,8 +274,8 @@ class IdleMiner:
             "battlexp": self.battlexp,
         }
 
-        with open(file, "w", encoding="utf-8"):
-            json.dump(profile, file)
+        with open(file, "w", encoding="utf-8") as jsonfile:
+            json.dump(profile, jsonfile)
 
     def get(self):
         """gets and executes command"""
