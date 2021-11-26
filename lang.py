@@ -31,6 +31,7 @@ LASTMINELEVELMSG: str
 NOLAPISMSG: str
 BADPROFILEMSG: str
 INVALIDTOOLMSG: str
+BADDIFFICULTYMSG: str
 
 
 def load(langpack: dict):
