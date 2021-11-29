@@ -19,7 +19,7 @@
     "HELPMSGC": " \ns/sell: sells it\np/profile: prints profile\nf/fish: treasure!\nh/hunt: more pets\nu/upgrade tool amount: upgrades a tool (eg. u p 1)\nq/quiz difficulty: get quizzed (eg. q easy)\nexit/quit: exit the game now\nf/farm: farms\nhelp: prints this again(and again)\nuse the pickaxe, shovel, and hoe because their awesome",
     "MOBHITMSG": "ouch says [red]mob[/red]: -%s health for it(%s left)",
     "MOBHURTMSG": "oof :( -%s [red]health[/red] (%s left)🎯🎯🎯🎯",
-    "DEADMSG": "oh no you [red]died[/red]([yellow]respawning[/yellow]...) [i]what if you were in hardcore?[/i]❔❔❓❓❔❓❔❓",
+    "DEADMSG": "oh no you [red]died[/red]([yellow]respawning[/yellow]...) [i]what if you were in hardcore[/i]❔❔❓❓❔❓❔❓",
     "WINMSG": "[b]yay[/b] you [red]killed[/red] it! +%s [b]x[/b][i]p[/i] [green]yay[/green]",
     "ATEMSG": "you [i]devoured[/i] %s: +infinity(1) hp🍧🍧🍧🍧🍧",
     "NOFOODMSG": "[red]oh[/red] [yellow]no[/yellow]: [yellow]no[/yellow] [red]food[/red]",
@@ -27,5 +27,6 @@
     "LASTMINELEVELMSG": "oh no no more mine levels what will you do know",
     "NOLAPISMSG": "no no more lapis eat 🎂🎂",
     "BADPROFILEMSG": "lost your progress(tm)",
-    "INVALIDTOOLMSG": "you chose a bad tool"
+    "INVALIDTOOLMSG": "you chose a bad tool",
+    "BADDIFICULTYMSG": "bad."
 }

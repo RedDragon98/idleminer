@@ -5,10 +5,10 @@ name = "pypi"
 
 [packages]
 pyyaml = "6.0"
-rich = "10.13.0"
+rich = "10.15.1"
 
 [dev-packages]
-pylint = "2.11.1"
+pylint = "2.12.1"
 pytest = "6.2"
 
 [requires]

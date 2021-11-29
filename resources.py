@@ -14,12 +14,12 @@ class Resources:
         else:
             self.resdict[resource] = amount
 
-    def get(self, resource):
+    def get(self, resource: str):
         """gets amount of resources"""
         if resource in self.resdict:
             return self.resdict[resource]
-        else:
-            return 0
+
+        return 0
 
     def zero(self, resource: str):
         """sets resource to zero"""
