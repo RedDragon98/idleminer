@@ -28,5 +28,6 @@
     "LASTMINELEVELMSG": "You are on the last mine level",
     "NOLAPISMSG": "You don't have enough lapis",
     "BADPROFILEMSG": "Could not load profile",
-    "INVALIDTOOLMSG": "Invalid tool"
+    "INVALIDTOOLMSG": "Invalid tool",
+    "BADDIFICULTYMSG": "Invalid quiz difficulty"
 }

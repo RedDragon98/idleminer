@@ -24,7 +24,7 @@ def configload(file):
     return yaml.safe_load(open("config/" + file, encoding="UTF-8"))
 
 
-def printlist(msg, end):
+def printlist(msg: list[str], end=str):
     """prints list"""
     index = 0
     for i in msg:
@@ -34,7 +34,7 @@ def printlist(msg, end):
         else:
             print(i, end=" ")
 
-    print(end, end="")
+    print(end=end)
 
 
 LANGUAGE: str = configload("lang.yml")
@@ -69,8 +69,8 @@ pets: list = dataload("pets.json")
 tools: list = dataload("tools.json")
 enchants: dict = dataload("enchants.json")
 
-shouldexit = False
-lastminelevel = False
+shouldexit: bool = False
+lastminelevel: bool = False
 
 
 TICKS = 1
@@ -83,15 +83,15 @@ HELPMSG = lang.HELPMSG
 if COLORS:
     HELPMSG = lang.HELPMSGC
 
-PROFILE_V = "0.0.10"  # profile version
-COMPAT_V = [
+PROFILE_V: str = "0.0.10"  # profile version
+COMPAT_V: list[str] = [
     "0.0.10"
 ]  # compatible profile versions
 
-pbooster = 0
+pbooster: int = 0
 
 
-def progressbar(num, cap, partitions=20):
+def progressbar(num: int, cap: int, partitions=20):
     """progressbar ####--"""
 
     dashes = round(num / (cap / partitions))
@@ -103,7 +103,7 @@ def progressbar(num, cap, partitions=20):
     idleprint(" (" + str(num) + "/" + str(cap) + ")")
 
 
-def getrank(level) -> str:
+def getrank(level: int) -> str:
     """gets rank of a tool"""
 
     rank = "impossible"
@@ -123,7 +123,7 @@ def getrank(level) -> str:
     return rank
 
 
-def getmult(tool, rank) -> str:
+def getmult(tool: str, rank: str) -> str:
     """gets multiplier based on rank"""
     return mults[tool][rank]
 
@@ -142,7 +142,7 @@ def intcheck(integer: str) -> bool:
 class CommandParser():
     """parses input"""
 
-    def get(self, prompt=">"):
+    def get(self, prompt: str = ">"):
         """gets input and returns a parsed version"""
         command = input(prompt)
         parsed = self.parse(command)
@@ -213,9 +213,9 @@ class IdleMiner:
 
         self.stats = Stats()
 
-    def load(self, file):
+    def load(self, filename: str):
         """loads a profile"""
-        with open(file, encoding="utf-8") as jsonfile:
+        with open(filename, encoding="utf-8") as jsonfile:
             try:
                 profile = json.load(jsonfile)
             except json.JSONDecodeError:
@@ -303,8 +303,8 @@ class IdleMiner:
         else:
             self.inventory = self._sell(self.inventory)
 
-    def _individualup(self, tool, toolname, amount, multiplier):
-        for _ in range(amount):
+    def _individualup(self, tool: str, toolname: str, amount: int, multiplier: int):
+        for _ in range(amount):  # stop iterating in this function
             price = self.tools.get(tool) * multiplier
             if price <= self.money:
                 self.tools.modify(tool, 1)
@@ -317,7 +317,7 @@ class IdleMiner:
         idleprint(lang.UPMSG %
                   (toolname, self.tools.get(tool), getrank(self.tools.get(tool))))
 
-    def upgrade(self, tool, amount):
+    def upgrade(self, tool: str, amount: int):
         """upgrades tool"""
         index = 0
         toolid = 0
@@ -461,8 +461,12 @@ class IdleMiner:
             else:
                 print(lang.NOLAPISMSG)
 
-    def _quiz(self, difficulty):
+    def _quiz(self, difficulty: str):
         """internal function for quizzes; returns whether the answer is correct"""
+        if not difficulty in quizes:
+            print(lang.BADDIFFICULTYMSG)
+            return False
+
         question = random.choice(quizes[difficulty])
 
         idleprint(question["question"] + "?")
@@ -493,7 +497,7 @@ class IdleMiner:
 
         return None
 
-    def quiz(self, difficulty):
+    def quiz(self, difficulty: str):
         """asks a quiz question"""
         if self.quizcooldown < 1:
             self.quizcooldown = 300
@@ -608,12 +612,12 @@ class IdleMiner:
             self.battlexp += mobs[horde]["xp"]
             idleprint(lang.WINMSG % 1)
 
-    def execute(self, cmd):
+    def execute(self, cmd: list[str]):
         """executes command"""
         match cmd:
-            case "s":
+            case "s" | "sell":
                 self.sell()
-            case "sp":
+            case "sp" | "sell-produce":
                 self.sell(True)
             case["upgrade" | "up" | "u", tool, amount]:
                 if intcheck(amount):
