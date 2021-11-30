@@ -39,6 +39,7 @@ def printlist(msg, end):
 
 LANGUAGE: str = configload("lang.yml")
 COLORS: bool = configload("colors.yml")
+DIFFICULTY: str = configload("difficulty.yml")
 
 
 idleprint = lambda *msg, style=None, end="\n": printlist(msg, end)
@@ -552,12 +553,16 @@ class IdleMiner:
 
     def battle(self):
         """battle a horde of mobs"""
+        difficulty = DIFFICULTY
+        DIFFICULTIES = ["easy", "medium", "hard", "really"]
+        DAMAGES = [1, 2, 4, 10]
+        damage = 1
 
         horde = random.choice(
             list(mobs.keys())[0:(self.battlelevel + 1) * 3])
 
         mobhp = mobs[horde]["hp"]
-        mobdmg = mobs[horde]["dmg"]
+        mobdmg = DAMAGES[DIFFICULTIES.index(DIFFICULTY)]
 
         stevehp = (self.battlelevel + 1) * 10
 
@@ -569,17 +574,15 @@ class IdleMiner:
             return
 
         while stevehp > 0 and mobhp > 0:
-            difficulty = "easy"
-            damage = 1
-            if mobhp >= 100:
-                difficulty = "really"
-                damage = 10
-            elif mobhp >= 50:
-                difficulty = "hard"
-                damage = 4
-            elif mobhp >= 20:
-                difficulty = "medium"
-                damage = 2
+            # if mobhp >= 100:
+            #     difficulty = "really"
+            #     damage = 10
+            # elif mobhp >= 50:
+            #     difficulty = "hard"
+            #     damage = 4
+            # elif mobhp >= 20:
+            #     difficulty = "medium"
+            #     damage = 2
             if self._quiz(difficulty):
                 dmgdone = damage * \
                     getmult("w", getrank(self.tools.get("w")))
