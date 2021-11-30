@@ -1,0 +1,92 @@
+[
+    {
+        "name": "Upgrade pickaxe 5 times",
+        "objective": "UP-P",
+        "amount": 5
+    },
+    {
+        "name": "Get $1,000",
+        "objective": "MONEY",
+        "amount": 1000
+    },
+    {
+        "name": "Win a battle",
+        "objective": "BATTLE-WIN",
+        "amount": 1
+    },
+    {
+        "name": "Grow a crop",
+        "objective": "GROW",
+        "amount": 1
+    },
+    {
+        "name": "Get a pet",
+        "objective": "HUNT-PET",
+        "amount": 1
+    },
+    {
+        "name": "Get 10 shards",
+        "objective": "SHARDS",
+        "amount": 10
+    },
+    {
+        "name": "Upgrade shovel 5 times",
+        "objective": "UP-S",
+        "amount": 5
+    },
+    {
+        "name": "Upgrade axe 5 times",
+        "objective": "UP-A",
+        "amount": 5
+    },
+    {
+        "name": "Enchant",
+        "objective": "ENCHANT",
+        "amount": 1
+    },
+    {
+        "name": "Get a quiz question correct",
+        "objective": "QUIZ-CORRECT",
+        "amount": 1
+    },
+    {
+        "name": "Upgrade hoe 5 times",
+        "objective": "UP-H",
+        "amount": 5
+    },
+    {
+        "name": "Find a new biome",
+        "objective": "BIOME-NEW",
+        "amount": 1
+    },
+    {
+        "name": "Break bedrock",
+        "objective": "MINE-BEDROCK",
+        "amount": 1
+    },
+    {
+        "name": "Mine every block",
+        "objective": "MINE-ALL",
+        "amount": 1
+    },
+    {
+        "name": "Visit every biome",
+        "objective": "BIOME-ALL",
+        "amount": 1
+    },
+    {
+        "name": "Get perfect gear",
+        "objective": "GEAR-PERFECT",
+        "amount": 1
+    },
+    {
+        "name": "Kill all bosses",
+        "objective": "BATTLE-ALL",
+        "amount": 1
+    },
+    {
+        "name": "Break bedrock without changing pickaxes",
+        "objective": "SINGLEMINE-BEDROCK",
+        "amount": 1
+    }
+]
