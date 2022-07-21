@@ -59,9 +59,26 @@
                 "wood": 90,
                 "leaves": 20
             }
+        },
+        {
+            "p": {
+                "stone": 45,
+                "diorite": 40,
+                "coal": 20,
+                "iron": 13,
+                "redstone": 0.09
+            },
+            "s": {
+                "dirt": 85,
+                "gravel": 15
+            },
+            "a": {
+                "wood": 95,
+                "leaves": 25
+            }
         }
     ],
-    "forest": [
+    "birch_forest": [
         {
             "p": {
                 "stone": 32,
@@ -76,8 +93,7 @@
             },
             "a": {
                 "wood": 90,
-                "leaves": 20,
-                "glow-berry": 5
+                "leaves": 20
             }
         },
         {
@@ -94,8 +110,7 @@
             },
             "a": {
                 "wood": 90,
-                "leaves": 25,
-                "glow-berry": 5
+                "leaves": 25
             }
         },
         {
@@ -112,8 +127,41 @@
             },
             "a": {
                 "wood": 90,
-                "leaves": 30,
-                "glow-berry": 5
+                "leaves": 30
+            }
+        },
+        {
+            "p": {
+                "stone": 20,
+                "diorite": 60,
+                "andesite": 26,
+                "coal": 50,
+                "iron": 40
+            },
+            "s": {
+                "dirt": 55,
+                "gravel": 45
+            },
+            "a": {
+                "wood": 95,
+                "leaves": 30
+            }
+        },
+        {
+            "p": {
+                "stone": 50,
+                "diorite": 50,
+                "andesite": 20,
+                "coal": 60,
+                "iron": 40
+            },
+            "s": {
+                "dirt": 40,
+                "gravel": 60
+            },
+            "a": {
+                "wood": 90,
+                "leaves": 30
             }
         }
     ]
