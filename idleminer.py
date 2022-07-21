@@ -83,9 +83,9 @@ HELPMSG = lang.HELPMSG
 if COLORS:
     HELPMSG = lang.HELPMSGC
 
-PROFILE_V: str = "0.0.10"  # profile version
+PROFILE_V: str = "0.0.11"  # profile version
 COMPAT_V: list[str] = [
-    "0.0.10"
+    "0.0.11"
 ]  # compatible profile versions
 
 pbooster: int = 0
@@ -189,6 +189,8 @@ class IdleMiner:
 
         self.inventory = resources.Resources()  # IdleMiner's inventory
 
+        self.adminmode = False
+
         self.fishcooldown = 1  # cooldowns
         self.fishxp = 0
         self.fishlevel = 1
@@ -244,6 +246,7 @@ class IdleMiner:
         self.farmlevel = profile["farmlevel"]
         self.battlelevel = profile["battlelevel"]
         self.battlexp = profile["battlexp"]
+        self.adminmode = profile["adminmode"]
 
         self.stats = Stats()
         self.stats.load(profile["stats"])
@@ -273,6 +276,7 @@ class IdleMiner:
             "stats": self.stats.save(),
             "battlelevel": self.battlelevel,
             "battlexp": self.battlexp,
+            "adminmode": self.adminmode
         }
 
         with open(file, "w", encoding="utf-8") as jsonfile:
@@ -615,6 +619,7 @@ class IdleMiner:
     def execute(self, cmd: list[str]):
         """executes command"""
         match cmd:
+            # normal commands
             case "s" | "sell":
                 self.sell()
             case "sp" | "sell-produce":
@@ -644,18 +649,32 @@ class IdleMiner:
                 shouldexit = True
             case "help":
                 idleprint(HELPMSG)
+
+            # hacking section
             case "cheat":
-                self.money += 10000000
-                self.blocksmined += 2000
-                self.farmgrowth = 0
-                self.huntcooldown = 0
-                self.fishcooldown = 0
-                self.quizcooldown = 0
-            # easter eggs?
+                if self.adminmode:
+                    self.money += 10000000000000000
+                    self.blocksmined += 2000
+                    self.farmgrowth = 0
+                    self.huntcooldown = 0
+                    self.fishcooldown = 0
+                    self.quizcooldown = 0
+                else:
+                    idleprint(
+                        lang.ERRMSG + " (in IdleMiner.execute)", style="red")
+            case "a\\b\\c\\d\\e\\f\\..\\z\\now\\I\\know\\my\\a\\b\\c's\\now\\will\\you\\sing\\with\\me":
+                self.adminmode = True
+                idleprint(lang.ABCHACKS)
+
+            # easter egg section
             case ":(":
                 idleprint("Oof", style="red")
             case ":)":
                 idleprint("Yay", style="green")
+            case "whoasked":
+                idleprint("I did", style="blue italics")
+
+            # default
             case _:
                 idleprint(lang.ERRMSG + " (in IdleMiner.execute)",
                           style="red")

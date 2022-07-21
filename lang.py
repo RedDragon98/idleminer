@@ -3,6 +3,7 @@
 
 ERRMSG: str
 COSTMSG: str
+ABCHACKS: str
 UPMSG: str
 NOTINTMSG: str
 MINEUPMSG: str
