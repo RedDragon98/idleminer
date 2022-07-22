@@ -75,6 +75,11 @@
         "amount": 1
     },
     {
+        "name": "Got the drip",
+        "objective": "FULL-WARDROBE",
+        "amount": 1
+    },
+    {
         "name": "Get perfect gear",
         "objective": "GEAR-PERFECT",
         "amount": 1

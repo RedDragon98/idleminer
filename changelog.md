@@ -26,5 +26,5 @@
 - Added basic hunting
 - Added mining
 - Added shovel
-- Added basic quizes
+- Added basic quizzes
 - Added saving and loading
