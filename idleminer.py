@@ -306,6 +306,8 @@ class IdleMiner:
 
     def _sell(self, itemstosell: resources.Resources):
         """internal function to sell from a dictionary"""
+        if len(itemstosell.list()) == 0:
+            idleprint(NOSELLMSG)
         for item in list(itemstosell.list()):
             if itemstosell.get(item) > 0:
                 money = round(itemstosell.get(item) *
@@ -325,9 +327,9 @@ class IdleMiner:
         else:
             self.inventory = self._sell(self.inventory)
 
-    def _individualup(self, tool: str, toolname: str, amount: int, multiplier: int):
+    def _individualup(self, tool: str, toolname: str, amount: int):
         for _ in range(amount):  # stop iterating in this function
-            price = self.tools.get(tool) * multiplier
+            price = (0.5 * self.tools.get(tool) ** 3) - (2.5 * self.tools.get(tool)) + 1000
             if price <= self.money:
                 self.tools.modify(tool, 1)
                 self.money -= price
@@ -341,23 +343,15 @@ class IdleMiner:
 
     def upgrade(self, tool: str, amount: int):
         """upgrades tool"""
-        index = 0
-        toolid = 0
-        for _toolid in tools.keys():
-            if tool in (_toolid, tools[_toolid]["name"]):
-                toolid = _toolid
-                break
 
-            index += 1
-
-        if toolid != 0:
-            self._individualup(
-                toolid, tools[toolid]["name"], amount, tools[toolid]["multiplier"])
-
-            return
-
-        # if nothing matches
-        idleprint(lang.ERRMSG + " (in IdleMiner.up)", style="red")
+        if tool in tools:
+            if amount == "max":
+                self._individualup(tool, tools[tool], 1000000)
+            else:
+                self._individualup(tool, tools[tool], amount)
+        else:
+            # if nothing matches
+            idleprint(lang.ERRMSG + " (in IdleMiner.up)", style="red")
 
     def miningtick(self):
         """adds resources to inventory"""
@@ -466,7 +460,7 @@ class IdleMiner:
         tier = chr(random.choice([1]) + 96)
         enchant = random.choice(list(enchants[tier].keys()))
         enchantjson = enchants[tier][enchant]
-        if input(enchant + "is available, would you like to use it").lower().startswith("y"):
+        if input(enchant + " is available, would you like to use it? ").lower().startswith("y"):
             if self.lapis >= enchantjson["lapis"]:
                 tool = input("What tool would you like to enchant? " +
                              str(enchantjson["tools"]) + " are valid tools: ")
@@ -630,6 +624,10 @@ class IdleMiner:
         else:
             idleprint(lang.COOLDOWNMSG % (self.farmgrowth, "farming"))
 
+    def dungeons(self):
+        """explorable dungeons?"""
+        # TODO later
+
     def fish(self):
         """fishes"""
         if self.fishcooldown < 1:
@@ -676,15 +674,6 @@ class IdleMiner:
             return
 
         while stevehp > 0 and mobhp > 0:
-            # if mobhp >= 100:
-            #     difficulty = "really"
-            #     damage = 10
-            # elif mobhp >= 50:
-            #     difficulty = "hard"
-            #     damage = 4
-            # elif mobhp >= 20:
-            #     difficulty = "medium"
-            #     damage = 2
             if self._quiz(difficulty):
                 dmgdone = damage * \
                     getmult("w", getrank(self.tools.get("w")))
@@ -718,8 +707,8 @@ class IdleMiner:
                 self.sell()
             case "sp" | "sell-produce":
                 self.sell(True)
-            case["upgrade" | "up" | "u", tool, amount]:
-                if intcheck(amount):
+            case ["upgrade" | "up" | "u", tool, amount]:
+                if intcheck(amount) or amount == "max":
                     self.upgrade(tool, int(amount))
             case "fish" | "f":
                 self.fish()
@@ -735,7 +724,7 @@ class IdleMiner:
                 self.wardrobe()
             case "equip", type, piece:
                 self.equip(type, piece)
-            case["quiz" | "q", difficulty]:
+            case ["quiz" | "q", difficulty]:
                 self.quiz(difficulty)
             case "farm" | "fm":
                 self.farm()
