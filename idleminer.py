@@ -448,7 +448,7 @@ class IdleMiner:
         tier = chr(random.choice([1]) + 96)
         enchant = random.choice(list(enchants[tier].keys()))
         enchantjson = enchants[tier][enchant]
-        if input(enchant + "is available, would you like to use it").lower().startswith("y"):
+        if input(enchant + " is available, would you like to use it? ").lower().startswith("y"):
             if self.lapis >= enchantjson["lapis"]:
                 tool = input("What tool would you like to enchant? " +
                              str(enchantjson["tools"]) + " are valid tools: ")
@@ -536,6 +536,10 @@ class IdleMiner:
         else:
             idleprint(lang.COOLDOWNMSG % (self.farmgrowth, "farming"))
 
+    def dungeons(self):
+        """explorable dungeons?"""
+        # TODO later
+
     def fish(self):
         """fishes"""
         if self.fishcooldown < 1:
@@ -582,15 +586,6 @@ class IdleMiner:
             return
 
         while stevehp > 0 and mobhp > 0:
-            # if mobhp >= 100:
-            #     difficulty = "really"
-            #     damage = 10
-            # elif mobhp >= 50:
-            #     difficulty = "hard"
-            #     damage = 4
-            # elif mobhp >= 20:
-            #     difficulty = "medium"
-            #     damage = 2
             if self._quiz(difficulty):
                 dmgdone = damage * \
                     getmult("w", getrank(self.tools.get("w")))
