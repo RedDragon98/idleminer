@@ -1,22 +1,7 @@
 {
-    "p": {
-        "name": "pickaxe",
-        "multiplier": 210
-    },
-    "s": {
-        "name": "shovel",
-        "multiplier": 100
-    },
-    "h": {
-        "name": "hoe",
-        "multiplier": 50
-    },
-    "a": {
-        "name": "axe",
-        "multiplier": 120
-    },
-    "w": {
-        "name": "sword",
-        "multiplier": 150
-    }
+    "p": "pickaxe",
+    "s": "shovel",
+    "h": "hoe",
+    "a": "axe",
+    "w": "sword"
 }

@@ -3,7 +3,7 @@
         {
             "question": "How do you get a music disc",
             "choices": [
-                "In loot chests at y=-1 in the void",
+                "In loot chests at y=-200 in the void",
                 "When a creeper is killed by a skeleton",
                 "When a skeleton is killed by a creeper",
                 "When a zombie is summoned by a griefer"
@@ -44,20 +44,12 @@
         },
         {
             "question": "What enchantment kills skeletons faster",
-            "choices": [
-                "Speed Kill",
-                "You can't",
-                "Sweeping Edge",
-                "Smite"
-            ],
+            "choices": ["Speed Kill", "You can't", "Sweeping Edge", "Smite"],
             "answer": 3
         },
         {
             "question": "You can get efficiency 5 on an enchanting table. True or False",
-            "choices": [
-                "True",
-                "False"
-            ],
+            "choices": ["True", "False"],
             "answer": 0
         },
         {
@@ -84,30 +76,17 @@
         },
         {
             "question": "What enchantment can turn turtles to bowls",
-            "choices": [
-                "Abracadabra",
-                "None",
-                "Channeling",
-                "Fire Aspect"
-            ],
+            "choices": ["Abracadabra", "None", "Channeling", "Fire Aspect"],
             "answer": 2
         },
         {
             "question": "Can tridents float",
-            "choices": [
-                "True",
-                "False"
-            ],
+            "choices": ["True", "False"],
             "answer": 0
         },
         {
             "question": "What type of bastion have gold trophy-like structures",
-            "choices": [
-                "Bridge",
-                "Stable",
-                "Housing",
-                "Treasure"
-            ],
+            "choices": ["Bridge", "Stable", "Housing", "Treasure"],
             "answer": 0
         },
         {
@@ -134,12 +113,7 @@
     "really": [
         {
             "question": "What changes through updates in a world (even when loaded)",
-            "choices": [
-                "Loot chests",
-                "Structures",
-                "Villager",
-                "Nothing"
-            ],
+            "choices": ["Loot chests", "Structures", "Villager", "Nothing"],
             "answer": 0
         },
         {
@@ -154,12 +128,7 @@
         },
         {
             "question": "Which version removed getting wither heads from strays (Bedrock)",
-            "choices": [
-                "1.14",
-                "1.15",
-                "1.16",
-                "It was never added"
-            ],
+            "choices": ["1.14", "1.15", "1.16", "It was never added"],
             "answer": 2
         },
         {
@@ -174,22 +143,12 @@
         },
         {
             "question": "Which direction does a loyalty trident face when you throw it",
-            "choices": [
-                "North",
-                "South",
-                "East",
-                "West"
-            ],
+            "choices": ["North", "South", "East", "West"],
             "answer": 1
         },
         {
             "question": "If a creeper explodes because of another creeper two blocks away, how many punches kill the creeper",
-            "choices": [
-                "It's dead",
-                "1",
-                "2",
-                "3"
-            ],
+            "choices": ["It's dead", "1", "2", "3"],
             "answer": 1
         },
         {
@@ -204,12 +163,7 @@
         },
         {
             "question": "How many hearts of damage do you take from a point blank creeper and an point blank end crystal explosion combined with blast protection 4, leather armor, and resistance 4 on normal mode",
-            "choices": [
-                "1 heart",
-                "1.5 hearts",
-                "2 hearts",
-                "2.5 hearts"
-            ],
+            "choices": ["1 heart", "1.5 hearts", "2 hearts", "2.5 hearts"],
             "answer": 2
         }
     ]

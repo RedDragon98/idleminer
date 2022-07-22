@@ -33,6 +33,7 @@ NOLAPISMSG: str
 BADPROFILEMSG: str
 INVALIDTOOLMSG: str
 BADDIFFICULTYMSG: str
+NOSELLMSG: str
 
 
 def load(langpack: dict):
