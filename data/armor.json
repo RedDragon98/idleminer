@@ -1,0 +1,44 @@
+{
+    "leather": {
+        "helmet": {
+            "health": 1
+        },
+        "chestplate": {
+            "health": 1
+        },
+        "leggings": {
+            "health": 1
+        },
+        "boots": {
+            "health": 1
+        }
+    },
+    "iron": {
+        "helmet": {
+            "health": 5
+        },
+        "chestplate": {
+            "health": 8
+        },
+        "leggings": {
+            "health": 7
+        },
+        "boots": {
+            "health": 4
+        }
+    },
+    "diamond": {
+        "helmet": {
+            "health": 10
+        },
+        "chestplate": {
+            "health": 16
+        },
+        "leggings": {
+            "health": 14
+        },
+        "boots": {
+            "health": 8
+        }
+    }
+}

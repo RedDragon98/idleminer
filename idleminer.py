@@ -68,6 +68,8 @@ mobs: dict = dataload("mobs.json")  # list of mobs
 pets: list = dataload("pets.json")
 tools: list = dataload("tools.json")
 enchants: dict = dataload("enchants.json")
+shop: dict = dataload("shop.json")
+armor: dict = dataload("armor.json")
 
 shouldexit: bool = False
 lastminelevel: bool = False
@@ -196,6 +198,17 @@ class IdleMiner:
         self.fishlevel = 1
         self.tools = resources.Resources()
 
+        self.equippedHelmet = "leather"
+        self.equippedChestplate = "leather"
+        self.equippedLeggings = "leather"
+        self.equippedBoots = "leather"
+        self.armorBonus = 0
+
+        self.allHelmet = ["Leather"]
+        self.allChestplate = ["Leather"]
+        self.allLeggings = ["Leather"]
+        self.allBoots = ["Leather"]
+
         self.blockspertick = {
             "p": getmult("p", getrank(self.tools.get("p"))),
             "s": getmult("s", getrank(self.tools.get("s"))),
@@ -247,6 +260,10 @@ class IdleMiner:
         self.battlelevel = profile["battlelevel"]
         self.battlexp = profile["battlexp"]
         self.adminmode = profile["adminmode"]
+        self.equippedHelmet = profile["helmet"]
+        self.equippedChestplate = profile["chestplate"]
+        self.equippedLeggings = profile["leggings"]
+        self.equippedBoots = profile["boots"]
 
         self.stats = Stats()
         self.stats.load(profile["stats"])
@@ -276,6 +293,7 @@ class IdleMiner:
             "stats": self.stats.save(),
             "battlelevel": self.battlelevel,
             "battlexp": self.battlexp,
+            "itemselected": self.itemselected,
             "adminmode": self.adminmode
         }
 
@@ -510,6 +528,82 @@ class IdleMiner:
             idleprint(lang.COOLDOWNMSG %
                       (self.quizcooldown, "getting quizzed"))
 
+    def shop(self, item: str):
+        if item in list(shop):
+            if self.money >= shop[item]:
+                self.money -= shop[item]
+                checkout = item.split("_")
+                try:
+                    checkout[1] += " " + checkout[2]
+                except: pass
+                if checkout[len(checkout) - 1] != "boots":
+                    print("You spent", shop[item], "coins on an", checkout[0], checkout[1])
+                else:
+                    print("You spent", shop[item], "coins on a pair of", checkout[0], checkout[1])
+                boughtItem = ""
+                for i in range(len(checkout) - 1):
+                    boughtItem += checkout[i].capitalize()
+                if checkout[len(checkout) - 1] == "helmet": #d3banana oof section
+                    self.equippedHelmet = checkout[0]
+                    self.allHelmet.append(boughtItem)
+                    if (len(checkout) == 3):
+                        self.equippedHelmet += checkout[1]
+                elif checkout[len(checkout) - 1] == "chestplate":
+                    self.equippedChestplate = checkout[0]
+                    self.allChestplate.append(boughtItem)
+                    if (len(checkout) == 3):
+                        self.equippedChestplate += checkout[1]
+                elif checkout[len(checkout) - 1] == "leggings":
+                    self.equippedLeggings = checkout[0]
+                    self.allLeggings.append(boughtItem)
+                    if (len(checkout) == 3):
+                        self.equippedLeggings += checkout[1]
+                elif checkout[len(checkout) - 1] == "boots":
+                    self.equippedBoots = checkout[0]
+                    self.allBoots.append(boughtItem)
+                    if (len(checkout) == 3):
+                        self.equippedBoots += checkout[1]
+            else:
+                print("You don't have enough money!")
+            self.armorBonus = 0
+            for i in range(4):
+                self.currentArmor = [self.equippedHelmet, self.equippedChestplate, self.equippedLeggings, self.equippedBoots][i]
+                self.armorType = ["helmet", "chestplate", "leggings", "boots"][i]
+                self.armorBonus += armor[self.currentArmor][self.armorType]["health"]
+        elif item in ["catalog", "catalogue", "c"]:
+            for i in range(len(shop)):
+                print(list(shop)[i], ":" + str(shop[list(shop)[i]]) + "coins")
+        else:
+            print("This is not an item in the shop!")
+        
+    def wardrobe(self):
+        print("Current Set:\n")
+        print("Helmet:", self.equippedHelmet.capitalize())
+        print("Chestplate:", self.equippedChestplate.capitalize())
+        print("Leggings:", self.equippedLeggings.capitalize())
+        print("Boots:", self.equippedBoots.capitalize(), "\n")
+
+        print("All Armor Owned:\n")
+        print("Helmet:", self.allHelmet)
+        print("Chestplate:", self.allChestplate)
+        print("Leggings:", self.allLeggings)
+        print("Boots:", self.allBoots)
+
+    def equip(self, type, piece: str):
+        type = type.capitalize()
+        if piece == "helmet" and type in self.allHelmet:
+            self.equippedHelmet = type
+        elif piece == "chestplate" and type in self.allBoots:
+            self.equippedChestplate = type
+        elif piece == "leggings" and type in self.allLeggings:
+            self.equippedLeggings = type
+        elif piece == "boots" and type in self.allBoots:
+            self.equippedBoots = type
+        elif type in list(armor):
+            print("You don't have this armor!")
+        else:
+            print("This armor doesn't exist!")
+
     def farm(self):
         """farms"""
         if self.farmgrowth < 1:
@@ -570,7 +664,7 @@ class IdleMiner:
         mobhp = mobs[horde]["hp"]
         mobdmg = DAMAGES[DIFFICULTIES.index(DIFFICULTY)]
 
-        stevehp = (self.battlelevel + 1) * 10
+        stevehp = ((self.battlelevel + 1) * 10) + self.armorBonus
 
         idleprint("Fighting:", horde, "with hp:", mobhp,
                   "and damage:", str(mobdmg) + ".", "You have", stevehp, "hp")
@@ -620,10 +714,16 @@ class IdleMiner:
                 self.fish()
             case "hunt" | "h":
                 self.hunt()
+            case "shop", item:
+                self.shop(item)
             case "profile" | "p":
                 self.profile()
                 idleprint("--------")
                 self.stats.printstats(idleprint, COLORS)
+            case "wardrobe" | "w":
+                self.wardrobe()
+            case "equip", type, piece:
+                self.equip(type, piece)
             case ["quiz" | "q", difficulty]:
                 self.quiz(difficulty)
             case "farm" | "fm":
