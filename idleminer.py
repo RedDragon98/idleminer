@@ -610,9 +610,6 @@ class IdleMiner:
         else:
             print("This armor doesn't exist!")
 
-    def setMoney(self, value):
-        self.money += int(value)
-
     def farm(self):
         """farms"""
         if self.farmgrowth < 1:
@@ -738,8 +735,6 @@ class IdleMiner:
                 self.wardrobe()
             case "equip", type, piece:
                 self.equip(type, piece)
-            case "sm", value:
-                self.setMoney(value)
             case["quiz" | "q", difficulty]:
                 self.quiz(difficulty)
             case "farm" | "fm":
