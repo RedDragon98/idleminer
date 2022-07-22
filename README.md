@@ -32,3 +32,12 @@ Once you progress in the game you can try the other mechanics, like farming and 
 
 
 ![image](https://user-images.githubusercontent.com/91714238/137562564-823a6ff4-182a-4041-9ac9-3279dec2217e.png)
+
+How to use the shop and armor:
+
+By running the command ```shop```, you can buy armor.
+Run ```shop c``` to list the items sold in the shop.
+The armor is auto-equipped, but if you want to switch armor, you can use ```equip armor_piece armor_type```
+E.G: ```equip leather helmet```
+
+
