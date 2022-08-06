@@ -178,7 +178,7 @@ class IdleMiner:
 
         self.basebpsize = 50  # base inventory size
         self.bpsizebooster = 1.0  # inventory size booster
-
+ 
         self.sellbooster = 1.0  # booster for sell prices
 
         self.blocksmined = 0  # blocks mined in this mine level
@@ -289,7 +289,7 @@ class IdleMiner:
             "tools": self.tools.save(),
             "pets": self.pets,
             "produce": self.produce.save(),
-            "farmlevel": self.farmlevel,
+            "farmlevel": self.farmlevel, 
             "stats": self.stats.save(),
             "battlelevel": self.battlelevel,
             "battlexp": self.battlexp,
@@ -328,7 +328,7 @@ class IdleMiner:
             self.inventory = self._sell(self.inventory)
 
     def _individualup(self, tool: str, toolname: str, amount: int):
-        for _ in range(amount):  # stop iterating in this function
+        for _ in range(amount):
             price = (0.5 * self.tools.get(tool) ** 3) - (2.5 * self.tools.get(tool)) + 1000
             if price <= self.money:
                 self.tools.modify(tool, 1)
@@ -356,7 +356,7 @@ class IdleMiner:
     def miningtick(self):
         """adds resources to inventory"""
         num = random.randint(1, 100)
-        for tool in ["p", "s", "a"]:  # some tools doesn't get ticks
+        for tool in ["p", "s", "a"]:  # some tools dont get ticks
             chances = mines[self.biome][self.minelevel][tool]
             for i in chances.keys():
                 if num > 100 - chances[i]:
@@ -377,7 +377,7 @@ class IdleMiner:
                 mines[self.biome][self.minelevel + 1]
             except IndexError:
                 if self.biomeid + 1 >= len(mines):
-                    pass  # no more biome upgrades
+                    pass  # already on the last biome
                 else:
                     self.biomeid += 1
 
@@ -441,7 +441,7 @@ class IdleMiner:
             self.huntcooldown = 300
             self.huntchance = random.randint(0, 100)
             if self.huntchance < 10:
-                pet = random.choice(pets[0:(25-(self.huntchance * 2))])
+                pet = random.choice([0:(25-(self.huntchance * 2))])
                 idleprint(pet)
 
                 self.stats.petscaught += 1
@@ -456,7 +456,7 @@ class IdleMiner:
             idleprint(lang.COOLDOWNMSG % (self.huntcooldown, "hunting"))
 
     def enchant(self):
-        """enchants random tool with random enchant"""
+        """enchants a tool with a random enchantment"""
         tier = chr(random.choice([1]) + 96)
         enchant = random.choice(list(enchants[tier].keys()))
         enchantjson = enchants[tier][enchant]
@@ -468,7 +468,7 @@ class IdleMiner:
                     for effect in enchantjson["effects"].keys():
                         if effect == "speed":
                             global pbooster
-                            # TODO other tools than p
+                            # TODO other tools than pick
                             pbooster += enchantjson["effects"]["speed"]
 
                     self.lapis -= enchantjson["lapis"]
@@ -805,7 +805,6 @@ def main():
                 sys.exit(0)
 
     except (KeyboardInterrupt, SystemExit, EOFError):
-        # doesn't seem to hide the error message, but still saves
         steve.save("profile.json")
         sys.exit(0)
 
