@@ -8,7 +8,7 @@ pyyaml = "6.0"
 rich = "12.5.1"
 
 [dev-packages]
-pylint = "2.14.5"
+pylint = "2.16.2"
 pytest = "7.1.2"
 
 [requires]
